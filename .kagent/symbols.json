@@ -1,0 +1,274 @@
+{
+  "symbols": {
+    "src/components/sign/Header.jsx": {
+      "ipo_ts": 1783604504477,
+      "edit_count": 9,
+      "last_lines": 58,
+      "last_ts": 1783605006301,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c3b9b0c5"
+    },
+    "src/components/sign/SignList.jsx": {
+      "ipo_ts": 1783604509384,
+      "edit_count": 2,
+      "last_lines": 61,
+      "last_ts": 1783604644914,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "98a0015c"
+    },
+    "src/components/sign/SignPreview.jsx": {
+      "ipo_ts": 1783604514110,
+      "edit_count": 71,
+      "last_lines": 229,
+      "last_ts": 1784640023421,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1959bb94"
+    },
+    "src/components/sign/SignSettings.jsx": {
+      "ipo_ts": 1783604523165,
+      "edit_count": 3,
+      "last_lines": 201,
+      "last_ts": 1784640023410,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "5a564fc7"
+    },
+    "src/App.jsx": {
+      "ipo_ts": 1783604525856,
+      "edit_count": 5,
+      "last_lines": 119,
+      "last_ts": 1784640023405,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "51d31128"
+    },
+    "public/国家高速4.svg": {
+      "ipo_ts": 1783605184453,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1783605184453,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d7c91d44"
+    },
+    "public/国家高速2.svg": {
+      "ipo_ts": 1783605184455,
+      "edit_count": 1,
+      "last_lines": 17,
+      "last_ts": 1783605184455,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c1e79af5"
+    },
+    "public/交通标志专用字体/jtbz_A.ttf": {
+      "ipo_ts": 1783864379648,
+      "edit_count": 1,
+      "last_lines": 12652,
+      "last_ts": 1783864379648,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "217838f7"
+    },
+    "public/交通标志专用字体/jtbz_B.ttf": {
+      "ipo_ts": 1783864379650,
+      "edit_count": 1,
+      "last_lines": 42,
+      "last_ts": 1783864379650,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "8ac1e1e2"
+    },
+    "public/交通标志专用字体/jtbz_C.ttf": {
+      "ipo_ts": 1783864379652,
+      "edit_count": 1,
+      "last_lines": 42,
+      "last_ts": 1783864379652,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f5f9d999"
+    },
+    "public/交通标志专用字体/textGenerator.py": {
+      "ipo_ts": 1783864379654,
+      "edit_count": 1,
+      "last_lines": 139,
+      "last_ts": 1783864379654,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "14445266"
+    },
+    "public/交通标志专用字体/字体使用说明.txt": {
+      "ipo_ts": 1783864379656,
+      "edit_count": 1,
+      "last_lines": 3,
+      "last_ts": 1783864379656,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "17871a17"
+    },
+    "src/index.css": {
+      "ipo_ts": 1783864507316,
+      "edit_count": 1,
+      "last_lines": 130,
+      "last_ts": 1783864507316,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "92e7886f"
+    },
+    "dist/favicon.svg": {
+      "ipo_ts": 1784639241949,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784639241949,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a1fb42fc"
+    },
+    "dist/icons.svg": {
+      "ipo_ts": 1784639241953,
+      "edit_count": 1,
+      "last_lines": 24,
+      "last_ts": 1784639241953,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1cf12c30"
+    },
+    "dist/交通标志专用字体/jtbz_A.ttf": {
+      "ipo_ts": 1784639241998,
+      "edit_count": 1,
+      "last_lines": 12652,
+      "last_ts": 1784639241998,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "217838f7"
+    },
+    "dist/交通标志专用字体/jtbz_B.ttf": {
+      "ipo_ts": 1784639242001,
+      "edit_count": 1,
+      "last_lines": 42,
+      "last_ts": 1784639242001,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "8ac1e1e2"
+    },
+    "dist/交通标志专用字体/jtbz_C.ttf": {
+      "ipo_ts": 1784639242004,
+      "edit_count": 1,
+      "last_lines": 42,
+      "last_ts": 1784639242004,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f5f9d999"
+    },
+    "dist/交通标志专用字体/textGenerator.py": {
+      "ipo_ts": 1784639242007,
+      "edit_count": 1,
+      "last_lines": 139,
+      "last_ts": 1784639242007,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "14445266"
+    },
+    "dist/交通标志专用字体/字体使用说明.txt": {
+      "ipo_ts": 1784639242009,
+      "edit_count": 1,
+      "last_lines": 3,
+      "last_ts": 1784639242009,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "17871a17"
+    },
+    "dist/国家高速2.svg": {
+      "ipo_ts": 1784639242011,
+      "edit_count": 1,
+      "last_lines": 17,
+      "last_ts": 1784639242011,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c1e79af5"
+    },
+    "dist/国家高速4.svg": {
+      "ipo_ts": 1784639242013,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784639242013,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d7c91d44"
+    },
+    "dist/assets/index-CvE99K_D.js": {
+      "ipo_ts": 1784639242305,
+      "edit_count": 1,
+      "last_lines": 184,
+      "last_ts": 1784639242305,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "23f67955"
+    },
+    "dist/assets/index-rRfru3C9.css": {
+      "ipo_ts": 1784639242308,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784639242308,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "94fbf790"
+    },
+    "dist/index.html": {
+      "ipo_ts": 1784639242310,
+      "edit_count": 2,
+      "last_lines": 13,
+      "last_ts": 1784640216340,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "392df000"
+    },
+    "render-check.png": {
+      "ipo_ts": 1784639292281,
+      "edit_count": 1,
+      "last_lines": 193,
+      "last_ts": 1784639292281,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2ee99967"
+    },
+    "mobile-render-check.png": {
+      "ipo_ts": 1784639329187,
+      "edit_count": 1,
+      "last_lines": 59,
+      "last_ts": 1784639329187,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "18b19c6d"
+    },
+    "file-render-check.png": {
+      "ipo_ts": 1784639376929,
+      "edit_count": 1,
+      "last_lines": 4,
+      "last_ts": 1784639376929,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a2f3a6aa"
+    },
+    "dist/assets/index-DyfhF_GS.js": {
+      "ipo_ts": 1784640216335,
+      "edit_count": 1,
+      "last_lines": 184,
+      "last_ts": 1784640216335,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "6fe38744"
+    },
+    "dist/assets/index-Q8r9n3Pv.css": {
+      "ipo_ts": 1784640216338,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784640216338,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "30a0b526"
+    }
+  }
+}
