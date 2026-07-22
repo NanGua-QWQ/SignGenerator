@@ -1,16 +1,42 @@
-# React + Vite
+# 高速编号牌生成器
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+基于 React、Vite 和 `fontkit` 的纯前端高速公路编号牌 SVG 生成器。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 国家高速/省高速类型切换
+- 2 位或 4 位数字编号：`15`、`0421`
+- 可选高速名称
+- 实时矢量预览、缩放与拖动
+- 下载不依赖系统字体的路径化 SVG
+- 明暗主题与移动端布局
 
-## React Compiler
+## 开发
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```powershell
+npm install
+npm run dev
+```
 
-## Expanding the Oxlint configuration
+生产构建与检查：
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```powershell
+npm run build
+npm run lint
+```
+
+## 目录
+
+```text
+src/
+  components/
+    layout/              # 页头与主题切换
+    ui/                  # 小型通用表单组件
+  features/
+    sign-generator/      # 编号牌界面与 SVG 生成逻辑
+  App.jsx                # 列表状态与响应式页面布局
+public/
+  fonts/                 # A/B/C 型字体资源
+```
+
+字体由浏览器读取后通过 `fontkit` 转换为 SVG `<path>`。生成结果不包含 `<text>`，在未安装交通标志字体的设备上也能正确显示。

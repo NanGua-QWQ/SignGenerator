@@ -3,10 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>路牌生成器</title>
+    <meta name="description" content="在浏览器中生成国家高速与省级高速编号牌 SVG" />
+    <title>高速编号牌生成器</title>
   </head>
   <body>
     <div id="root"></div>
+    <div id="file-protocol-notice" hidden style="max-width: 42rem; margin: 8rem auto; padding: 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6;">
+      此项目需要通过 Vite 本地服务运行。请在项目目录执行 <code>npm run dev</code>，再打开终端显示的本地地址。
+    </div>
+    <script>
+      if (window.location.protocol === 'file:') {
+        document.getElementById('file-protocol-notice').hidden = false
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

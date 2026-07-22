@@ -1,119 +1,101 @@
-import { useState, useCallback } from 'react'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { Header } from '@/components/sign/Header'
-import { SignList } from '@/components/sign/SignList'
-import { SignPreview } from '@/components/sign/SignPreview'
-import { SignSettings } from '@/components/sign/SignSettings'
+import { useCallback, useMemo, useState } from 'react'
+import { Header } from '@/components/layout/Header'
+import { SignList } from '@/features/sign-generator/SignList'
+import { SignPreview } from '@/features/sign-generator/SignPreview'
+import { SignSettings } from '@/features/sign-generator/SignSettings'
 
-const defaultDestinations = [
-  { city: '北京', km: '50', arrow: 'up' },
-  { city: '沈阳', km: '320', arrow: 'up' },
-  { city: '哈尔滨', km: '580', arrow: 'up' },
-]
+function cleanDigits(value) {
+  return String(value || '').replace(/\D/g, '').slice(0, 4)
+}
 
-function createSign(overrides = {}) {
+function buildSignCode(kind, digits) {
+  return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
+}
+
+function parseSignCode(value) {
+  const code = String(value || '').trim().toUpperCase()
+  const national = /^G(\d{2}|\d{4})$/.exec(code)
+  if (national) return { kind: 'national', digits: national[1] }
+
+  const provincial = /^(?:.|)(S(\d{2}|\d{4}))$/u.exec(code)
+  if (provincial) return { kind: 'provincial', digits: provincial[2] }
+
+  return { kind: 'national', digits: cleanDigits(code) || '15' }
+}
+
+function normalizeSign(overrides = {}) {
+  const parsed = overrides.kind && overrides.digits
+    ? { kind: overrides.kind, digits: cleanDigits(overrides.digits) || '15' }
+    : parseSignCode(overrides.code || 'G15')
   return {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    type: 'highway',
-    headerText: '国家高速',
-    route: 'G1',
-    name: '京哈高速',
-    direction: 'north',
-    destinations: defaultDestinations.map(d => ({ ...d })),
-    ...overrides,
+    kind: parsed.kind,
+    digits: parsed.digits,
+    code: buildSignCode(parsed.kind, parsed.digits),
   }
 }
 
-const initialSigns = [
-  createSign(),
-  createSign({ route: 'G2', name: '京沪高速', direction: 'south', destinations: [
-    { city: '天津', km: '120', arrow: 'up' },
-    { city: '济南', km: '380', arrow: 'up' },
-    { city: '上海', km: '1200', arrow: 'up' },
-  ]}),
-  createSign({ route: 'G4', name: '京港澳高速', direction: 'south', destinations: [
-    { city: '石家庄', km: '280', arrow: 'up' },
-    { city: '郑州', km: '680', arrow: 'up' },
-    { city: '广州', km: '2100', arrow: 'up' },
-  ]}),
-]
+function createSign(overrides = {}) {
+  const sign = normalizeSign(overrides)
+  return {
+    id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+    ...sign,
+    name: overrides.name ?? '沈海高速',
+  }
+}
+
+function createInitialSigns() {
+  const params = new URLSearchParams(window.location.search)
+  const code = params.get('code') || 'G15'
+  const name = params.has('name') ? params.get('name') : '沈海高速'
+  return [
+    createSign({ code, name }),
+    createSign({ code: 'G0421', name: '许广高速' }),
+  ]
+}
 
 export default function App() {
-  const [signs, setSigns] = useState(initialSigns)
-  const [selectedId, setSelectedId] = useState(initialSigns[0].id)
-  const [mode, setMode] = useState('highway')
+  const [signs, setSigns] = useState(createInitialSigns)
+  const [selectedId, setSelectedId] = useState(() => signs[0].id)
+  const selectedSign = useMemo(
+    () => signs.find(sign => sign.id === selectedId) || signs[0],
+    [selectedId, signs],
+  )
 
-  const currentSign = signs.find(s => s.id === selectedId) || signs[0]
-
-  const updateCurrentSign = useCallback((updates) => {
-    setSigns(prev => prev.map(s =>
-      s.id === selectedId ? { ...s, ...updates } : s
-    ))
-  }, [selectedId])
-
-  const handleSelect = useCallback((id) => {
-    setSelectedId(id)
+  const addSign = useCallback(() => {
+    const sign = createSign()
+    setSigns(current => [...current, sign])
+    setSelectedId(sign.id)
   }, [])
 
-  const handleAdd = useCallback(() => {
-    const newSign = createSign({ type: mode })
-    setSigns(prev => [...prev, newSign])
-    setSelectedId(newSign.id)
-  }, [mode])
+  const updateSign = useCallback((updates) => {
+    setSigns(current => current.map(sign => {
+      if (sign.id !== selectedId) return sign
+      const next = { ...sign, ...updates }
+      return { ...next, ...normalizeSign(next) }
+    }))
+  }, [selectedId])
 
-  const handleDelete = useCallback((id) => {
-    setSigns(prev => {
-      const next = prev.filter(s => s.id !== id)
-      if (next.length === 0) return prev
-      if (id === selectedId) {
-        const idx = prev.findIndex(s => s.id === id)
-        const newIdx = Math.min(idx, next.length - 1)
-        setSelectedId(next[newIdx].id)
-      }
+  const deleteSign = useCallback((id) => {
+    setSigns(current => {
+      if (current.length === 1) return current
+      const next = current.filter(sign => sign.id !== id)
+      if (id === selectedId) setSelectedId(next[0].id)
       return next
     })
   }, [selectedId])
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <Header mode={mode} onModeChange={setMode} />
-
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <div className="hidden h-full md:block">
-          <PanelGroup direction="horizontal" autoSaveId="sign-layout">
-          <Panel defaultSize={15} minSize={12} maxSize={25} className="hidden md:block">
-            <SignList
-              signs={signs}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              onAdd={handleAdd}
-              onDelete={handleDelete}
-            />
-          </Panel>
-
-          <PanelResizeHandle className="hidden md:block w-1.5 bg-transparent hover:bg-accent transition-colors cursor-col-resize shrink-0" />
-
-          <Panel defaultSize={55} minSize={30}>
-            <SignPreview sign={currentSign} />
-          </Panel>
-
-          <PanelResizeHandle className="hidden md:block w-1.5 bg-transparent hover:bg-accent transition-colors cursor-col-resize shrink-0" />
-
-          <Panel defaultSize={30} minSize={20} maxSize={40}>
-            <SignSettings sign={currentSign} onChange={updateCurrentSign} />
-          </Panel>
-          </PanelGroup>
+    <div className="flex h-dvh flex-col bg-background">
+      <Header />
+      <main className="grid min-h-0 flex-1 grid-cols-[14rem_minmax(0,1fr)_20rem] max-lg:grid-cols-[12rem_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
+        <div>
+          <SignList signs={signs} selectedId={selectedId} onSelect={setSelectedId} onAdd={addSign} onDelete={deleteSign} />
         </div>
-
-        <div className="flex h-full flex-col md:hidden">
-          <div className="min-h-0 flex-[1.15]">
-            <SignPreview sign={currentSign} />
-          </div>
-          <div className="min-h-0 flex-1">
-            <SignSettings sign={currentSign} onChange={updateCurrentSign} />
-          </div>
+        <SignPreview sign={selectedSign} />
+        <div className="max-lg:col-span-2 max-lg:max-h-72 max-md:col-span-1 max-md:max-h-none">
+          <SignSettings sign={selectedSign} onChange={updateSign} />
         </div>
-      </div>
+      </main>
     </div>
   )
 }
