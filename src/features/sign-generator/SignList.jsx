@@ -13,7 +13,7 @@ export function SignList({ signs, selectedId, onSelect, onAdd, onDelete }) {
           {signs.map(sign => (
             <div key={sign.id} className={`group relative shrink-0 rounded-md transition-colors max-md:w-40 ${sign.id === selectedId ? 'bg-accent text-accent-foreground' : 'bg-muted/50 hover:bg-muted'}`}>
               <button type="button" onClick={() => onSelect(sign.id)} className="flex w-full items-center gap-2 p-2 pr-8 text-left">
-                <span className="inline-flex h-6 min-w-8 items-center justify-center rounded-sm bg-[#006e55] px-1 text-[10px] font-bold text-white">{sign.code || 'G15'}</span>
+                <span className="inline-flex h-6 min-w-8 items-center justify-center rounded-sm bg-[#359b47] px-1 text-[10px] font-bold text-white">{sign.code || 'G15'}</span>
                 <span className="min-w-0 flex-1 truncate text-xs font-medium">{sign.name || '高速编号牌'}</span>
               </button>
               <button type="button" onClick={() => onDelete(sign.id)} className="absolute right-2 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded text-muted-foreground opacity-0 hover:bg-destructive/10 group-hover:opacity-100 focus:opacity-100" aria-label={`删除 ${sign.code}`}><Trash2 className="size-3" /></button>

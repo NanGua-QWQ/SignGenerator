@@ -3,8 +3,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export function SignSettings({ sign, onChange }) {
+  const nameLimit = sign.digits.length === 4 ? 6 : 4
+
   const updateDigits = event => {
     onChange({ digits: event.target.value.replace(/\D/g, '').slice(0, 4) })
+  }
+
+  const updateName = event => {
+    onChange({ name: Array.from(event.target.value).slice(0, nameLimit).join('') })
+  }
+
+  const updateProvinceLabel = event => {
+    onChange({ provinceLabel: Array.from(event.target.value.trim()).slice(0, 4).join('') })
   }
 
   return (
@@ -19,15 +29,23 @@ export function SignSettings({ sign, onChange }) {
               <Button variant={sign.kind === 'provincial' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ kind: 'provincial' })}>省高速</Button>
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="road-digits">道路编号</Label>
-            <Input id="road-digits" value={sign.digits} onChange={updateDigits} placeholder="15 或 0421" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
-            <p className="text-xs text-muted-foreground">只输入数字，支持 2 位或 4 位编号。</p>
+          <div className={`grid gap-3 ${sign.kind === 'provincial' ? 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : 'grid-cols-1'}`}>
+            {sign.kind === 'provincial' && (
+              <div className="space-y-1.5">
+                <Label htmlFor="province-label">省高速文字</Label>
+                <Input id="province-label" value={sign.provinceLabel} onChange={updateProvinceLabel} placeholder="粤高速" maxLength={4} className="h-9" />
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label htmlFor="road-digits">道路编号</Label>
+              <Input id="road-digits" value={sign.digits} onChange={updateDigits} placeholder="1、15 或 0421" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
+            </div>
+            <p className={`${sign.kind === 'provincial' ? 'col-span-2' : ''} text-xs text-muted-foreground`}>只输入数字，支持 1 位、2 位或 4 位编号。</p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="road-name">高速名称</Label>
-            <Input id="road-name" value={sign.name} onChange={event => onChange({ name: event.target.value })} placeholder="例如：沈海高速" className="h-9" />
-            <p className="text-xs text-muted-foreground">留空则生成不含路名的高速编号牌。</p>
+            <Input id="road-name" value={sign.name} onChange={updateName} placeholder="例如：沈海高速" maxLength={nameLimit} className="h-9" />
+            <p className="text-xs text-muted-foreground">当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。</p>
           </div>
         </div>
       </div>

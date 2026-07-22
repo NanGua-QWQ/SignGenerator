@@ -2,12 +2,12 @@
   "symbols": {
     "src/App.jsx": {
       "ipo_ts": 1783604525856,
-      "edit_count": 11,
-      "last_lines": 101,
-      "last_ts": 1784724188905,
+      "edit_count": 14,
+      "last_lines": 118,
+      "last_ts": 1784727006307,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "27b6e690"
+      "last_content_hash": "7e29e3e"
     },
     "src/index.css": {
       "ipo_ts": 1783864507316,
@@ -17,17 +17,6 @@
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "3fed40ef"
-    },
-    "dist/index.html": {
-      "ipo_ts": 1784639242310,
-      "edit_count": 18,
-      "last_lines": 22,
-      "last_ts": 1784724703395,
-      "delisted": true,
-      "last_source": "onEdit",
-      "last_content_hash": "c72678f8",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
     },
     "index.html": {
       "ipo_ts": 1784642341957,
@@ -58,39 +47,39 @@
     },
     "src/features/sign-generator/generator.js": {
       "ipo_ts": 1784717556437,
-      "edit_count": 5,
-      "last_lines": 120,
-      "last_ts": 1784724119519,
+      "edit_count": 9,
+      "last_lines": 131,
+      "last_ts": 1784727103976,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "3ad437d2"
+      "last_content_hash": "f5e73e07"
     },
     "src/features/sign-generator/SignList.jsx": {
       "ipo_ts": 1784717561128,
-      "edit_count": 2,
+      "edit_count": 3,
       "last_lines": 26,
-      "last_ts": 1784717949630,
+      "last_ts": 1784725454754,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "56e6a1c8"
+      "last_content_hash": "74ab4f09"
     },
     "src/features/sign-generator/SignSettings.jsx": {
       "ipo_ts": 1784717565812,
-      "edit_count": 2,
-      "last_lines": 36,
-      "last_ts": 1784724083756,
+      "edit_count": 4,
+      "last_lines": 54,
+      "last_ts": 1784727067514,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "8c5687ad"
+      "last_content_hash": "876e302d"
     },
     "src/features/sign-generator/SignPreview.jsx": {
       "ipo_ts": 1784717570275,
-      "edit_count": 3,
+      "edit_count": 4,
       "last_lines": 73,
-      "last_ts": 1784719091387,
+      "last_ts": 1784727127502,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "a89f678b"
+      "last_content_hash": "ce6ef1ab"
     },
     "src/components/layout/ThemeToggle.jsx": {
       "ipo_ts": 1784717576580,
@@ -139,12 +128,12 @@
     },
     "README.md": {
       "ipo_ts": 1784717955695,
-      "edit_count": 3,
-      "last_lines": 42,
-      "last_ts": 1784724661025,
+      "edit_count": 7,
+      "last_lines": 43,
+      "last_ts": 1784727158779,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "9e96337a"
+      "last_content_hash": "ab50e8af"
     },
     "node_modules/lightningcss-win32-x64-msvc/LICENSE": {
       "ipo_ts": 1784718212930,
@@ -1046,82 +1035,68 @@
       "last_source": "onEdit",
       "last_content_hash": "db34f31e"
     },
-    "dist/fonts/jtbz_A.ttf": {
-      "ipo_ts": 1784718304620,
-      "edit_count": 1,
-      "last_lines": 12652,
-      "last_ts": 1784718304620,
-      "delisted": true,
+    "public/fonts/SourceHanSansSC-Bold.otf": {
+      "ipo_ts": 1784725495457,
+      "edit_count": 2,
+      "last_lines": 229620,
+      "last_ts": 1784725498469,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "217838f7",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "73808d9f"
     },
-    "dist/fonts/jtbz_B.ttf": {
-      "ipo_ts": 1784718304623,
+    "dist/fonts/SourceHanSansSC-Bold.otf": {
+      "ipo_ts": 1784725541075,
       "edit_count": 1,
-      "last_lines": 42,
-      "last_ts": 1784718304623,
-      "delisted": true,
+      "last_lines": 229620,
+      "last_ts": 1784725541075,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "8ac1e1e2",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "73808d9f"
     },
-    "dist/fonts/jtbz_C.ttf": {
-      "ipo_ts": 1784718304625,
-      "edit_count": 1,
-      "last_lines": 42,
-      "last_ts": 1784718304625,
-      "delisted": true,
+    "dist/index.html": {
+      "ipo_ts": 1784725541292,
+      "edit_count": 5,
+      "last_lines": 22,
+      "last_ts": 1784727186384,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "f5f9d999",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "a3d76043"
     },
-    "dist/fonts/字体使用说明.txt": {
-      "ipo_ts": 1784718304627,
-      "edit_count": 1,
-      "last_lines": 3,
-      "last_ts": 1784718304627,
-      "delisted": true,
+    ".gitignore": {
+      "ipo_ts": 1784725931147,
+      "edit_count": 7,
+      "last_lines": 29,
+      "last_ts": 1784726065304,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "17871a17",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "b404e120"
     },
     "dist/assets/fontkit.es-kbAj9PL1.js": {
-      "ipo_ts": 1784718304899,
+      "ipo_ts": 1784725972469,
       "edit_count": 1,
       "last_lines": 47,
-      "last_ts": 1784718304899,
-      "delisted": true,
+      "last_ts": 1784725972469,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "1ddc53ec",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "1ddc53ec"
     },
-    "dist/assets/index-BwYnJmH_.css": {
-      "ipo_ts": 1784724165032,
+    "dist/assets/index-B7l4smtV.css": {
+      "ipo_ts": 1784727186372,
       "edit_count": 1,
       "last_lines": 1,
-      "last_ts": 1784724165032,
-      "delisted": true,
+      "last_ts": 1784727186372,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "b2ab7b65",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "14541504"
     },
-    "dist/assets/index-CrpZPk_J.js": {
-      "ipo_ts": 1784724326194,
+    "dist/assets/index-DWe52Yal.js": {
+      "ipo_ts": 1784727186380,
       "edit_count": 1,
       "last_lines": 129,
-      "last_ts": 1784724326194,
-      "delisted": true,
+      "last_ts": 1784727186380,
+      "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "5213086e",
-      "delisted_at": 1784724912315,
-      "delist_rounds": 0
+      "last_content_hash": "8d23ea25"
     }
   }
 }

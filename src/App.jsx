@@ -8,28 +8,44 @@ function cleanDigits(value) {
   return String(value || '').replace(/\D/g, '').slice(0, 4)
 }
 
+function cleanProvinceLabel(value) {
+  return Array.from(String(value || '').trim()).slice(0, 4).join('')
+}
+
+function nameLimitForDigits(digits) {
+  return digits.length === 4 ? 6 : 4
+}
+
+function cleanName(value, digits) {
+  return Array.from(String(value || '')).slice(0, nameLimitForDigits(digits)).join('')
+}
+
 function buildSignCode(kind, digits) {
   return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
 
 function parseSignCode(value) {
   const code = String(value || '').trim().toUpperCase()
-  const national = /^G(\d{2}|\d{4})$/.exec(code)
+  const national = /^G(\d{1,2}|\d{4})$/.exec(code)
   if (national) return { kind: 'national', digits: national[1] }
 
-  const provincial = /^(?:.|)(S(\d{2}|\d{4}))$/u.exec(code)
-  if (provincial) return { kind: 'provincial', digits: provincial[2] }
+  const provincial = /^S(\d{1,2}|\d{4})$/.exec(code)
+  if (provincial) return { kind: 'provincial', digits: provincial[1], provinceLabel: '粤高速' }
+
+  const legacyProvincial = /^(.)(S(\d{1,2}|\d{4}))$/u.exec(code)
+  if (legacyProvincial) return { kind: 'provincial', digits: legacyProvincial[3], provinceLabel: `${legacyProvincial[1]}高速` }
 
   return { kind: 'national', digits: cleanDigits(code) || '15' }
 }
 
 function normalizeSign(overrides = {}) {
-  const parsed = overrides.kind && overrides.digits
-    ? { kind: overrides.kind, digits: cleanDigits(overrides.digits) || '15' }
+  const parsed = overrides.kind
+    ? { kind: overrides.kind, digits: cleanDigits(overrides.digits), provinceLabel: overrides.provinceLabel }
     : parseSignCode(overrides.code || 'G15')
   return {
     kind: parsed.kind,
     digits: parsed.digits,
+    provinceLabel: parsed.kind === 'provincial' ? cleanProvinceLabel(parsed.provinceLabel) || '粤高速' : '',
     code: buildSignCode(parsed.kind, parsed.digits),
   }
 }
@@ -39,7 +55,7 @@ function createSign(overrides = {}) {
   return {
     id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
     ...sign,
-    name: overrides.name ?? '沈海高速',
+    name: cleanName(overrides.name ?? '沈海高速', sign.digits),
   }
 }
 
@@ -71,7 +87,8 @@ export default function App() {
     setSigns(current => current.map(sign => {
       if (sign.id !== selectedId) return sign
       const next = { ...sign, ...updates }
-      return { ...next, ...normalizeSign(next) }
+      const normalized = normalizeSign(next)
+      return { ...next, ...normalized, name: cleanName(next.name, normalized.digits) }
     }))
   }, [selectedId])
 

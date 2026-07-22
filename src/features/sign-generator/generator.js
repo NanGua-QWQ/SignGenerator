@@ -1,4 +1,5 @@
 const FONT_URLS = {
+  han: '/fonts/SourceHanSansSC-Bold.otf',
   a: '/fonts/jtbz_A.ttf',
   b: '/fonts/jtbz_B.ttf',
   c: '/fonts/jtbz_C.ttf',
@@ -6,10 +7,10 @@ const FONT_URLS = {
 
 const fontCache = new Map()
 let fontkitPromise
-const GREEN = '#006E55'
-const RED = '#B5273C'
+const GREEN = '#359b47'
+const RED = '#ee2d2d'
 const WHITE = '#FFFFFF'
-const YELLOW = '#FFCD00'
+const YELLOW = '#f4eb35'
 const BLACK = '#000000'
 
 function escapeXml(value) {
@@ -30,7 +31,7 @@ async function loadFont(kind) {
   return fontCache.get(kind)
 }
 
-function outlinedText(font, text, startX, startY, width, height, fill) {
+function outlinedText(font, text, startX, startY, width, height, fill, options = {}) {
   const glyphs = Array.from(text).map(char => {
     const glyph = font.glyphForCodePoint(char.codePointAt(0))
     if (glyph.id === 0 && char !== ' ') throw new Error(`字体不包含字符“${char}”`)
@@ -42,8 +43,10 @@ function outlinedText(font, text, startX, startY, width, height, fill) {
   })
 
   const usedWidth = glyphs.reduce((total, item) => total + item.width, 0)
-  const gap = glyphs.length > 1 ? (width - usedWidth) / (glyphs.length - 1) : 0
-  let x = startX
+  const rawGap = glyphs.length > 1 ? (width - usedWidth) / (glyphs.length - 1) : 0
+  const gap = Number.isFinite(options.maxGap) ? Math.min(rawGap, options.maxGap) : rawGap
+  const contentWidth = usedWidth + gap * Math.max(0, glyphs.length - 1)
+  let x = startX + (width - contentWidth) / 2
   return glyphs.map(({ glyph, box, scale, width: glyphWidth }) => {
     const transform = `translate(${x} ${startY + box.maxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
     x += glyphWidth + gap
@@ -66,50 +69,58 @@ function expresswayBackground(width, withName, bannerColor) {
   return outer + banner + body
 }
 
-function parseCode(value) {
-  const code = String(value || '').trim().toUpperCase()
-  const national = /^G(\d{2}|\d{4})$/.exec(code)
-  if (national) return { code, digits: national[1], province: null }
-
-  const provincial = /^S(\d{2}|\d{4})$/.exec(code)
-  if (provincial) return { code, digits: provincial[1], province: '省' }
-
-  const legacyProvincial = /^(.)(S(\d{2}|\d{4}))$/u.exec(code)
-  if (legacyProvincial) return { code: legacyProvincial[2], digits: legacyProvincial[3], province: legacyProvincial[1] }
-
-  throw new Error('请输入 2 位或 4 位数字编号')
+function cleanProvinceLabel(value) {
+  return Array.from(String(value || '').trim()).slice(0, 4).join('')
 }
 
-export async function generateSignSvg(inputCode, inputName = '') {
-  const sign = parseCode(inputCode)
-  const fontRequests = [loadFont('a'), loadFont('b')]
-  if (sign.digits.length === 4) fontRequests.push(loadFont('c'))
-  const [fontA, fontB, fontC] = await Promise.all(fontRequests)
+function parseCode(value) {
+  const code = String(value || '').trim().toUpperCase()
+  const national = /^G(\d{1,2}|\d{4})$/.exec(code)
+  if (national) return { code, digits: national[1], kind: 'national', provinceLabel: '' }
 
-  const named = Boolean(inputName.trim())
+  const provincial = /^S(\d{1,2}|\d{4})$/.exec(code)
+  if (provincial) return { code, digits: provincial[1], kind: 'provincial', provinceLabel: '粤高速' }
+
+  const legacyProvincial = /^(.)(S(\d{1,2}|\d{4}))$/u.exec(code)
+  if (legacyProvincial) return { code: legacyProvincial[2], digits: legacyProvincial[3], kind: 'provincial', provinceLabel: `${legacyProvincial[1]}高速` }
+
+  throw new Error('请输入 1 位、2 位或 4 位数字编号')
+}
+
+export async function generateSignSvg(inputCode, inputName = '', inputProvinceLabel = '') {
+  const sign = parseCode(inputCode)
+  const nameLimit = sign.digits.length === 4 ? 6 : 4
+  const name = Array.from(inputName.trim()).slice(0, nameLimit).join('')
+  const [fontHan, fontA, fontB, fontC] = await Promise.all([loadFont('han'), loadFont('a'), loadFont('b'), loadFont('c')])
+
+  const named = Boolean(name)
   const width = sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : 1700
-  const bannerText = sign.province ? `${sign.province}高速` : '国家高速'
-  const bannerColor = sign.province ? YELLOW : RED
-  const bannerTextColor = sign.province ? BLACK : WHITE
-  const bannerX = sign.digits.length === 4 ? 355 : sign.province ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)
-  const bannerWidth = sign.digits.length === 4 ? 990 : sign.province ? 500 : 700
+  const provinceLabel = cleanProvinceLabel(inputProvinceLabel) || sign.provinceLabel
+  const bannerText = sign.kind === 'provincial' ? provinceLabel : '国家高速'
+  const bannerColor = sign.kind === 'provincial' ? YELLOW : RED
+  const bannerTextColor = sign.kind === 'provincial' ? BLACK : WHITE
+  const bannerX = sign.digits.length === 4 ? 355 : sign.kind === 'provincial' ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)
+  const bannerWidth = sign.digits.length === 4 ? 990 : sign.kind === 'provincial' ? 500 : 700
   const mainCode = sign.digits.length === 4 ? sign.code.slice(0, 3) : sign.code
   const mainX = sign.digits.length === 1 ? 150 : 90
   const mainWidth = sign.digits.length === 1 ? 700 : 1070
+  const mainMaxGap = sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
+  const mainFont = named ? fontB : fontA
   const bannerY = named ? 110 : 80
-  const bannerPaths = outlinedText(fontA, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)
-  const content = [bannerPaths, outlinedText(fontB, mainCode, mainX, named ? 340 : 370, mainWidth, 450, WHITE)]
+  const bannerPaths = outlinedText(fontHan, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)
+  const content = [bannerPaths, outlinedText(mainFont, mainCode, mainX, named ? 340 : 370, mainWidth, 450, WHITE, { maxGap: mainMaxGap })]
   if (sign.digits.length === 4) {
     const suffixWidth = sign.digits.endsWith('1') ? 315 : 390
-    content.push(outlinedText(fontC, sign.code.slice(3), 1220, named ? 490 : 520, suffixWidth, 300, WHITE))
+    const suffixMaxGap = sign.digits.endsWith('1') ? 35 : 55
+    content.push(outlinedText(fontC, sign.code.slice(3), 1220, named ? 490 : 520, suffixWidth, 300, WHITE, { maxGap: suffixMaxGap }))
   }
   if (named) {
     const nameWidth = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
-    content.push(outlinedText(fontA, inputName.trim(), nameX, 860, nameWidth, 200, WHITE))
+    content.push(outlinedText(fontHan, name, nameX, 860, nameWidth, 200, WHITE))
   }
   const height = named ? 1200 : 1000
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(`${inputCode} ${inputName}`.trim())} 道路编号牌">${expresswayBackground(width, named, bannerColor)}${content.join('')}</svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(`${inputCode} ${name}`.trim())} 道路编号牌">${expresswayBackground(width, named, bannerColor)}${content.join('')}</svg>`
 }
 
 export function signFilename(code, name = '') {

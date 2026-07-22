@@ -19,11 +19,11 @@ export function SignPreview({ sign }) {
     let active = true
     setError('')
     setIsLoading(true)
-    generateSignSvg(sign.code, sign.name)
+    generateSignSvg(sign.code, sign.name, sign.provinceLabel)
       .then(result => { if (active) { setSvg(result); setIsLoading(false) } })
       .catch(reason => { if (active) { setSvg(''); setError(reason.message); setIsLoading(false) } })
     return () => { active = false }
-  }, [sign.code, sign.name])
+  }, [sign.code, sign.name, sign.provinceLabel])
 
   const zoom = useCallback(multiplier => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
