@@ -1,19 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
+import type { Sign } from '@/features/sign-generator/types'
 import { Download, LoaderCircle, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { generateSignSvg, signFilename } from './generator'
+import { generateSignSvg, signFilename } from '@/features/sign-generator/generator'
 
 const MIN_SCALE = 0.4
 const MAX_SCALE = 3
 
-export function SignPreview({ sign }) {
+interface Offset {
+  x: number
+  y: number
+}
+
+export function SignPreview({ sign }: { sign: Sign }) {
   const [svg, setSvg] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [scale, setScale] = useState(1)
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 })
   const dragging = useRef(false)
-  const lastPosition = useRef({ x: 0, y: 0 })
+  const lastPosition = useRef<Offset>({ x: 0, y: 0 })
 
   useEffect(() => {
     let active = true
@@ -25,7 +32,7 @@ export function SignPreview({ sign }) {
     return () => { active = false }
   }, [sign.code, sign.name, sign.provinceLabel])
 
-  const zoom = useCallback(multiplier => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
+  const zoom = useCallback((multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
   const download = () => {
     if (!svg) return
@@ -38,14 +45,14 @@ export function SignPreview({ sign }) {
     setTimeout(() => URL.revokeObjectURL(url), 0)
   }
 
-  const startDrag = (event) => {
+  const startDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
     dragging.current = true
     lastPosition.current = { x: event.clientX, y: event.clientY }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
-  const moveDrag = (event) => {
+  const moveDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!dragging.current) return
     setOffset(current => ({
       x: current.x + event.clientX - lastPosition.current.x,

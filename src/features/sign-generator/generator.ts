@@ -1,39 +1,69 @@
+import type { Font, Glyph } from '@pdf-lib/fontkit'
+import type { SignKind } from './types'
+
 const FONT_URLS = {
   han: '/fonts/SourceHanSansSC-Bold.otf',
   a: '/fonts/jtbz_A.ttf',
   b: '/fonts/jtbz_B.ttf',
   c: '/fonts/jtbz_C.ttf',
-}
+} as const
 
-const fontCache = new Map()
-let fontkitPromise
+type FontKey = keyof typeof FONT_URLS
+
+const fontCache = new Map<FontKey, Promise<Font>>()
+let fontkitPromise: Promise<{
+  default: typeof import('@pdf-lib/fontkit')
+}> | undefined
 const GREEN = '#359b47'
 const RED = '#ee2d2d'
 const WHITE = '#FFFFFF'
 const YELLOW = '#f4eb35'
 const BLACK = '#000000'
 
-function escapeXml(value) {
-  return String(value).replace(/[<>&"']/g, char => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[char])
+const XML_ESCAPES: Record<string, string> = {
+  '<': '&lt;',
+  '>': '&gt;',
+  '&': '&amp;',
+  '"': '&quot;',
+  "'": '&apos;',
 }
 
-async function loadFont(kind) {
-  if (!fontCache.has(kind)) {
-    if (!fontkitPromise) fontkitPromise = import('@pdf-lib/fontkit').then(module => module.default)
-    fontCache.set(kind, Promise.all([
-      fetch(FONT_URLS[kind]).then(response => {
-        if (!response.ok) throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`)
-        return response.arrayBuffer()
-      }),
-      fontkitPromise,
-    ]).then(([buffer, fontkit]) => fontkit.create(new Uint8Array(buffer))))
-  }
-  return fontCache.get(kind)
+function escapeXml(value: string): string {
+  return String(value).replace(/[<>&"']/g, char => XML_ESCAPES[char])
 }
 
-function textLayout(font, text, height) {
+async function loadFont(kind: FontKey): Promise<Font> {
+  const cached = fontCache.get(kind)
+  if (cached) return cached
+  if (!fontkitPromise) fontkitPromise = import('@pdf-lib/fontkit')
+  const fontPromise = Promise.all([
+    fetch(FONT_URLS[kind]).then(response => {
+      if (!response.ok) throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`)
+      return response.arrayBuffer()
+    }),
+    fontkitPromise,
+  ]).then(([buffer, fontkit]) => fontkit.default.create(new Uint8Array(buffer)))
+  fontCache.set(kind, fontPromise)
+  return fontPromise
+}
+
+interface GlyphItem {
+  glyph: Glyph
+  box: { minX: number; minY: number; maxX: number; maxY: number }
+  scale: number
+  width: number
+}
+
+interface TextLayout {
+  glyphs: GlyphItem[]
+  usedWidth: number
+}
+
+function textLayout(font: Font, text: string, height: number): TextLayout {
   const glyphs = Array.from(text).map(char => {
-    const glyph = font.glyphForCodePoint(char.codePointAt(0))
+    const codePoint = char.codePointAt(0)
+    if (codePoint === undefined) throw new Error(`无效字符`)
+    const glyph = font.glyphForCodePoint(codePoint)
     if (glyph.id === 0 && char !== ' ') throw new Error(`字体不包含字符“${char}”`)
     const box = glyph.bbox
     const glyphHeight = box.maxY - box.minY
@@ -46,14 +76,20 @@ function textLayout(font, text, height) {
   return { glyphs, usedWidth }
 }
 
-function textGap(usedWidth, glyphCount, width, options = {}) {
+interface LayoutOptions {
+  align?: 'start' | 'center'
+  minGap?: number
+  maxGap?: number
+}
+
+function textGap(usedWidth: number, glyphCount: number, width: number, options: LayoutOptions = {}): number {
   const rawGap = glyphCount > 1 ? (width - usedWidth) / (glyphCount - 1) : 0
-  const minGap = Number.isFinite(options.minGap) ? options.minGap : 0
-  const cappedGap = Number.isFinite(options.maxGap) ? Math.min(rawGap, options.maxGap) : rawGap
+  const minGap = typeof options.minGap === 'number' ? options.minGap : 0
+  const cappedGap = typeof options.maxGap === 'number' ? Math.min(rawGap, options.maxGap) : rawGap
   return Math.max(minGap, cappedGap)
 }
 
-function renderLayout(layout, startX, startY, fill, gap) {
+function renderLayout(layout: TextLayout, startX: number, startY: number, fill: string, gap: number): string {
   let x = startX
   return layout.glyphs.map(({ glyph, box, scale, width: glyphWidth }) => {
     const transform = `translate(${x} ${startY + box.maxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
@@ -62,7 +98,7 @@ function renderLayout(layout, startX, startY, fill, gap) {
   }).join('')
 }
 
-function outlinedText(font, text, startX, startY, width, height, fill, options = {}) {
+function outlinedText(font: Font, text: string, startX: number, startY: number, width: number, height: number, fill: string, options: LayoutOptions = {}): string {
   const layout = textLayout(font, text, height)
   const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
   const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
@@ -70,7 +106,7 @@ function outlinedText(font, text, startX, startY, width, height, fill, options =
   return renderLayout(layout, x, startY, fill, gap)
 }
 
-function expresswayBackground(width, withName, bannerColor) {
+function expresswayBackground(width: number, withName: boolean, bannerColor: string): string {
   const height = withName ? 1200 : 1000
   const outer = withName
     ? `<rect width="${width}" height="${height}" rx="110" fill="${GREEN}"/><rect x="30" y="30" width="${width - 60}" height="${height - 60}" rx="80" fill="${WHITE}"/>`
@@ -85,11 +121,11 @@ function expresswayBackground(width, withName, bannerColor) {
   return outer + banner + body
 }
 
-function cleanProvinceLabel(value) {
+function cleanProvinceLabel(value: string): string {
   return Array.from(String(value || '').trim()).slice(0, 1).join('')
 }
 
-function parseCode(value) {
+function parseCode(value: string): { code: string; digits: string; kind: SignKind; provinceLabel: string } {
   const code = String(value || '').trim().toUpperCase()
   const national = /^G(\d{1,2}|\d{4})$/.exec(code)
   if (national) return { code, digits: national[1], kind: 'national', provinceLabel: '' }
@@ -103,7 +139,7 @@ function parseCode(value) {
   throw new Error('请输入 1 位、2 位或 4 位数字编号')
 }
 
-export async function generateSignSvg(inputCode, inputName = '', inputProvinceLabel = '') {
+export async function generateSignSvg(inputCode: string, inputName = '', inputProvinceLabel = ''): Promise<string> {
   const sign = parseCode(inputCode)
   const nameLimit = sign.digits.length === 4 ? 6 : 4
   const name = Array.from(inputName.trim()).slice(0, nameLimit).join('')
@@ -150,7 +186,7 @@ export async function generateSignSvg(inputCode, inputName = '', inputProvinceLa
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(`${inputCode} ${name}`.trim())} 道路编号牌">${expresswayBackground(width, named, bannerColor)}${content.join('')}</svg>`
 }
 
-export function signFilename(code, name = '') {
+export function signFilename(code: string, name = ''): string {
   const safeCode = String(code || 'road-sign').trim().replace(/[<>:"/\\|?*]/g, '_')
   const safeName = String(name || '').trim().replace(/[<>:"/\\|?*]/g, '_')
   const base = `${safeCode}${safeName ? `_${safeName}` : ''}`
