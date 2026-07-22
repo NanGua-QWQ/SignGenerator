@@ -2,12 +2,12 @@
   "symbols": {
     "src/App.jsx": {
       "ipo_ts": 1783604525856,
-      "edit_count": 14,
+      "edit_count": 15,
       "last_lines": 118,
-      "last_ts": 1784727006307,
+      "last_ts": 1784728189550,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "7e29e3e"
+      "last_content_hash": "97556c30"
     },
     "src/index.css": {
       "ipo_ts": 1783864507316,
@@ -47,12 +47,12 @@
     },
     "src/features/sign-generator/generator.js": {
       "ipo_ts": 1784717556437,
-      "edit_count": 9,
+      "edit_count": 10,
       "last_lines": 131,
-      "last_ts": 1784727103976,
+      "last_ts": 1784728259404,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "f5e73e07"
+      "last_content_hash": "e652997f"
     },
     "src/features/sign-generator/SignList.jsx": {
       "ipo_ts": 1784717561128,
@@ -65,12 +65,12 @@
     },
     "src/features/sign-generator/SignSettings.jsx": {
       "ipo_ts": 1784717565812,
-      "edit_count": 4,
+      "edit_count": 5,
       "last_lines": 54,
-      "last_ts": 1784727067514,
+      "last_ts": 1784728214094,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "876e302d"
+      "last_content_hash": "d5ff0286"
     },
     "src/features/sign-generator/SignPreview.jsx": {
       "ipo_ts": 1784717570275,
@@ -128,12 +128,12 @@
     },
     "README.md": {
       "ipo_ts": 1784717955695,
-      "edit_count": 7,
+      "edit_count": 8,
       "last_lines": 43,
-      "last_ts": 1784727158779,
+      "last_ts": 1784728307777,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "ab50e8af"
+      "last_content_hash": "dc763d17"
     },
     "node_modules/lightningcss-win32-x64-msvc/LICENSE": {
       "ipo_ts": 1784718212930,
@@ -1055,12 +1055,12 @@
     },
     "dist/index.html": {
       "ipo_ts": 1784725541292,
-      "edit_count": 5,
+      "edit_count": 6,
       "last_lines": 22,
-      "last_ts": 1784727186384,
+      "last_ts": 1784728335727,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "a3d76043"
+      "last_content_hash": "639c784"
     },
     ".gitignore": {
       "ipo_ts": 1784725931147,
@@ -1073,9 +1073,9 @@
     },
     "dist/assets/fontkit.es-kbAj9PL1.js": {
       "ipo_ts": 1784725972469,
-      "edit_count": 1,
+      "edit_count": 2,
       "last_lines": 47,
-      "last_ts": 1784725972469,
+      "last_ts": 1784728335717,
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "1ddc53ec"
@@ -1089,14 +1089,23 @@
       "last_source": "onEdit",
       "last_content_hash": "14541504"
     },
-    "dist/assets/index-DWe52Yal.js": {
-      "ipo_ts": 1784727186380,
-      "edit_count": 1,
-      "last_lines": 129,
-      "last_ts": 1784727186380,
+    "vite.config.js": {
+      "ipo_ts": 1784727790095,
+      "edit_count": 5,
+      "last_lines": 14,
+      "last_ts": 1784727890380,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "8d23ea25"
+      "last_content_hash": "f5accc51"
+    },
+    "dist/assets/index-D82W3zmc.js": {
+      "ipo_ts": 1784728335724,
+      "edit_count": 1,
+      "last_lines": 129,
+      "last_ts": 1784728335724,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "35ae4f31"
     }
   }
 }

@@ -70,7 +70,7 @@ function expresswayBackground(width, withName, bannerColor) {
 }
 
 function cleanProvinceLabel(value) {
-  return Array.from(String(value || '').trim()).slice(0, 4).join('')
+  return Array.from(String(value || '').trim()).slice(0, 1).join('')
 }
 
 function parseCode(value) {
@@ -79,10 +79,10 @@ function parseCode(value) {
   if (national) return { code, digits: national[1], kind: 'national', provinceLabel: '' }
 
   const provincial = /^S(\d{1,2}|\d{4})$/.exec(code)
-  if (provincial) return { code, digits: provincial[1], kind: 'provincial', provinceLabel: '粤高速' }
+  if (provincial) return { code, digits: provincial[1], kind: 'provincial', provinceLabel: '粤' }
 
   const legacyProvincial = /^(.)(S(\d{1,2}|\d{4}))$/u.exec(code)
-  if (legacyProvincial) return { code: legacyProvincial[2], digits: legacyProvincial[3], kind: 'provincial', provinceLabel: `${legacyProvincial[1]}高速` }
+  if (legacyProvincial) return { code: legacyProvincial[2], digits: legacyProvincial[3], kind: 'provincial', provinceLabel: legacyProvincial[1] }
 
   throw new Error('请输入 1 位、2 位或 4 位数字编号')
 }
@@ -95,8 +95,8 @@ export async function generateSignSvg(inputCode, inputName = '', inputProvinceLa
 
   const named = Boolean(name)
   const width = sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : 1700
-  const provinceLabel = cleanProvinceLabel(inputProvinceLabel) || sign.provinceLabel
-  const bannerText = sign.kind === 'provincial' ? provinceLabel : '国家高速'
+  const provinceLabel = cleanProvinceLabel(inputProvinceLabel) || sign.provinceLabel || '粤'
+  const bannerText = sign.kind === 'provincial' ? `${provinceLabel}高速` : '国家高速'
   const bannerColor = sign.kind === 'provincial' ? YELLOW : RED
   const bannerTextColor = sign.kind === 'provincial' ? BLACK : WHITE
   const bannerX = sign.digits.length === 4 ? 355 : sign.kind === 'provincial' ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)

@@ -9,7 +9,7 @@ function cleanDigits(value) {
 }
 
 function cleanProvinceLabel(value) {
-  return Array.from(String(value || '').trim()).slice(0, 4).join('')
+  return Array.from(String(value || '').trim()).slice(0, 1).join('')
 }
 
 function nameLimitForDigits(digits) {
@@ -30,10 +30,10 @@ function parseSignCode(value) {
   if (national) return { kind: 'national', digits: national[1] }
 
   const provincial = /^S(\d{1,2}|\d{4})$/.exec(code)
-  if (provincial) return { kind: 'provincial', digits: provincial[1], provinceLabel: '粤高速' }
+  if (provincial) return { kind: 'provincial', digits: provincial[1], provinceLabel: '粤' }
 
   const legacyProvincial = /^(.)(S(\d{1,2}|\d{4}))$/u.exec(code)
-  if (legacyProvincial) return { kind: 'provincial', digits: legacyProvincial[3], provinceLabel: `${legacyProvincial[1]}高速` }
+  if (legacyProvincial) return { kind: 'provincial', digits: legacyProvincial[3], provinceLabel: legacyProvincial[1] }
 
   return { kind: 'national', digits: cleanDigits(code) || '15' }
 }
@@ -45,7 +45,7 @@ function normalizeSign(overrides = {}) {
   return {
     kind: parsed.kind,
     digits: parsed.digits,
-    provinceLabel: parsed.kind === 'provincial' ? cleanProvinceLabel(parsed.provinceLabel) || '粤高速' : '',
+    provinceLabel: parsed.kind === 'provincial' ? (parsed.provinceLabel === undefined ? '粤' : cleanProvinceLabel(parsed.provinceLabel)) : '',
     code: buildSignCode(parsed.kind, parsed.digits),
   }
 }

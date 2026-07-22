@@ -14,7 +14,7 @@ export function SignSettings({ sign, onChange }) {
   }
 
   const updateProvinceLabel = event => {
-    onChange({ provinceLabel: Array.from(event.target.value.trim()).slice(0, 4).join('') })
+    onChange({ provinceLabel: Array.from(event.target.value.trim()).slice(0, 1).join('') })
   }
 
   return (
@@ -32,8 +32,8 @@ export function SignSettings({ sign, onChange }) {
           <div className={`grid gap-3 ${sign.kind === 'provincial' ? 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : 'grid-cols-1'}`}>
             {sign.kind === 'provincial' && (
               <div className="space-y-1.5">
-                <Label htmlFor="province-label">省高速文字</Label>
-                <Input id="province-label" value={sign.provinceLabel} onChange={updateProvinceLabel} placeholder="粤高速" maxLength={4} className="h-9" />
+                <Label htmlFor="province-label">省高速简称</Label>
+                <Input id="province-label" value={sign.provinceLabel} onChange={updateProvinceLabel} placeholder="粤" maxLength={1} className="h-9" />
               </div>
             )}
             <div className="space-y-1.5">
