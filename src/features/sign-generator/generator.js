@@ -31,7 +31,7 @@ async function loadFont(kind) {
   return fontCache.get(kind)
 }
 
-function outlinedText(font, text, startX, startY, width, height, fill, options = {}) {
+function textLayout(font, text, height) {
   const glyphs = Array.from(text).map(char => {
     const glyph = font.glyphForCodePoint(char.codePointAt(0))
     if (glyph.id === 0 && char !== ' ') throw new Error(`字体不包含字符“${char}”`)
@@ -43,15 +43,31 @@ function outlinedText(font, text, startX, startY, width, height, fill, options =
   })
 
   const usedWidth = glyphs.reduce((total, item) => total + item.width, 0)
-  const rawGap = glyphs.length > 1 ? (width - usedWidth) / (glyphs.length - 1) : 0
-  const gap = Number.isFinite(options.maxGap) ? Math.min(rawGap, options.maxGap) : rawGap
-  const contentWidth = usedWidth + gap * Math.max(0, glyphs.length - 1)
-  let x = startX + (width - contentWidth) / 2
-  return glyphs.map(({ glyph, box, scale, width: glyphWidth }) => {
+  return { glyphs, usedWidth }
+}
+
+function textGap(usedWidth, glyphCount, width, options = {}) {
+  const rawGap = glyphCount > 1 ? (width - usedWidth) / (glyphCount - 1) : 0
+  const minGap = Number.isFinite(options.minGap) ? options.minGap : 0
+  const cappedGap = Number.isFinite(options.maxGap) ? Math.min(rawGap, options.maxGap) : rawGap
+  return Math.max(minGap, cappedGap)
+}
+
+function renderLayout(layout, startX, startY, fill, gap) {
+  let x = startX
+  return layout.glyphs.map(({ glyph, box, scale, width: glyphWidth }) => {
     const transform = `translate(${x} ${startY + box.maxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
     x += glyphWidth + gap
     return `<path d="${glyph.path.toSVG()}" transform="${transform}" fill="${fill}" fill-rule="evenodd"/>`
   }).join('')
+}
+
+function outlinedText(font, text, startX, startY, width, height, fill, options = {}) {
+  const layout = textLayout(font, text, height)
+  const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
+  const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
+  const x = options.align === 'start' ? startX : startX + (width - contentWidth) / 2
+  return renderLayout(layout, x, startY, fill, gap)
 }
 
 function expresswayBackground(width, withName, bannerColor) {
@@ -105,14 +121,25 @@ export async function generateSignSvg(inputCode, inputName = '', inputProvinceLa
   const mainX = sign.digits.length === 1 ? 150 : 90
   const mainWidth = sign.digits.length === 1 ? 700 : 1070
   const mainMaxGap = sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
+  const mainMinGap = named ? 0 : sign.digits.length === 4 ? 25 : 50
   const mainFont = named ? fontB : fontA
   const bannerY = named ? 110 : 80
   const bannerPaths = outlinedText(fontHan, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)
-  const content = [bannerPaths, outlinedText(mainFont, mainCode, mainX, named ? 340 : 370, mainWidth, 450, WHITE, { maxGap: mainMaxGap })]
+  const content = [bannerPaths]
   if (sign.digits.length === 4) {
-    const suffixWidth = sign.digits.endsWith('1') ? 315 : 390
-    const suffixMaxGap = sign.digits.endsWith('1') ? 35 : 55
-    content.push(outlinedText(fontC, sign.code.slice(3), 1220, named ? 490 : 520, suffixWidth, 300, WHITE, { maxGap: suffixMaxGap }))
+    const mainLayout = textLayout(mainFont, mainCode, 450)
+    const suffixLayout = textLayout(fontC, sign.code.slice(3), 300)
+    const mainGap = textGap(mainLayout.usedWidth, mainLayout.glyphs.length, 1180, { maxGap: mainMaxGap, minGap: mainMinGap })
+    const suffixGap = textGap(suffixLayout.usedWidth, suffixLayout.glyphs.length, sign.digits.endsWith('1') ? 280 : 340, { maxGap: sign.digits.endsWith('1') ? 35 : 55 })
+    const mainContentWidth = mainLayout.usedWidth + mainGap * Math.max(0, mainLayout.glyphs.length - 1)
+    const suffixContentWidth = suffixLayout.usedWidth + suffixGap * Math.max(0, suffixLayout.glyphs.length - 1)
+    const groupGap = named ? 55 : 45
+    const groupWidth = mainContentWidth + groupGap + suffixContentWidth
+    const groupX = (width - groupWidth) / 2 + (named ? 0 : 24)
+    content.push(renderLayout(mainLayout, groupX, named ? 340 : 370, WHITE, mainGap))
+    content.push(renderLayout(suffixLayout, groupX + mainContentWidth + groupGap, named ? 490 : 520, WHITE, suffixGap))
+  } else {
+    content.push(outlinedText(mainFont, mainCode, mainX, named ? 340 : 370, mainWidth, 450, WHITE, { maxGap: mainMaxGap, minGap: mainMinGap }))
   }
   if (named) {
     const nameWidth = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : 1400

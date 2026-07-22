@@ -47,12 +47,12 @@
     },
     "src/features/sign-generator/generator.js": {
       "ipo_ts": 1784717556437,
-      "edit_count": 10,
-      "last_lines": 131,
-      "last_ts": 1784728259404,
+      "edit_count": 13,
+      "last_lines": 158,
+      "last_ts": 1784729032229,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "e652997f"
+      "last_content_hash": "eb84af14"
     },
     "src/features/sign-generator/SignList.jsx": {
       "ipo_ts": 1784717561128,
@@ -1055,12 +1055,12 @@
     },
     "dist/index.html": {
       "ipo_ts": 1784725541292,
-      "edit_count": 6,
+      "edit_count": 8,
       "last_lines": 22,
-      "last_ts": 1784728335727,
+      "last_ts": 1784729070967,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "639c784"
+      "last_content_hash": "a3f95687"
     },
     ".gitignore": {
       "ipo_ts": 1784725931147,
@@ -1098,14 +1098,14 @@
       "last_source": "onEdit",
       "last_content_hash": "f5accc51"
     },
-    "dist/assets/index-D82W3zmc.js": {
-      "ipo_ts": 1784728335724,
+    "dist/assets/index-DLpHs7C8.js": {
+      "ipo_ts": 1784729070963,
       "edit_count": 1,
       "last_lines": 129,
-      "last_ts": 1784728335724,
+      "last_ts": 1784729070963,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "35ae4f31"
+      "last_content_hash": "1ea6e038"
     }
   }
 }
