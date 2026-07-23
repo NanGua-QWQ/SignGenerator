@@ -21,6 +21,27 @@ function cleanName(value: string, digits: string): string {
   return Array.from(String(value || '')).slice(0, nameLimitForDigits(digits)).join('')
 }
 
+function cleanExitText(value: string, fallback: string, limit: number): string {
+  const text = Array.from(String(value || '').trim()).slice(0, limit).join('')
+  return text || fallback
+}
+
+function cleanExitNumber(value: string): string {
+  return String(value || '').replace(/\D/g, '').slice(0, 4)
+}
+
+function cleanExitDistance(value: string): string {
+  return String(value || '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 5)
+}
+
+function cleanRoute(value: string, fallback: string): string {
+  return String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || fallback
+}
+
+function cleanDirection(value: string, fallback: string): string {
+  return Array.from(String(value || '').trim()).slice(0, 1).join('') || fallback
+}
+
 function buildSignCode(kind: Sign['kind'], digits: string): string {
   return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
@@ -40,14 +61,24 @@ function parseSignCode(value: string): { kind: Sign['kind']; digits: string; pro
 }
 
 function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
+  const template = overrides.template ?? 'expressway'
   const parsed = overrides.kind
     ? { kind: overrides.kind, digits: cleanDigits(overrides.digits ?? ''), provinceLabel: overrides.provinceLabel }
     : parseSignCode(overrides.code ?? 'G15')
   return {
+    template,
     kind: parsed.kind,
     digits: parsed.digits,
     provinceLabel: parsed.kind === 'provincial' ? (parsed.provinceLabel === undefined ? '粤' : cleanProvinceLabel(parsed.provinceLabel)) : '',
     code: buildSignCode(parsed.kind, parsed.digits),
+    exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
+    exitDistance: cleanExitDistance(overrides.exitDistance ?? '2'),
+    exitName: cleanExitText(overrides.exitName ?? '', '柳州', 6),
+    exitDestination: cleanExitText(overrides.exitDestination ?? '', '玉林', 8),
+    leftRoute: cleanRoute(overrides.leftRoute ?? 'G72', 'G72'),
+    rightRoute: cleanRoute(overrides.rightRoute ?? 'G80', 'G80'),
+    leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
+    rightDirection: cleanDirection(overrides.rightDirection ?? '东', '东'),
   }
 }
 
@@ -56,18 +87,36 @@ function createSign(overrides: Partial<Sign> = {}): Sign {
   return {
     id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
     ...sign,
-    name: cleanName(overrides.name ?? '沈海高速', sign.digits),
+    name: sign.template === 'expressway'
+      ? cleanName(overrides.name ?? '沈海高速', sign.digits)
+      : cleanExitText(overrides.name ?? '出口定位', '出口定位', 8),
   }
 }
 
 function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
+  const template = params.get('template') === 'exit-location' ? 'exit-location' : 'expressway'
   const code = params.get('code') ?? 'G15'
   const name = params.get('name') ?? '沈海高速'
-  return [
-    createSign({ code, name }),
-    createSign({ code: 'G0421', name: '许广高速' }),
-  ]
+  const exitNumber = params.get('exitNumber') ?? '360'
+  const exitDistance = params.get('exitDistance') ?? '2'
+  const exitName = params.get('exitName') ?? '柳州'
+  const exitDestination = params.get('exitDestination') ?? '玉林'
+  const leftRoute = params.get('leftRoute') ?? 'G72'
+  const rightRoute = params.get('rightRoute') ?? 'G80'
+  const leftDirection = params.get('leftDirection') ?? '北'
+  const rightDirection = params.get('rightDirection') ?? '东'
+  return template === 'exit-location'
+    ? [
+        createSign({ template: 'exit-location', name: '出口定位', exitNumber, exitDistance, exitName, exitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ code, name }),
+        createSign({ code: 'G0421', name: '许广高速' }),
+      ]
+    : [
+        createSign({ code, name }),
+        createSign({ code: 'G0421', name: '许广高速' }),
+        createSign({ template: 'exit-location', name: '出口定位', exitNumber: '360', exitDistance: '2', exitName: '柳州', exitDestination: '玉林', leftRoute: 'G72', rightRoute: 'G80', leftDirection: '北', rightDirection: '东' }),
+      ]
 }
 
 export default function App() {
@@ -89,7 +138,11 @@ export default function App() {
       if (sign.id !== selectedId) return sign
       const next = { ...sign, ...updates }
       const normalized = normalizeSign(next)
-      return { ...next, ...normalized, name: cleanName(next.name, normalized.digits) }
+      return {
+        ...next,
+        ...normalized,
+        name: normalized.template === 'expressway' ? cleanName(next.name, normalized.digits) : cleanExitText(next.name, '出口定位', 8),
+      }
     }))
   }, [selectedId])
 

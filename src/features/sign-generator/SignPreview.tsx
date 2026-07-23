@@ -26,11 +26,11 @@ export function SignPreview({ sign }: { sign: Sign }) {
     let active = true
     setError('')
     setIsLoading(true)
-    generateSignSvg(sign.code, sign.name, sign.provinceLabel)
+    generateSignSvg(sign)
       .then(result => { if (active) { setSvg(result); setIsLoading(false) } })
       .catch(reason => { if (active) { setSvg(''); setError(reason.message); setIsLoading(false) } })
     return () => { active = false }
-  }, [sign.code, sign.name, sign.provinceLabel])
+  }, [sign])
 
   const zoom = useCallback((multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
@@ -40,7 +40,7 @@ export function SignPreview({ sign }: { sign: Sign }) {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = signFilename(sign.code, sign.name)
+    link.download = signFilename(sign)
     link.click()
     setTimeout(() => URL.revokeObjectURL(url), 0)
   }

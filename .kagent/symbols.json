@@ -1,14 +1,5 @@
 {
   "symbols": {
-    "src/App.jsx": {
-      "ipo_ts": 1783604525856,
-      "edit_count": 15,
-      "last_lines": 118,
-      "last_ts": 1784728189550,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "97556c30"
-    },
     "src/index.css": {
       "ipo_ts": 1783864507316,
       "edit_count": 5,
@@ -20,111 +11,30 @@
     },
     "index.html": {
       "ipo_ts": 1784642341957,
-      "edit_count": 2,
+      "edit_count": 3,
       "last_lines": 21,
-      "last_ts": 1784717944449,
+      "last_ts": 1784770327534,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "f35755f7"
+      "last_content_hash": "3a88b988"
     },
     "package.json": {
       "ipo_ts": 1784716738247,
-      "edit_count": 5,
-      "last_lines": 28,
-      "last_ts": 1784718218551,
+      "edit_count": 6,
+      "last_lines": 32,
+      "last_ts": 1784770327540,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "46f0083c"
-    },
-    "src/components/layout/Header.jsx": {
-      "ipo_ts": 1784717308715,
-      "edit_count": 2,
-      "last_lines": 13,
-      "last_ts": 1784717579826,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "5ea94934"
-    },
-    "src/features/sign-generator/generator.js": {
-      "ipo_ts": 1784717556437,
-      "edit_count": 13,
-      "last_lines": 158,
-      "last_ts": 1784729032229,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "eb84af14"
-    },
-    "src/features/sign-generator/SignList.jsx": {
-      "ipo_ts": 1784717561128,
-      "edit_count": 3,
-      "last_lines": 26,
-      "last_ts": 1784725454754,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "74ab4f09"
-    },
-    "src/features/sign-generator/SignSettings.jsx": {
-      "ipo_ts": 1784717565812,
-      "edit_count": 5,
-      "last_lines": 54,
-      "last_ts": 1784728214094,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d5ff0286"
-    },
-    "src/features/sign-generator/SignPreview.jsx": {
-      "ipo_ts": 1784717570275,
-      "edit_count": 4,
-      "last_lines": 73,
-      "last_ts": 1784727127502,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "ce6ef1ab"
-    },
-    "src/components/layout/ThemeToggle.jsx": {
-      "ipo_ts": 1784717576580,
-      "edit_count": 1,
-      "last_lines": 19,
-      "last_ts": 1784717576580,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b6a9af57"
-    },
-    "src/components/ui/button.jsx": {
-      "ipo_ts": 1784717777193,
-      "edit_count": 1,
-      "last_lines": 26,
-      "last_ts": 1784717777193,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "fd38450e"
-    },
-    "src/components/ui/label.jsx": {
-      "ipo_ts": 1784717781493,
-      "edit_count": 1,
-      "last_lines": 5,
-      "last_ts": 1784717781493,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "e54a907a"
-    },
-    "node_modules/.package-lock.json": {
-      "ipo_ts": 1784717853556,
-      "edit_count": 3,
-      "last_lines": 1300,
-      "last_ts": 1784718218453,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "a9c5663a"
+      "last_content_hash": "941e4bb7"
     },
     "package-lock.json": {
       "ipo_ts": 1784717853563,
-      "edit_count": 3,
-      "last_lines": 2793,
-      "last_ts": 1784718218549,
+      "edit_count": 4,
+      "last_lines": 2855,
+      "last_ts": 1784770327537,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "fd94fb76"
+      "last_content_hash": "f398279b"
     },
     "README.md": {
       "ipo_ts": 1784717955695,
@@ -134,249 +44,6 @@
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "dc763d17"
-    },
-    "node_modules/lightningcss-win32-x64-msvc/LICENSE": {
-      "ipo_ts": 1784718212930,
-      "edit_count": 1,
-      "last_lines": 373,
-      "last_ts": 1784718212930,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "a73d491d"
-    },
-    "node_modules/lightningcss-win32-x64-msvc/README.md": {
-      "ipo_ts": 1784718212932,
-      "edit_count": 1,
-      "last_lines": 1,
-      "last_ts": 1784718212932,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "79591c6e"
-    },
-    "node_modules/lightningcss-win32-x64-msvc/lightningcss.win32-x64-msvc.node": {
-      "ipo_ts": 1784718213295,
-      "edit_count": 1,
-      "last_lines": 15214,
-      "last_ts": 1784718213295,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "81f83f4c"
-    },
-    "node_modules/lightningcss-win32-x64-msvc/package.json": {
-      "ipo_ts": 1784718213300,
-      "edit_count": 1,
-      "last_lines": 34,
-      "last_ts": 1784718213300,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "dcdf302"
-    },
-    "node_modules/lightningcss/LICENSE": {
-      "ipo_ts": 1784718213311,
-      "edit_count": 1,
-      "last_lines": 373,
-      "last_ts": 1784718213311,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "a73d491d"
-    },
-    "node_modules/lightningcss/README.md": {
-      "ipo_ts": 1784718213316,
-      "edit_count": 1,
-      "last_lines": 105,
-      "last_ts": 1784718213316,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b8d0f982"
-    },
-    "node_modules/lightningcss/node/ast.d.ts": {
-      "ipo_ts": 1784718213330,
-      "edit_count": 1,
-      "last_lines": 9892,
-      "last_ts": 1784718213330,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "3e37a9c"
-    },
-    "node_modules/lightningcss/node/ast.js.flow": {
-      "ipo_ts": 1784718213341,
-      "edit_count": 1,
-      "last_lines": 10539,
-      "last_ts": 1784718213341,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "370a246a"
-    },
-    "node_modules/lightningcss/node/browserslistToTargets.js": {
-      "ipo_ts": 1784718213346,
-      "edit_count": 1,
-      "last_lines": 48,
-      "last_ts": 1784718213346,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "cc1c413e"
-    },
-    "node_modules/lightningcss/node/composeVisitors.js": {
-      "ipo_ts": 1784718213350,
-      "edit_count": 1,
-      "last_lines": 450,
-      "last_ts": 1784718213350,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "6ee130e9"
-    },
-    "node_modules/lightningcss/node/flags.js": {
-      "ipo_ts": 1784718213358,
-      "edit_count": 1,
-      "last_lines": 28,
-      "last_ts": 1784718213358,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b533a493"
-    },
-    "node_modules/lightningcss/node/index.d.ts": {
-      "ipo_ts": 1784718213362,
-      "edit_count": 1,
-      "last_lines": 494,
-      "last_ts": 1784718213362,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b04bae31"
-    },
-    "node_modules/lightningcss/node/index.js": {
-      "ipo_ts": 1784718213365,
-      "edit_count": 1,
-      "last_lines": 59,
-      "last_ts": 1784718213365,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "972c8441"
-    },
-    "node_modules/lightningcss/node/index.js.flow": {
-      "ipo_ts": 1784718213372,
-      "edit_count": 1,
-      "last_lines": 843,
-      "last_ts": 1784718213372,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "51c2361"
-    },
-    "node_modules/lightningcss/node/index.mjs": {
-      "ipo_ts": 1784718213375,
-      "edit_count": 1,
-      "last_lines": 4,
-      "last_ts": 1784718213375,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "596f486"
-    },
-    "node_modules/lightningcss/node/targets.d.ts": {
-      "ipo_ts": 1784718213378,
-      "edit_count": 1,
-      "last_lines": 40,
-      "last_ts": 1784718213378,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "50281bfb"
-    },
-    "node_modules/lightningcss/node/targets.js.flow": {
-      "ipo_ts": 1784718213382,
-      "edit_count": 1,
-      "last_lines": 39,
-      "last_ts": 1784718213382,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "ca3267d0"
-    },
-    "node_modules/lightningcss/package.json": {
-      "ipo_ts": 1784718213386,
-      "edit_count": 1,
-      "last_lines": 110,
-      "last_ts": 1784718213386,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d7ee4ebc"
-    },
-    "node_modules/magic-string/LICENSE": {
-      "ipo_ts": 1784718213390,
-      "edit_count": 1,
-      "last_lines": 7,
-      "last_ts": 1784718213390,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "2b04a961"
-    },
-    "node_modules/magic-string/README.md": {
-      "ipo_ts": 1784718213395,
-      "edit_count": 1,
-      "last_lines": 325,
-      "last_ts": 1784718213395,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "2cd14ea3"
-    },
-    "node_modules/magic-string/package.json": {
-      "ipo_ts": 1784718213398,
-      "edit_count": 1,
-      "last_lines": 67,
-      "last_ts": 1784718213398,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "c6fad8a9"
-    },
-    "node_modules/@tailwindcss/oxide-win32-x64-msvc/README.md": {
-      "ipo_ts": 1784718213426,
-      "edit_count": 1,
-      "last_lines": 3,
-      "last_ts": 1784718213426,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d77ee506"
-    },
-    "node_modules/@tailwindcss/oxide-win32-x64-msvc/package.json": {
-      "ipo_ts": 1784718213429,
-      "edit_count": 1,
-      "last_lines": 27,
-      "last_ts": 1784718213429,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "585b97ef"
-    },
-    "node_modules/@tailwindcss/oxide/LICENSE": {
-      "ipo_ts": 1784718213433,
-      "edit_count": 1,
-      "last_lines": 21,
-      "last_ts": 1784718213433,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "7d73a64c"
-    },
-    "node_modules/@tailwindcss/oxide/index.d.ts": {
-      "ipo_ts": 1784718213438,
-      "edit_count": 1,
-      "last_lines": 49,
-      "last_ts": 1784718213438,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d36a082"
-    },
-    "node_modules/@tailwindcss/oxide/index.js": {
-      "ipo_ts": 1784718213443,
-      "edit_count": 1,
-      "last_lines": 589,
-      "last_ts": 1784718213443,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "85c5dce0"
-    },
-    "node_modules/@tailwindcss/oxide/package.json": {
-      "ipo_ts": 1784718213447,
-      "edit_count": 1,
-      "last_lines": 75,
-      "last_ts": 1784718213447,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "48d79c01"
     },
     "node_modules/@tailwindcss/vite/LICENSE": {
       "ipo_ts": 1784718213451,
@@ -404,375 +71,6 @@
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "a0fc8b67"
-    },
-    "node_modules/enhanced-resolve/LICENSE": {
-      "ipo_ts": 1784718213462,
-      "edit_count": 1,
-      "last_lines": 20,
-      "last_ts": 1784718213462,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d08035fe"
-    },
-    "node_modules/enhanced-resolve/lib/AliasFieldPlugin.js": {
-      "ipo_ts": 1784718213466,
-      "edit_count": 1,
-      "last_lines": 123,
-      "last_ts": 1784718213466,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "631ccf2b"
-    },
-    "node_modules/enhanced-resolve/lib/AliasPlugin.js": {
-      "ipo_ts": 1784718213470,
-      "edit_count": 1,
-      "last_lines": 63,
-      "last_ts": 1784718213470,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "ad015d69"
-    },
-    "node_modules/enhanced-resolve/lib/AliasUtils.js": {
-      "ipo_ts": 1784718213474,
-      "edit_count": 1,
-      "last_lines": 333,
-      "last_ts": 1784718213474,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b11674cd"
-    },
-    "node_modules/enhanced-resolve/lib/AppendPlugin.js": {
-      "ipo_ts": 1784718213478,
-      "edit_count": 1,
-      "last_lines": 49,
-      "last_ts": 1784718213478,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "fa2709d8"
-    },
-    "node_modules/enhanced-resolve/lib/CachedInputFileSystem.js": {
-      "ipo_ts": 1784718213483,
-      "edit_count": 1,
-      "last_lines": 845,
-      "last_ts": 1784718213483,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "83543b6a"
-    },
-    "node_modules/enhanced-resolve/lib/CloneBasenamePlugin.js": {
-      "ipo_ts": 1784718213488,
-      "edit_count": 1,
-      "last_lines": 51,
-      "last_ts": 1784718213488,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "945b416c"
-    },
-    "node_modules/enhanced-resolve/lib/ConditionalPlugin.js": {
-      "ipo_ts": 1784718213492,
-      "edit_count": 1,
-      "last_lines": 59,
-      "last_ts": 1784718213492,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "54e6acf8"
-    },
-    "node_modules/enhanced-resolve/lib/DescriptionFilePlugin.js": {
-      "ipo_ts": 1784718213496,
-      "edit_count": 1,
-      "last_lines": 103,
-      "last_ts": 1784718213496,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "70e4c06d"
-    },
-    "node_modules/enhanced-resolve/lib/DescriptionFileUtils.js": {
-      "ipo_ts": 1784718213500,
-      "edit_count": 1,
-      "last_lines": 232,
-      "last_ts": 1784718213500,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "cc5dde34"
-    },
-    "node_modules/enhanced-resolve/lib/DirectoryExistsPlugin.js": {
-      "ipo_ts": 1784718213506,
-      "edit_count": 1,
-      "last_lines": 68,
-      "last_ts": 1784718213506,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f4a74cc8"
-    },
-    "node_modules/enhanced-resolve/lib/ExportsFieldPlugin.js": {
-      "ipo_ts": 1784718213510,
-      "edit_count": 1,
-      "last_lines": 254,
-      "last_ts": 1784718213510,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "76e2361a"
-    },
-    "node_modules/enhanced-resolve/lib/ExtensionAliasPlugin.js": {
-      "ipo_ts": 1784718213513,
-      "edit_count": 1,
-      "last_lines": 129,
-      "last_ts": 1784718213513,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "27aba511"
-    },
-    "node_modules/enhanced-resolve/lib/FileExistsPlugin.js": {
-      "ipo_ts": 1784718213517,
-      "edit_count": 1,
-      "last_lines": 65,
-      "last_ts": 1784718213517,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d4f395fb"
-    },
-    "node_modules/enhanced-resolve/lib/ImportsFieldPlugin.js": {
-      "ipo_ts": 1784718213827,
-      "edit_count": 1,
-      "last_lines": 233,
-      "last_ts": 1784718213827,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "731bc22"
-    },
-    "node_modules/enhanced-resolve/lib/JoinRequestPartPlugin.js": {
-      "ipo_ts": 1784718213829,
-      "edit_count": 1,
-      "last_lines": 75,
-      "last_ts": 1784718213829,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "8344daa7"
-    },
-    "node_modules/enhanced-resolve/lib/JoinRequestPlugin.js": {
-      "ipo_ts": 1784718213832,
-      "edit_count": 1,
-      "last_lines": 45,
-      "last_ts": 1784718213832,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "10715e95"
-    },
-    "node_modules/enhanced-resolve/lib/LogInfoPlugin.js": {
-      "ipo_ts": 1784718213834,
-      "edit_count": 1,
-      "last_lines": 58,
-      "last_ts": 1784718213834,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "c914f20c"
-    },
-    "node_modules/enhanced-resolve/lib/MainFieldPlugin.js": {
-      "ipo_ts": 1784718213838,
-      "edit_count": 1,
-      "last_lines": 97,
-      "last_ts": 1784718213838,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "1a63fb9a"
-    },
-    "node_modules/enhanced-resolve/lib/ModulesInHierachicDirectoriesPlugin.js": {
-      "ipo_ts": 1784718213841,
-      "edit_count": 1,
-      "last_lines": 9,
-      "last_ts": 1784718213841,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b19c8d99"
-    },
-    "node_modules/enhanced-resolve/lib/ModulesInHierarchicalDirectoriesPlugin.js": {
-      "ipo_ts": 1784718213843,
-      "edit_count": 1,
-      "last_lines": 47,
-      "last_ts": 1784718213843,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d537516f"
-    },
-    "node_modules/enhanced-resolve/lib/ModulesInRootPlugin.js": {
-      "ipo_ts": 1784718213845,
-      "edit_count": 1,
-      "last_lines": 49,
-      "last_ts": 1784718213845,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "ea90c01a"
-    },
-    "node_modules/enhanced-resolve/lib/ModulesUtils.js": {
-      "ipo_ts": 1784718213848,
-      "edit_count": 1,
-      "last_lines": 132,
-      "last_ts": 1784718213848,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f2cc904b"
-    },
-    "node_modules/enhanced-resolve/lib/NextPlugin.js": {
-      "ipo_ts": 1784718213850,
-      "edit_count": 1,
-      "last_lines": 33,
-      "last_ts": 1784718213850,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "2abf7294"
-    },
-    "node_modules/enhanced-resolve/lib/ParsePlugin.js": {
-      "ipo_ts": 1784718213854,
-      "edit_count": 1,
-      "last_lines": 84,
-      "last_ts": 1784718213854,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "972f1ee2"
-    },
-    "node_modules/enhanced-resolve/lib/PnpPlugin.js": {
-      "ipo_ts": 1784718213857,
-      "edit_count": 1,
-      "last_lines": 134,
-      "last_ts": 1784718213857,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "6c21cd7d"
-    },
-    "node_modules/enhanced-resolve/lib/createInnerContext.js": {
-      "ipo_ts": 1784718213859,
-      "edit_count": 1,
-      "last_lines": 56,
-      "last_ts": 1784718213859,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "7a648585"
-    },
-    "node_modules/enhanced-resolve/lib/forEachBail.js": {
-      "ipo_ts": 1784718213862,
-      "edit_count": 1,
-      "last_lines": 50,
-      "last_ts": 1784718213862,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "8de24ead"
-    },
-    "node_modules/enhanced-resolve/lib/getInnerRequest.js": {
-      "ipo_ts": 1784718213865,
-      "edit_count": 1,
-      "last_lines": 41,
-      "last_ts": 1784718213865,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "91f6ae6d"
-    },
-    "node_modules/enhanced-resolve/lib/getPaths.js": {
-      "ipo_ts": 1784718213868,
-      "edit_count": 1,
-      "last_lines": 82,
-      "last_ts": 1784718213868,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "539080e0"
-    },
-    "node_modules/enhanced-resolve/lib/index.js": {
-      "ipo_ts": 1784718213872,
-      "edit_count": 1,
-      "last_lines": 310,
-      "last_ts": 1784718213872,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "994e210"
-    },
-    "node_modules/enhanced-resolve/lib/util/entrypoints.js": {
-      "ipo_ts": 1784718213878,
-      "edit_count": 1,
-      "last_lines": 745,
-      "last_ts": 1784718213878,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d912b7a"
-    },
-    "node_modules/enhanced-resolve/lib/util/fileURLToPath.js": {
-      "ipo_ts": 1784718213882,
-      "edit_count": 1,
-      "last_lines": 93,
-      "last_ts": 1784718213882,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d47a5894"
-    },
-    "node_modules/enhanced-resolve/lib/util/fs.js": {
-      "ipo_ts": 1784718213890,
-      "edit_count": 1,
-      "last_lines": 106,
-      "last_ts": 1784718213890,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f0b10426"
-    },
-    "node_modules/enhanced-resolve/lib/util/graceful-fs-browser.js": {
-      "ipo_ts": 1784718213895,
-      "edit_count": 1,
-      "last_lines": 40,
-      "last_ts": 1784718213895,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "31a7e369"
-    },
-    "node_modules/enhanced-resolve/lib/util/identifier.js": {
-      "ipo_ts": 1784718213899,
-      "edit_count": 1,
-      "last_lines": 101,
-      "last_ts": 1784718213899,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "1f9c3245"
-    },
-    "node_modules/enhanced-resolve/lib/util/memoize.js": {
-      "ipo_ts": 1784718213904,
-      "edit_count": 1,
-      "last_lines": 37,
-      "last_ts": 1784718213904,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "b9b545ab"
-    },
-    "node_modules/enhanced-resolve/lib/util/module-browser.js": {
-      "ipo_ts": 1784718213908,
-      "edit_count": 1,
-      "last_lines": 8,
-      "last_ts": 1784718213908,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "34b20092"
-    },
-    "node_modules/enhanced-resolve/lib/util/path-browser.js": {
-      "ipo_ts": 1784718213910,
-      "edit_count": 1,
-      "last_lines": 407,
-      "last_ts": 1784718213910,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "690117e"
-    },
-    "node_modules/enhanced-resolve/lib/util/path.js": {
-      "ipo_ts": 1784718213913,
-      "edit_count": 1,
-      "last_lines": 358,
-      "last_ts": 1784718213913,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "fdebb589"
-    },
-    "node_modules/enhanced-resolve/lib/util/process-browser.js": {
-      "ipo_ts": 1784718213916,
-      "edit_count": 1,
-      "last_lines": 23,
-      "last_ts": 1784718213916,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "a0a64e9a"
     },
     "node_modules/tailwindcss/LICENSE": {
       "ipo_ts": 1784718213919,
@@ -837,204 +135,6 @@
       "last_source": "onEdit",
       "last_content_hash": "7452a831"
     },
-    "node_modules/@tailwindcss/node/LICENSE": {
-      "ipo_ts": 1784718213960,
-      "edit_count": 1,
-      "last_lines": 21,
-      "last_ts": 1784718213960,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "7d73a64c"
-    },
-    "node_modules/@tailwindcss/node/README.md": {
-      "ipo_ts": 1784718213964,
-      "edit_count": 1,
-      "last_lines": 36,
-      "last_ts": 1784718213964,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "4776a537"
-    },
-    "node_modules/@tailwindcss/node/package.json": {
-      "ipo_ts": 1784718213968,
-      "edit_count": 1,
-      "last_lines": 48,
-      "last_ts": 1784718213968,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "e5c6d9d7"
-    },
-    "node_modules/enhanced-resolve/README.md": {
-      "ipo_ts": 1784718213975,
-      "edit_count": 1,
-      "last_lines": 862,
-      "last_ts": 1784718213975,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f4357d81"
-    },
-    "node_modules/enhanced-resolve/lib/ResolverFactory.js": {
-      "ipo_ts": 1784718213979,
-      "edit_count": 1,
-      "last_lines": 849,
-      "last_ts": 1784718213979,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f37c53b"
-    },
-    "node_modules/enhanced-resolve/lib/RestrictionsPlugin.js": {
-      "ipo_ts": 1784718213983,
-      "edit_count": 1,
-      "last_lines": 78,
-      "last_ts": 1784718213983,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "3048fa5b"
-    },
-    "node_modules/enhanced-resolve/lib/ResultPlugin.js": {
-      "ipo_ts": 1784718213991,
-      "edit_count": 1,
-      "last_lines": 43,
-      "last_ts": 1784718213991,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "978fcf57"
-    },
-    "node_modules/enhanced-resolve/lib/RootsPlugin.js": {
-      "ipo_ts": 1784718213994,
-      "edit_count": 1,
-      "last_lines": 69,
-      "last_ts": 1784718213994,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "4ed06e88"
-    },
-    "node_modules/enhanced-resolve/lib/SelfReferencePlugin.js": {
-      "ipo_ts": 1784718214000,
-      "edit_count": 1,
-      "last_lines": 106,
-      "last_ts": 1784718214000,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "d08507af"
-    },
-    "node_modules/enhanced-resolve/lib/SymlinkPlugin.js": {
-      "ipo_ts": 1784718214004,
-      "edit_count": 1,
-      "last_lines": 132,
-      "last_ts": 1784718214004,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "af32f1"
-    },
-    "node_modules/enhanced-resolve/lib/SyncAsyncFileSystemDecorator.js": {
-      "ipo_ts": 1784718214008,
-      "edit_count": 1,
-      "last_lines": 258,
-      "last_ts": 1784718214008,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "53955102"
-    },
-    "node_modules/enhanced-resolve/lib/TryNextPlugin.js": {
-      "ipo_ts": 1784718214011,
-      "edit_count": 1,
-      "last_lines": 41,
-      "last_ts": 1784718214011,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "6204ce79"
-    },
-    "node_modules/enhanced-resolve/lib/TsconfigPathsPlugin.js": {
-      "ipo_ts": 1784718214015,
-      "edit_count": 1,
-      "last_lines": 900,
-      "last_ts": 1784718214015,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "2ca59e17"
-    },
-    "node_modules/enhanced-resolve/lib/UnsafeCachePlugin.js": {
-      "ipo_ts": 1784718214018,
-      "edit_count": 1,
-      "last_lines": 200,
-      "last_ts": 1784718214018,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "4884f626"
-    },
-    "node_modules/enhanced-resolve/lib/UseFilePlugin.js": {
-      "ipo_ts": 1784718214023,
-      "edit_count": 1,
-      "last_lines": 55,
-      "last_ts": 1784718214023,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "75b0bcde"
-    },
-    "node_modules/enhanced-resolve/lib/util/strip-json-comments.js": {
-      "ipo_ts": 1784718214026,
-      "edit_count": 1,
-      "last_lines": 177,
-      "last_ts": 1784718214026,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "a00455ab"
-    },
-    "node_modules/enhanced-resolve/lib/util/url-browser.js": {
-      "ipo_ts": 1784718214029,
-      "edit_count": 1,
-      "last_lines": 14,
-      "last_ts": 1784718214029,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "e28899d2"
-    },
-    "node_modules/enhanced-resolve/package.json": {
-      "ipo_ts": 1784718214032,
-      "edit_count": 1,
-      "last_lines": 85,
-      "last_ts": 1784718214032,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "6557d5b4"
-    },
-    "node_modules/enhanced-resolve/types.d.ts": {
-      "ipo_ts": 1784718214035,
-      "edit_count": 1,
-      "last_lines": 2061,
-      "last_ts": 1784718214035,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "78190878"
-    },
-    "node_modules/enhanced-resolve/lib/Resolver.js": {
-      "ipo_ts": 1784718214040,
-      "edit_count": 1,
-      "last_lines": 1247,
-      "last_ts": 1784718214040,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "57185165"
-    },
-    "node_modules/@tailwindcss/oxide-win32-x64-msvc/LICENSE": {
-      "ipo_ts": 1784718218450,
-      "edit_count": 1,
-      "last_lines": 21,
-      "last_ts": 1784718218450,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "7d73a64c"
-    },
-    "node_modules/@tailwindcss/oxide-win32-x64-msvc/tailwindcss-oxide.win32-x64-msvc.node": {
-      "ipo_ts": 1784718218544,
-      "edit_count": 1,
-      "last_lines": 14377,
-      "last_ts": 1784718218544,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "db34f31e"
-    },
     "public/fonts/SourceHanSansSC-Bold.otf": {
       "ipo_ts": 1784725495457,
       "edit_count": 2,
@@ -1055,57 +155,30 @@
     },
     "dist/index.html": {
       "ipo_ts": 1784725541292,
-      "edit_count": 8,
+      "edit_count": 13,
       "last_lines": 22,
-      "last_ts": 1784729070967,
+      "last_ts": 1784781667258,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "a3f95687"
+      "last_content_hash": "ecf978e7"
     },
     ".gitignore": {
       "ipo_ts": 1784725931147,
-      "edit_count": 7,
-      "last_lines": 29,
-      "last_ts": 1784726065304,
+      "edit_count": 12,
+      "last_lines": 28,
+      "last_ts": 1784802215834,
       "delisted": false,
       "last_source": "onEdit",
-      "last_content_hash": "b404e120"
+      "last_content_hash": "f3177969"
     },
     "dist/assets/fontkit.es-kbAj9PL1.js": {
       "ipo_ts": 1784725972469,
-      "edit_count": 2,
+      "edit_count": 4,
       "last_lines": 47,
-      "last_ts": 1784728335717,
+      "last_ts": 1784781667230,
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "1ddc53ec"
-    },
-    "dist/assets/index-B7l4smtV.css": {
-      "ipo_ts": 1784727186372,
-      "edit_count": 1,
-      "last_lines": 1,
-      "last_ts": 1784727186372,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "14541504"
-    },
-    "vite.config.js": {
-      "ipo_ts": 1784727790095,
-      "edit_count": 5,
-      "last_lines": 14,
-      "last_ts": 1784727890380,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "f5accc51"
-    },
-    "dist/assets/index-DLpHs7C8.js": {
-      "ipo_ts": 1784729070963,
-      "edit_count": 1,
-      "last_lines": 129,
-      "last_ts": 1784729070963,
-      "delisted": false,
-      "last_source": "onEdit",
-      "last_content_hash": "1ea6e038"
     },
     "public/出口定位.svg": {
       "ipo_ts": 1784770141836,
@@ -1115,6 +188,402 @@
       "delisted": false,
       "last_source": "onEdit",
       "last_content_hash": "1a0e694a"
+    },
+    "src/App.tsx": {
+      "ipo_ts": 1784770327494,
+      "edit_count": 6,
+      "last_lines": 172,
+      "last_ts": 1784781469427,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7aa3cf6a"
+    },
+    "src/components/layout/Header.tsx": {
+      "ipo_ts": 1784770327497,
+      "edit_count": 2,
+      "last_lines": 13,
+      "last_ts": 1784771836675,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fe509bee"
+    },
+    "src/components/layout/ThemeToggle.tsx": {
+      "ipo_ts": 1784770327500,
+      "edit_count": 1,
+      "last_lines": 19,
+      "last_ts": 1784770327500,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "52aa96dc"
+    },
+    "src/components/theme-provider.tsx": {
+      "ipo_ts": 1784770327502,
+      "edit_count": 1,
+      "last_lines": 6,
+      "last_ts": 1784770327502,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "20392536"
+    },
+    "src/components/ui/button.tsx": {
+      "ipo_ts": 1784770327504,
+      "edit_count": 1,
+      "last_lines": 35,
+      "last_ts": 1784770327504,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c1682e78"
+    },
+    "src/components/ui/input.tsx": {
+      "ipo_ts": 1784770327507,
+      "edit_count": 1,
+      "last_lines": 22,
+      "last_ts": 1784770327507,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "a074a884"
+    },
+    "src/components/ui/label.tsx": {
+      "ipo_ts": 1784770327509,
+      "edit_count": 1,
+      "last_lines": 8,
+      "last_ts": 1784770327509,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "54ca8045"
+    },
+    "src/features/sign-generator/SignList.tsx": {
+      "ipo_ts": 1784770327511,
+      "edit_count": 2,
+      "last_lines": 38,
+      "last_ts": 1784771813322,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "13390262"
+    },
+    "src/features/sign-generator/SignPreview.tsx": {
+      "ipo_ts": 1784770327513,
+      "edit_count": 2,
+      "last_lines": 80,
+      "last_ts": 1784771721019,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "76ff4b7b"
+    },
+    "src/features/sign-generator/SignSettings.tsx": {
+      "ipo_ts": 1784770327515,
+      "edit_count": 4,
+      "last_lines": 146,
+      "last_ts": 1784781500278,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "83cf593d"
+    },
+    "src/features/sign-generator/generator.ts": {
+      "ipo_ts": 1784770327518,
+      "edit_count": 8,
+      "last_lines": 303,
+      "last_ts": 1784781636723,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "45539207"
+    },
+    "src/features/sign-generator/types.ts": {
+      "ipo_ts": 1784770327520,
+      "edit_count": 3,
+      "last_lines": 20,
+      "last_ts": 1784781347520,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "aba3541f"
+    },
+    "src/lib/utils.ts": {
+      "ipo_ts": 1784770327522,
+      "edit_count": 1,
+      "last_lines": 6,
+      "last_ts": 1784770327522,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d57f655a"
+    },
+    "src/main.tsx": {
+      "ipo_ts": 1784770327525,
+      "edit_count": 1,
+      "last_lines": 13,
+      "last_ts": 1784770327525,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9de1ab4b"
+    },
+    "src/vite-env.d.ts": {
+      "ipo_ts": 1784770327527,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784770327527,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c692c582"
+    },
+    "tsconfig.json": {
+      "ipo_ts": 1784770327529,
+      "edit_count": 1,
+      "last_lines": 30,
+      "last_ts": 1784770327529,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2cbb6d6"
+    },
+    "vite.config.ts": {
+      "ipo_ts": 1784770327531,
+      "edit_count": 1,
+      "last_lines": 14,
+      "last_ts": 1784770327531,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "76e3cc57"
+    },
+    "public/出口定位.html": {
+      "ipo_ts": 1784771863952,
+      "edit_count": 1,
+      "last_lines": 32,
+      "last_ts": 1784771863952,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "906826a"
+    },
+    "dist/出口定位.html": {
+      "ipo_ts": 1784771949357,
+      "edit_count": 1,
+      "last_lines": 32,
+      "last_ts": 1784771949357,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "906826a"
+    },
+    "dist/出口定位.svg": {
+      "ipo_ts": 1784771949360,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784771949360,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "1a0e694a"
+    },
+    "dist/assets/index-B4fNIBnR.css": {
+      "ipo_ts": 1784781542593,
+      "edit_count": 1,
+      "last_lines": 1,
+      "last_ts": 1784781542593,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "c66a42bf"
+    },
+    "dist/assets/index-VdisryMh.js": {
+      "ipo_ts": 1784781667249,
+      "edit_count": 1,
+      "last_lines": 129,
+      "last_ts": 1784781667249,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "b5c12c74"
+    },
+    "node_modules/.bin/browserslist": {
+      "ipo_ts": 1784802009514,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009514,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e99f8a0"
+    },
+    "node_modules/.bin/browserslist.CMD": {
+      "ipo_ts": 1784802009517,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009517,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "d8d05ed5"
+    },
+    "node_modules/.bin/browserslist.ps1": {
+      "ipo_ts": 1784802009519,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009519,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "9876593"
+    },
+    "node_modules/.bin/jiti": {
+      "ipo_ts": 1784802009521,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009521,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e40f6522"
+    },
+    "node_modules/.bin/jiti.CMD": {
+      "ipo_ts": 1784802009523,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009523,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "2ccbfdb5"
+    },
+    "node_modules/.bin/jiti.ps1": {
+      "ipo_ts": 1784802009525,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009525,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "42aead5b"
+    },
+    "node_modules/.bin/oxlint": {
+      "ipo_ts": 1784802009527,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009527,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e4425de2"
+    },
+    "node_modules/.bin/oxlint.CMD": {
+      "ipo_ts": 1784802009529,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009529,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7c5670d5"
+    },
+    "node_modules/.bin/oxlint.ps1": {
+      "ipo_ts": 1784802009532,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009532,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "f77855f7"
+    },
+    "node_modules/.bin/tsc": {
+      "ipo_ts": 1784802009534,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009534,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "41ee61ea"
+    },
+    "node_modules/.bin/tsc.CMD": {
+      "ipo_ts": 1784802009536,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009536,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "7a08fbb3"
+    },
+    "node_modules/.bin/tsc.ps1": {
+      "ipo_ts": 1784802009537,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009537,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "93aacf2d"
+    },
+    "node_modules/.bin/tsserver": {
+      "ipo_ts": 1784802009539,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009539,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "189b0522"
+    },
+    "node_modules/.bin/tsserver.CMD": {
+      "ipo_ts": 1784802009541,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009541,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "e512115"
+    },
+    "node_modules/.bin/tsserver.ps1": {
+      "ipo_ts": 1784802009543,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009543,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "917ccb9b"
+    },
+    "node_modules/.bin/vite": {
+      "ipo_ts": 1784802009545,
+      "edit_count": 1,
+      "last_lines": 21,
+      "last_ts": 1784802009545,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "511df1a6"
+    },
+    "node_modules/.bin/vite.CMD": {
+      "ipo_ts": 1784802009547,
+      "edit_count": 1,
+      "last_lines": 12,
+      "last_ts": 1784802009547,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "655e8c37"
+    },
+    "node_modules/.bin/vite.ps1": {
+      "ipo_ts": 1784802009549,
+      "edit_count": 1,
+      "last_lines": 41,
+      "last_ts": 1784802009549,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "fc347c6f"
+    },
+    "node_modules/.modules.yaml": {
+      "ipo_ts": 1784802009551,
+      "edit_count": 1,
+      "last_lines": 347,
+      "last_ts": 1784802009551,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "5bfb89bd"
+    },
+    "node_modules/.pnpm-workspace-state-v1.json": {
+      "ipo_ts": 1784802009553,
+      "edit_count": 1,
+      "last_lines": 27,
+      "last_ts": 1784802009553,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "11a2f833"
+    },
+    "node_modules/.pnpm/lock.yaml": {
+      "ipo_ts": 1784802009555,
+      "edit_count": 1,
+      "last_lines": 1759,
+      "last_ts": 1784802009555,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "aefd8bc5"
+    },
+    "pnpm-lock.yaml": {
+      "ipo_ts": 1784802009561,
+      "edit_count": 1,
+      "last_lines": 1759,
+      "last_ts": 1784802009561,
+      "delisted": false,
+      "last_source": "onEdit",
+      "last_content_hash": "aefd8bc5"
     }
   }
 }

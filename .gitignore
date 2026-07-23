@@ -11,19 +11,18 @@ node_modules
 dist
 dist-ssr
 *.local
-.kagent
+.kagent/*
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
+*.suo~
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
 # Fonts
-*.otf
-*.ttf
+public/fonts/*
