@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
+import { ChevronDown } from 'lucide-react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +8,25 @@ import { Label } from '@/components/ui/label'
 interface SignSettingsProps {
   sign: Sign
   onChange: (updates: Partial<Sign>) => void
+}
+
+const DIRECTION_OPTIONS = ['东', '南', '西', '北']
+
+interface DirectionSelectProps {
+  id: string
+  value: string
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void
+}
+
+function DirectionSelect({ id, value, onChange }: DirectionSelectProps) {
+  return (
+    <div className="relative">
+      <select id={id} value={value} onChange={onChange} className="h-9 w-full appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm font-medium shadow-xs outline-none transition-[border-color,box-shadow] hover:border-foreground/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+        {DIRECTION_OPTIONS.map(direction => <option key={direction} value={direction}>{direction}</option>)}
+      </select>
+      <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+    </div>
+  )
 }
 
 export function SignSettings({ sign, onChange }: SignSettingsProps) {
@@ -74,12 +94,12 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
     onChange({ rightRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) })
   }
 
-  const updateLeftDirection = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ leftDirection: Array.from(event.target.value.trim()).slice(0, 1).join('') })
+  const updateLeftDirection = (event: ChangeEvent<HTMLSelectElement>) => {
+    onChange({ leftDirection: event.target.value })
   }
 
-  const updateRightDirection = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ rightDirection: Array.from(event.target.value.trim()).slice(0, 1).join('') })
+  const updateRightDirection = (event: ChangeEvent<HTMLSelectElement>) => {
+    onChange({ rightDirection: event.target.value })
   }
 
   return (
@@ -135,7 +155,7 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="left-direction">方向</Label>
-                  <Input id="left-direction" value={sign.leftDirection} onChange={updateLeftDirection} placeholder="北" maxLength={1} className="h-9" />
+                  <DirectionSelect id="left-direction" value={sign.leftDirection} onChange={updateLeftDirection} />
                 </div>
               </div>
               <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] gap-3">
@@ -145,7 +165,7 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="right-direction">方向</Label>
-                  <Input id="right-direction" value={sign.rightDirection} onChange={updateRightDirection} placeholder="东" maxLength={1} className="h-9" />
+                  <DirectionSelect id="right-direction" value={sign.rightDirection} onChange={updateRightDirection} />
                 </div>
               </div>
               <div className="space-y-1.5">

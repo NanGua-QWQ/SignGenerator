@@ -51,7 +51,7 @@ async function loadFont(kind: FontKey): Promise<Font> {
 
 async function loadRoadForkPreviewTemplate(): Promise<string> {
   if (!roadForkPreviewTemplatePromise) {
-    roadForkPreviewTemplatePromise = fetch('/出口定位.svg').then(response => {
+    roadForkPreviewTemplatePromise = fetch('/template/道路分岔预告.svg').then(response => {
       if (!response.ok) throw new Error('无法加载道路分岔预告 SVG 模板')
       return response.text()
     })
@@ -173,7 +173,8 @@ function cleanExitRoute(value: string, fallback: string): string {
 }
 
 function cleanDirection(value: string, fallback: string): string {
-  return Array.from(String(value || '').trim()).slice(0, 1).join('') || fallback
+  const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
+  return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
 
 function routeShield(fontChinese: Font, fontLatin: Font, code: string, x: number, y: number, width: number, height: number): string {

@@ -39,7 +39,8 @@ function cleanRoute(value: string, fallback: string): string {
 }
 
 function cleanDirection(value: string, fallback: string): string {
-  return Array.from(String(value || '').trim()).slice(0, 1).join('') || fallback
+  const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
+  return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
 
 function buildSignCode(kind: Sign['kind'], digits: string): string {
