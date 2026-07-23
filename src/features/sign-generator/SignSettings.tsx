@@ -1,19 +1,26 @@
+import type { ChangeEvent } from 'react'
+import type { Sign } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export function SignSettings({ sign, onChange }) {
+interface SignSettingsProps {
+  sign: Sign
+  onChange: (updates: Partial<Sign>) => void
+}
+
+export function SignSettings({ sign, onChange }: SignSettingsProps) {
   const nameLimit = sign.digits.length === 4 ? 6 : 4
 
-  const updateDigits = event => {
+  const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ digits: event.target.value.replace(/\D/g, '').slice(0, 4) })
   }
 
-  const updateName = event => {
+  const updateName = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ name: Array.from(event.target.value).slice(0, nameLimit).join('') })
   }
 
-  const updateProvinceLabel = event => {
+  const updateProvinceLabel = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ provinceLabel: Array.from(event.target.value.trim()).slice(0, 1).join('') })
   }
 

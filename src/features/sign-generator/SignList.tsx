@@ -1,6 +1,15 @@
+import type { Sign } from '@/features/sign-generator/types'
 import { Plus, Trash2 } from 'lucide-react'
 
-export function SignList({ signs, selectedId, onSelect, onAdd, onDelete }) {
+interface SignListProps {
+  signs: Sign[]
+  selectedId: string
+  onSelect: (id: string) => void
+  onAdd: () => void
+  onDelete: (id: string) => void
+}
+
+export function SignList({ signs, selectedId, onSelect, onAdd, onDelete }: SignListProps) {
   return (
     <aside className="h-full overflow-y-auto border-r bg-background max-md:max-h-32 max-md:border-b max-md:border-r-0">
       <div className="p-3 max-md:py-2">

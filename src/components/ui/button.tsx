@@ -1,16 +1,25 @@
+import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 const variants = {
   default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
   ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-}
+} as const
 
 const sizes = {
   default: 'h-9 px-4 py-2',
   icon: 'size-9',
+} as const
+
+type ButtonVariant = keyof typeof variants
+type ButtonSize = keyof typeof sizes
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
 }
 
-export function Button({ className, variant = 'default', size = 'default', type = 'button', ...props }) {
+export function Button({ className, variant = 'default', size = 'default', type = 'button', ...props }: ButtonProps) {
   return (
     <button
       type={type}

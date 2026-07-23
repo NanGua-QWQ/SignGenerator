@@ -1,30 +1,31 @@
 import { useCallback, useMemo, useState } from 'react'
+import type { Sign } from '@/features/sign-generator/types'
 import { Header } from '@/components/layout/Header'
 import { SignList } from '@/features/sign-generator/SignList'
 import { SignPreview } from '@/features/sign-generator/SignPreview'
 import { SignSettings } from '@/features/sign-generator/SignSettings'
 
-function cleanDigits(value) {
+function cleanDigits(value: string): string {
   return String(value || '').replace(/\D/g, '').slice(0, 4)
 }
 
-function cleanProvinceLabel(value) {
+function cleanProvinceLabel(value: string): string {
   return Array.from(String(value || '').trim()).slice(0, 1).join('')
 }
 
-function nameLimitForDigits(digits) {
+function nameLimitForDigits(digits: string): number {
   return digits.length === 4 ? 6 : 4
 }
 
-function cleanName(value, digits) {
+function cleanName(value: string, digits: string): string {
   return Array.from(String(value || '')).slice(0, nameLimitForDigits(digits)).join('')
 }
 
-function buildSignCode(kind, digits) {
+function buildSignCode(kind: Sign['kind'], digits: string): string {
   return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
 
-function parseSignCode(value) {
+function parseSignCode(value: string): { kind: Sign['kind']; digits: string; provinceLabel?: string } {
   const code = String(value || '').trim().toUpperCase()
   const national = /^G(\d{1,2}|\d{4})$/.exec(code)
   if (national) return { kind: 'national', digits: national[1] }
@@ -38,10 +39,10 @@ function parseSignCode(value) {
   return { kind: 'national', digits: cleanDigits(code) || '15' }
 }
 
-function normalizeSign(overrides = {}) {
+function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
   const parsed = overrides.kind
-    ? { kind: overrides.kind, digits: cleanDigits(overrides.digits), provinceLabel: overrides.provinceLabel }
-    : parseSignCode(overrides.code || 'G15')
+    ? { kind: overrides.kind, digits: cleanDigits(overrides.digits ?? ''), provinceLabel: overrides.provinceLabel }
+    : parseSignCode(overrides.code ?? 'G15')
   return {
     kind: parsed.kind,
     digits: parsed.digits,
@@ -50,7 +51,7 @@ function normalizeSign(overrides = {}) {
   }
 }
 
-function createSign(overrides = {}) {
+function createSign(overrides: Partial<Sign> = {}): Sign {
   const sign = normalizeSign(overrides)
   return {
     id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
@@ -59,10 +60,10 @@ function createSign(overrides = {}) {
   }
 }
 
-function createInitialSigns() {
+function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
-  const code = params.get('code') || 'G15'
-  const name = params.has('name') ? params.get('name') : '沈海高速'
+  const code = params.get('code') ?? 'G15'
+  const name = params.get('name') ?? '沈海高速'
   return [
     createSign({ code, name }),
     createSign({ code: 'G0421', name: '许广高速' }),
@@ -70,10 +71,10 @@ function createInitialSigns() {
 }
 
 export default function App() {
-  const [signs, setSigns] = useState(createInitialSigns)
-  const [selectedId, setSelectedId] = useState(() => signs[0].id)
-  const selectedSign = useMemo(
-    () => signs.find(sign => sign.id === selectedId) || signs[0],
+  const [signs, setSigns] = useState<Sign[]>(createInitialSigns)
+  const [selectedId, setSelectedId] = useState<string>(() => signs[0].id)
+  const selectedSign = useMemo<Sign>(
+    () => signs.find(sign => sign.id === selectedId) ?? signs[0],
     [selectedId, signs],
   )
 
@@ -83,7 +84,7 @@ export default function App() {
     setSelectedId(sign.id)
   }, [])
 
-  const updateSign = useCallback((updates) => {
+  const updateSign = useCallback((updates: Partial<Sign>) => {
     setSigns(current => current.map(sign => {
       if (sign.id !== selectedId) return sign
       const next = { ...sign, ...updates }
@@ -92,7 +93,7 @@ export default function App() {
     }))
   }, [selectedId])
 
-  const deleteSign = useCallback((id) => {
+  const deleteSign = useCallback((id: string) => {
     setSigns(current => {
       if (current.length === 1) return current
       const next = current.filter(sign => sign.id !== id)
