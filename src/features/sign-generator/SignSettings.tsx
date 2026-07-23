@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,14 @@ interface SignSettingsProps {
 
 export function SignSettings({ sign, onChange }: SignSettingsProps) {
   const nameLimit = sign.digits.length === 4 ? 6 : 4
+  const composingExitField = useRef<'name' | 'destination' | null>(null)
+  const [exitNameInput, setExitNameInput] = useState(sign.exitName)
+  const [exitDestinationInput, setExitDestinationInput] = useState(sign.exitDestination)
+
+  useEffect(() => {
+    if (composingExitField.current !== 'name') setExitNameInput(sign.exitName)
+    if (composingExitField.current !== 'destination') setExitDestinationInput(sign.exitDestination)
+  }, [sign.exitDestination, sign.exitName])
 
   const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ digits: event.target.value.replace(/\D/g, '').slice(0, 4) })
@@ -33,11 +41,29 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
   }
 
   const updateExitName = (event: ChangeEvent<HTMLInputElement>) => {
+    setExitNameInput(event.target.value)
+    if (composingExitField.current === 'name') return
     onChange({ exitName: Array.from(event.target.value).slice(0, 6).join('') })
   }
 
   const updateExitDestination = (event: ChangeEvent<HTMLInputElement>) => {
+    setExitDestinationInput(event.target.value)
+    if (composingExitField.current === 'destination') return
     onChange({ exitDestination: Array.from(event.target.value).slice(0, 8).join('') })
+  }
+
+  const finishExitNameComposition = (event: CompositionEvent<HTMLInputElement>) => {
+    composingExitField.current = null
+    const value = Array.from(event.currentTarget.value).slice(0, 6).join('')
+    setExitNameInput(value)
+    onChange({ exitName: value })
+  }
+
+  const finishExitDestinationComposition = (event: CompositionEvent<HTMLInputElement>) => {
+    composingExitField.current = null
+    const value = Array.from(event.currentTarget.value).slice(0, 8).join('')
+    setExitDestinationInput(value)
+    onChange({ exitDestination: value })
   }
 
   const updateLeftRoute = (event: ChangeEvent<HTMLInputElement>) => {
@@ -59,23 +85,16 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
-        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">标志设置</h2>
+        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{sign.template === 'road-fork-preview' ? '道路分岔预告设置' : '标志设置'}</h2>
         <div className="flex flex-col gap-4">
-          <div className="space-y-1.5">
-            <Label>模板类型</Label>
-            <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
-              <Button variant={sign.template === 'expressway' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ template: 'expressway' })}>高速编号牌</Button>
-              <Button variant={sign.template === 'exit-location' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ template: 'exit-location' })}>出口定位</Button>
-            </div>
-          </div>
-
           {sign.template === 'expressway' ? (
             <>
               <div className="space-y-1.5">
                 <Label>高速类型</Label>
                 <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
                   <Button variant={sign.kind === 'national' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ kind: 'national' })}>国家高速</Button>
-                  <Button variant={sign.kind === 'provincial' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ kind: 'provincial' })}>省高速</Button>
+                  <Button variant={sign.kind === 'provincial' ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ kind: 'provincial', provinceLabel: sign.provinceLabel || '粤' })}>省高速</Button>
+                  <Button variant={sign.kind === 'beijing-tianjin-hebei' ? 'default' : 'ghost'} className="col-span-2 h-8 rounded-sm px-1 text-xs whitespace-nowrap" onClick={() => onChange({ kind: 'beijing-tianjin-hebei', provinceLabel: '' })}>京津冀高速</Button>
                 </div>
               </div>
               <div className={`grid gap-3 ${sign.kind === 'provincial' ? 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : 'grid-cols-1'}`}>
@@ -131,11 +150,11 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="exit-name">出口名称</Label>
-                <Input id="exit-name" value={sign.exitName} onChange={updateExitName} placeholder="柳州" maxLength={6} className="h-9" />
+                <Input id="exit-name" value={exitNameInput} onChange={updateExitName} onCompositionStart={() => { composingExitField.current = 'name' }} onCompositionEnd={finishExitNameComposition} placeholder="柳州" className="h-9" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="exit-destination">目的地</Label>
-                <Input id="exit-destination" value={sign.exitDestination} onChange={updateExitDestination} placeholder="玉林" maxLength={8} className="h-9" />
+                <Input id="exit-destination" value={exitDestinationInput} onChange={updateExitDestination} onCompositionStart={() => { composingExitField.current = 'destination' }} onCompositionEnd={finishExitDestinationComposition} placeholder="玉林" className="h-9" />
               </div>
             </>
           )}

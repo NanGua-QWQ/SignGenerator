@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
-import type { Sign } from '@/features/sign-generator/types'
-import { Header } from '@/components/layout/Header'
+import type { Sign, SignKind, SignTemplate } from '@/features/sign-generator/types'
+import { Header, type WorkspaceTab } from '@/components/layout/Header'
 import { SignList } from '@/features/sign-generator/SignList'
 import { SignPreview } from '@/features/sign-generator/SignPreview'
 import { SignSettings } from '@/features/sign-generator/SignSettings'
@@ -43,7 +43,16 @@ function cleanDirection(value: string, fallback: string): string {
 }
 
 function buildSignCode(kind: Sign['kind'], digits: string): string {
-  return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
+  return `${kind === 'national' ? 'G' : 'S'}${digits}`
+}
+
+function templateForTab(tab: WorkspaceTab): SignTemplate {
+  return tab === 'fork-guidance' ? 'road-fork-preview' : 'expressway'
+}
+
+function initialTab(): WorkspaceTab {
+  const template = new URLSearchParams(window.location.search).get('template')
+  return template === 'road-fork-preview' || template === 'exit-location' ? 'fork-guidance' : 'signs'
 }
 
 function parseSignCode(value: string): { kind: Sign['kind']; digits: string; provinceLabel?: string } {
@@ -60,6 +69,10 @@ function parseSignCode(value: string): { kind: Sign['kind']; digits: string; pro
   return { kind: 'national', digits: cleanDigits(code) || '15' }
 }
 
+function parseInitialKind(value: string | null): SignKind | undefined {
+  return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei' ? value : undefined
+}
+
 function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
   const template = overrides.template ?? 'expressway'
   const parsed = overrides.kind
@@ -73,8 +86,8 @@ function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'>
     code: buildSignCode(parsed.kind, parsed.digits),
     exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
     exitDistance: cleanExitDistance(overrides.exitDistance ?? '2'),
-    exitName: cleanExitText(overrides.exitName ?? '', '柳州', 6),
-    exitDestination: cleanExitText(overrides.exitDestination ?? '', '玉林', 8),
+    exitName: cleanExitText(overrides.exitName ?? '柳州', '', 6),
+    exitDestination: cleanExitText(overrides.exitDestination ?? '玉林', '', 8),
     leftRoute: cleanRoute(overrides.leftRoute ?? 'G72', 'G72'),
     rightRoute: cleanRoute(overrides.rightRoute ?? 'G80', 'G80'),
     leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
@@ -89,14 +102,16 @@ function createSign(overrides: Partial<Sign> = {}): Sign {
     ...sign,
     name: sign.template === 'expressway'
       ? cleanName(overrides.name ?? '沈海高速', sign.digits)
-      : cleanExitText(overrides.name ?? '出口定位', '出口定位', 8),
+      : cleanExitText(overrides.name ?? '道路分岔预告', '道路分岔预告', 8),
   }
 }
 
 function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
-  const template = params.get('template') === 'exit-location' ? 'exit-location' : 'expressway'
+  const requestedTemplate = params.get('template')
+  const template: SignTemplate = requestedTemplate === 'road-fork-preview' || requestedTemplate === 'exit-location' ? 'road-fork-preview' : 'expressway'
   const code = params.get('code') ?? 'G15'
+  const kind = parseInitialKind(params.get('kind'))
   const name = params.get('name') ?? '沈海高速'
   const exitNumber = params.get('exitNumber') ?? '360'
   const exitDistance = params.get('exitDistance') ?? '2'
@@ -106,32 +121,43 @@ function createInitialSigns(): Sign[] {
   const rightRoute = params.get('rightRoute') ?? 'G80'
   const leftDirection = params.get('leftDirection') ?? '北'
   const rightDirection = params.get('rightDirection') ?? '东'
-  return template === 'exit-location'
+  return template === 'road-fork-preview'
     ? [
-        createSign({ template: 'exit-location', name: '出口定位', exitNumber, exitDistance, exitName, exitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
-        createSign({ code, name }),
+        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ code, name, kind }),
         createSign({ code: 'G0421', name: '许广高速' }),
       ]
     : [
-        createSign({ code, name }),
+        createSign({ code, name, kind }),
         createSign({ code: 'G0421', name: '许广高速' }),
-        createSign({ template: 'exit-location', name: '出口定位', exitNumber: '360', exitDistance: '2', exitName: '柳州', exitDestination: '玉林', leftRoute: 'G72', rightRoute: 'G80', leftDirection: '北', rightDirection: '东' }),
+        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber: '360', exitDistance: '2', exitName: '柳州', exitDestination: '玉林', leftRoute: 'G72', rightRoute: 'G80', leftDirection: '北', rightDirection: '东' }),
       ]
 }
 
 export default function App() {
   const [signs, setSigns] = useState<Sign[]>(createInitialSigns)
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>(initialTab)
   const [selectedId, setSelectedId] = useState<string>(() => signs[0].id)
+  const activeTemplate = templateForTab(activeTab)
+  const visibleSigns = useMemo(() => signs.filter(sign => sign.template === activeTemplate), [activeTemplate, signs])
   const selectedSign = useMemo<Sign>(
-    () => signs.find(sign => sign.id === selectedId) ?? signs[0],
-    [selectedId, signs],
+    () => visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0],
+    [selectedId, visibleSigns],
   )
 
   const addSign = useCallback(() => {
-    const sign = createSign()
+    const sign = createSign({ template: activeTemplate })
     setSigns(current => [...current, sign])
     setSelectedId(sign.id)
-  }, [])
+  }, [activeTemplate])
+
+  const changeTab = useCallback((tab: WorkspaceTab) => {
+    const template = templateForTab(tab)
+    const firstSign = signs.find(sign => sign.template === template)
+    if (!firstSign) return
+    setActiveTab(tab)
+    setSelectedId(current => signs.some(sign => sign.id === current && sign.template === template) ? current : firstSign.id)
+  }, [signs])
 
   const updateSign = useCallback((updates: Partial<Sign>) => {
     setSigns(current => current.map(sign => {
@@ -141,26 +167,27 @@ export default function App() {
       return {
         ...next,
         ...normalized,
-        name: normalized.template === 'expressway' ? cleanName(next.name, normalized.digits) : cleanExitText(next.name, '出口定位', 8),
+        name: normalized.template === 'expressway' ? cleanName(next.name, normalized.digits) : cleanExitText(next.name, '道路分岔预告', 8),
       }
     }))
   }, [selectedId])
 
   const deleteSign = useCallback((id: string) => {
     setSigns(current => {
-      if (current.length === 1) return current
+      const target = current.find(sign => sign.id === id)
+      if (!target || current.filter(sign => sign.template === target.template).length === 1) return current
       const next = current.filter(sign => sign.id !== id)
-      if (id === selectedId) setSelectedId(next[0].id)
+      if (id === selectedId) setSelectedId(next.find(sign => sign.template === target.template)?.id ?? next[0].id)
       return next
     })
   }, [selectedId])
 
   return (
     <div className="flex h-dvh flex-col bg-background">
-      <Header />
+      <Header activeTab={activeTab} onTabChange={changeTab} />
       <main className="grid min-h-0 flex-1 grid-cols-[14rem_minmax(0,1fr)_20rem] max-lg:grid-cols-[12rem_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
         <div>
-          <SignList signs={signs} selectedId={selectedId} onSelect={setSelectedId} onAdd={addSign} onDelete={deleteSign} />
+          <SignList title={activeTab === 'fork-guidance' ? '分叉指引' : '标志列表'} signs={visibleSigns} selectedId={selectedId} onSelect={setSelectedId} onAdd={addSign} onDelete={deleteSign} />
         </div>
         <SignPreview sign={selectedSign} />
         <div className="max-lg:col-span-2 max-lg:max-h-72 max-md:col-span-1 max-md:max-h-none">

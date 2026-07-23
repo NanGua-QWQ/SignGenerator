@@ -11,7 +11,7 @@ const FONT_URLS = {
 type FontKey = keyof typeof FONT_URLS
 
 const fontCache = new Map<FontKey, Promise<Font>>()
-let exitLocationTemplatePromise: Promise<string> | undefined
+let roadForkPreviewTemplatePromise: Promise<string> | undefined
 let fontkitPromise: Promise<{
   default: typeof import('@pdf-lib/fontkit')
 }> | undefined
@@ -19,6 +19,7 @@ const GREEN = '#359b47'
 const RED = '#ee2d2d'
 const WHITE = '#FFFFFF'
 const YELLOW = '#f4eb35'
+const YELLOW_GREEN = '#ccff33'
 const BLACK = '#000000'
 
 const XML_ESCAPES: Record<string, string> = {
@@ -48,14 +49,14 @@ async function loadFont(kind: FontKey): Promise<Font> {
   return fontPromise
 }
 
-async function loadExitLocationTemplate(): Promise<string> {
-  if (!exitLocationTemplatePromise) {
-    exitLocationTemplatePromise = fetch('/出口定位.svg').then(response => {
-      if (!response.ok) throw new Error('无法加载出口定位 SVG 模板')
+async function loadRoadForkPreviewTemplate(): Promise<string> {
+  if (!roadForkPreviewTemplatePromise) {
+    roadForkPreviewTemplatePromise = fetch('/出口定位.svg').then(response => {
+      if (!response.ok) throw new Error('无法加载道路分岔预告 SVG 模板')
       return response.text()
     })
   }
-  return exitLocationTemplatePromise
+  return roadForkPreviewTemplatePromise
 }
 
 interface GlyphItem {
@@ -116,7 +117,7 @@ function textGap(usedWidth: number, glyphCount: number, width: number, options: 
 
 function renderLayout(layout: TextLayout, startX: number, startY: number, fill: string, gap: number): string {
   let x = startX
-  return layout.glyphs.map(({ glyph, box, scale, width: glyphWidth, path, isWhitespace }) => {
+  return layout.glyphs.map(({ box, scale, width: glyphWidth, path, isWhitespace }) => {
     if (isWhitespace || !path) {
       x += glyphWidth + gap
       return ''
@@ -175,22 +176,22 @@ function cleanDirection(value: string, fallback: string): string {
   return Array.from(String(value || '').trim()).slice(0, 1).join('') || fallback
 }
 
-function routeShield(fontHan: Font, fontA: Font, code: string, x: number, y: number, width: number, height: number): string {
+function routeShield(fontChinese: Font, fontLatin: Font, code: string, x: number, y: number, width: number, height: number): string {
   const inset = 4
   const bannerHeight = 24
   return [
     `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="8" fill="${WHITE}"/>`,
     `<rect x="${x + inset}" y="${y + inset}" width="${width - inset * 2}" height="${height - inset * 2}" rx="5" fill="${GREEN}"/>`,
     `<path d="M ${x + inset + 5} ${y + inset} H ${x + width - inset - 5} Q ${x + width - inset} ${y + inset} ${x + width - inset} ${y + inset + 5} V ${y + inset + bannerHeight} H ${x + inset} V ${y + inset + 5} Q ${x + inset} ${y + inset} ${x + inset + 5} ${y + inset} Z" fill="${RED}"/>`,
-    outlinedText(fontHan, '国家高速', x + 29, y + 10, width - 58, 8, WHITE, { maxGap: 1 }),
-    outlinedText(fontA, code, x + 14, y + 42, width - 28, 44, WHITE, { maxGap: 4, minGap: 0 }),
+    outlinedText(fontChinese, '国家高速', x + 29, y + 10, width - 58, 8, WHITE, { maxGap: 1 }),
+    outlinedText(fontLatin, code, x + 14, y + 42, width - 28, 44, WHITE, { maxGap: 4, minGap: 0 }),
   ].join('')
 }
 
-function directionPlate(fontHan: Font, text: string, x: number, y: number): string {
+function directionPlate(fontChinese: Font, text: string, x: number, y: number): string {
   return [
     `<rect x="${x}" y="${y}" width="64" height="64" fill="${WHITE}"/>`,
-    outlinedText(fontHan, text, x + 8, y + 9, 48, 45, GREEN),
+    outlinedText(fontChinese, text, x + 8, y + 9, 48, 45, GREEN),
   ].join('')
 }
 
@@ -208,32 +209,36 @@ function parseCode(value: string): { code: string; digits: string; kind: SignKin
   throw new Error('请输入 1 位、2 位或 4 位数字编号')
 }
 
-async function generateExpresswaySignSvg(inputCode: string, inputName = '', inputProvinceLabel = ''): Promise<string> {
-  const sign = parseCode(inputCode)
+async function generateExpresswaySignSvg(inputCode: string, inputName = '', inputProvinceLabel = '', inputKind?: SignKind): Promise<string> {
+  const parsedCode = parseCode(inputCode)
+  const sign = inputKind ? { ...parsedCode, kind: inputKind } : parsedCode
   const nameLimit = sign.digits.length === 4 ? 6 : 4
   const name = Array.from(inputName.trim()).slice(0, nameLimit).join('')
-  const [fontHan, fontA, fontB, fontC] = await Promise.all([loadFont('han'), loadFont('a'), loadFont('b'), loadFont('c')])
+  const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
 
   const named = Boolean(name)
   const width = sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : 1700
+  const isProvincial = sign.kind === 'provincial'
+  const isBeijingTianjinHebei = sign.kind === 'beijing-tianjin-hebei'
   const provinceLabel = cleanProvinceLabel(inputProvinceLabel) || sign.provinceLabel || '粤'
-  const bannerText = sign.kind === 'provincial' ? `${provinceLabel}高速` : '国家高速'
-  const bannerColor = sign.kind === 'provincial' ? YELLOW : RED
-  const bannerTextColor = sign.kind === 'provincial' ? BLACK : WHITE
-  const bannerX = sign.digits.length === 4 ? 355 : sign.kind === 'provincial' ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)
-  const bannerWidth = sign.digits.length === 4 ? 990 : sign.kind === 'provincial' ? 500 : 700
-  const mainCode = sign.digits.length === 4 ? sign.code.slice(0, 3) : sign.code
-  const mainX = sign.digits.length === 1 ? 150 : 90
-  const mainWidth = sign.digits.length === 1 ? 700 : 1070
-  const mainMaxGap = sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
-  const mainMinGap = named ? 0 : sign.digits.length === 4 ? 25 : 50
-  const mainFont = named ? fontB : fontA
+  const bannerText = isProvincial ? `${provinceLabel}高速` : isBeijingTianjinHebei ? '京津冀高速' : '国家高速'
+  const bannerColor = isProvincial ? YELLOW : isBeijingTianjinHebei ? YELLOW_GREEN : RED
+  const bannerTextColor = isProvincial || isBeijingTianjinHebei ? BLACK : WHITE
+  const bannerX = sign.digits.length === 4 ? 355 : isProvincial ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)
+  const bannerWidth = sign.digits.length === 4 ? 990 : isProvincial ? 500 : 700
+  const usesCompactFourDigitSuffix = sign.digits.length === 4 && !isBeijingTianjinHebei
+  const mainCode = usesCompactFourDigitSuffix ? sign.code.slice(0, 3) : sign.code
+  const mainX = isBeijingTianjinHebei && sign.digits.length === 4 ? 100 : sign.digits.length === 1 ? 150 : 90
+  const mainWidth = isBeijingTianjinHebei && sign.digits.length === 4 ? 1500 : sign.digits.length === 1 ? 700 : 1070
+  const mainMaxGap = isBeijingTianjinHebei && sign.digits.length === 4 ? 50 : sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
+  const mainMinGap = named ? 0 : usesCompactFourDigitSuffix ? 25 : 50
+  const mainFont = fontLatin
   const bannerY = named ? 110 : 80
-  const bannerPaths = outlinedText(fontHan, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)
+  const bannerPaths = outlinedText(fontChinese, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)
   const content = [bannerPaths]
-  if (sign.digits.length === 4) {
+  if (usesCompactFourDigitSuffix) {
     const mainLayout = textLayout(mainFont, mainCode, 450)
-    const suffixLayout = textLayout(fontC, sign.code.slice(3), 300)
+    const suffixLayout = textLayout(fontLatin, sign.code.slice(3), 300)
     const mainGap = textGap(mainLayout.usedWidth, mainLayout.glyphs.length, 1180, { maxGap: mainMaxGap, minGap: mainMinGap })
     const suffixGap = textGap(suffixLayout.usedWidth, suffixLayout.glyphs.length, sign.digits.endsWith('1') ? 280 : 340, { maxGap: sign.digits.endsWith('1') ? 35 : 55 })
     const mainContentWidth = mainLayout.usedWidth + mainGap * Math.max(0, mainLayout.glyphs.length - 1)
@@ -249,53 +254,53 @@ async function generateExpresswaySignSvg(inputCode: string, inputName = '', inpu
   if (named) {
     const nameWidth = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
-    content.push(outlinedText(fontHan, name, nameX, 860, nameWidth, 200, WHITE))
+    content.push(outlinedText(fontChinese, name, nameX, 860, nameWidth, 200, WHITE))
   }
   const height = named ? 1200 : 1000
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(`${inputCode} ${name}`.trim())} 道路编号牌">${expresswayBackground(width, named, bannerColor)}${content.join('')}</svg>`
 }
 
-async function generateExitLocationSvg(sign: Sign): Promise<string> {
-  const [template, fontHan, fontA] = await Promise.all([loadExitLocationTemplate(), loadFont('han'), loadFont('a')])
+async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
+  const [template, fontChinese, fontLatin] = await Promise.all([loadRoadForkPreviewTemplate(), loadFont('a'), loadFont('b')])
   const exitNumber = cleanExitNumber(sign.exitNumber)
   const exitDistance = cleanExitDistance(sign.exitDistance)
-  const exitName = cleanExitText(sign.exitName, '柳州', 6)
-  const destination = cleanExitText(sign.exitDestination, '玉林', 8)
+  const exitName = cleanExitText(sign.exitName, '', 6)
+  const destination = cleanExitText(sign.exitDestination, '', 8)
   const leftRoute = cleanExitRoute(sign.leftRoute, 'G72')
   const rightRoute = cleanExitRoute(sign.rightRoute, 'G80')
   const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
   const overlay = [
-    `<g data-generated="exit-location">`,
-    outlinedText(fontA, exitNumber, 884, 20, 100, 42, GREEN, { maxGap: 4, minGap: 0 }),
-    directionPlate(fontHan, leftDirection, 149, 149),
-    routeShield(fontHan, fontA, leftRoute, 226, 132, 132, 104),
-    routeShield(fontHan, fontA, rightRoute, 656, 132, 132, 104),
-    directionPlate(fontHan, rightDirection, 802, 153),
+    `<g data-generated="road-fork-preview">`,
+    outlinedText(fontLatin, exitNumber, 884, 20, 100, 42, GREEN, { maxGap: 4, minGap: 0 }),
+    directionPlate(fontChinese, leftDirection, 149, 149),
+    routeShield(fontChinese, fontLatin, leftRoute, 226, 132, 132, 104),
+    routeShield(fontChinese, fontLatin, rightRoute, 656, 132, 132, 104),
+    directionPlate(fontChinese, rightDirection, 802, 153),
     `<rect x="123" y="240" width="240" height="92" fill="${GREEN}"/>`,
-    outlinedText(fontHan, exitName, 123, 258, 240, 56, WHITE, { maxGap: 16 }),
+    outlinedText(fontChinese, exitName, 123, 258, 240, 56, WHITE, { maxGap: 16 }),
     `<rect x="625" y="240" width="240" height="92" fill="${GREEN}"/>`,
-    outlinedText(fontHan, destination, 625, 258, 240, 56, WHITE, { maxGap: 16 }),
+    outlinedText(fontChinese, destination, 625, 258, 240, 56, WHITE, { maxGap: 16 }),
     `<rect x="666" y="345" width="190" height="96" fill="${GREEN}"/>`,
-    outlinedText(fontA, exitDistance, 668, 348, 76, 68, WHITE, { maxGap: 4, minGap: 0 }),
-    outlinedText(fontHan, 'km', 746, 389, 70, 30, WHITE, { align: 'start', maxGap: 2, minGap: 0 }),
+    outlinedText(fontLatin, exitDistance, 668, 348, 76, 68, WHITE, { maxGap: 4, minGap: 0 }),
+    outlinedText(fontLatin, 'km', 746, 389, 70, 30, WHITE, { align: 'start', maxGap: 2, minGap: 0 }),
     `</g>`,
   ].join('')
   const svg = template
     .replace(/<!--rotationCenter:[\s\S]*?-->/, '')
-    .replace('<svg ', `<svg role="img" aria-label="${label} 出口定位牌" `)
+    .replace('<svg ', `<svg role="img" aria-label="${label} 道路分岔预告牌" `)
   return svg.replace('</svg>', `${overlay}</svg>`)
 }
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
-  if (sign.template === 'exit-location') return generateExitLocationSvg(sign)
-  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel)
+  if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
+  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind)
 }
 
 export function signFilename(sign: Sign): string {
-  const code = sign.template === 'exit-location' ? `出口定位_${sign.exitNumber}` : sign.code
-  const name = sign.template === 'exit-location' ? sign.exitName || sign.name : sign.name
+  const code = sign.template === 'road-fork-preview' ? `道路分岔预告_${sign.exitNumber}` : sign.code
+  const name = sign.template === 'road-fork-preview' ? sign.exitName || sign.name : sign.name
   const safeCode = String(code || 'road-sign').trim().replace(/[<>:"/\\|?*]/g, '_')
   const safeName = String(name || '').trim().replace(/[<>:"/\\|?*]/g, '_')
   const base = `${safeCode}${safeName ? `_${safeName}` : ''}`

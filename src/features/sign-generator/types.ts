@@ -1,5 +1,5 @@
-export type SignKind = 'national' | 'provincial'
-export type SignTemplate = 'expressway' | 'exit-location'
+export type SignKind = 'national' | 'provincial' | 'beijing-tianjin-hebei'
+export type SignTemplate = 'expressway' | 'road-fork-preview'
 
 export interface Sign {
   id: string

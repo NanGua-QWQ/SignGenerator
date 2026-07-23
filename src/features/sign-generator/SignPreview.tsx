@@ -19,6 +19,8 @@ export function SignPreview({ sign }: { sign: Sign }) {
   const [isLoading, setIsLoading] = useState(true)
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const previewRef = useRef<HTMLDivElement>(null)
   const dragging = useRef(false)
   const lastPosition = useRef<Offset>({ x: 0, y: 0 })
 
@@ -33,6 +35,19 @@ export function SignPreview({ sign }: { sign: Sign }) {
   }, [sign])
 
   const zoom = useCallback((multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
+
+  useEffect(() => {
+    const preview = previewRef.current
+    if (!preview) return
+    const handleWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey) return
+      event.preventDefault()
+      zoom(event.deltaY < 0 ? 1.1 : 0.9)
+    }
+    preview.addEventListener('wheel', handleWheel, { passive: false })
+    return () => preview.removeEventListener('wheel', handleWheel)
+  }, [zoom])
+
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
   const download = () => {
     if (!svg) return
@@ -47,8 +62,10 @@ export function SignPreview({ sign }: { sign: Sign }) {
 
   const startDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
+    event.preventDefault()
     dragging.current = true
     lastPosition.current = { x: event.clientX, y: event.clientY }
+    setIsDragging(true)
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
@@ -59,6 +76,12 @@ export function SignPreview({ sign }: { sign: Sign }) {
       y: current.y + event.clientY - lastPosition.current.y,
     }))
     lastPosition.current = { x: event.clientX, y: event.clientY }
+  }
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragging.current = false
+    setIsDragging(false)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
   }
 
   return (
@@ -72,8 +95,8 @@ export function SignPreview({ sign }: { sign: Sign }) {
         </div>
         <Button variant="ghost" size="icon" className="size-7" onClick={download} disabled={!svg} title="下载 SVG"><Download className="size-3.5" /></Button>
       </div>
-      <div className="flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6" style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={() => { dragging.current = false }} onPointerCancel={() => { dragging.current = false }}>
-        {isLoading ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" /> : error ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p> : <div className="min-w-0 w-full max-w-[550px] [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} dangerouslySetInnerHTML={{ __html: svg }} />}
+      <div ref={previewRef} className={`flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDownCapture={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}>
+        {isLoading ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" /> : error ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p> : <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} dangerouslySetInnerHTML={{ __html: svg }} />}
       </div>
     </section>
   )
