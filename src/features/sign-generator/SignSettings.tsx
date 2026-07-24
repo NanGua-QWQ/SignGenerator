@@ -31,21 +31,33 @@ function DirectionSelect({ id, value, onChange }: DirectionSelectProps) {
 
 export function SignSettings({ sign, onChange }: SignSettingsProps) {
   const nameLimit = sign.digits.length === 4 ? 6 : 4
+  const composingRoadName = useRef(false)
   const composingExitField = useRef<'name' | 'destination' | null>(null)
+  const [roadNameInput, setRoadNameInput] = useState(sign.name)
   const [exitNameInput, setExitNameInput] = useState(sign.exitName)
   const [exitDestinationInput, setExitDestinationInput] = useState(sign.exitDestination)
 
   useEffect(() => {
+    if (!composingRoadName.current) setRoadNameInput(sign.name)
     if (composingExitField.current !== 'name') setExitNameInput(sign.exitName)
     if (composingExitField.current !== 'destination') setExitDestinationInput(sign.exitDestination)
-  }, [sign.exitDestination, sign.exitName])
+  }, [sign.exitDestination, sign.exitName, sign.name])
 
   const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ digits: event.target.value.replace(/\D/g, '').slice(0, 4) })
   }
 
   const updateName = (event: ChangeEvent<HTMLInputElement>) => {
+    setRoadNameInput(event.target.value)
+    if (composingRoadName.current) return
     onChange({ name: Array.from(event.target.value).slice(0, nameLimit).join('') })
+  }
+
+  const finishRoadNameComposition = (event: CompositionEvent<HTMLInputElement>) => {
+    composingRoadName.current = false
+    const value = Array.from(event.currentTarget.value).slice(0, nameLimit).join('')
+    setRoadNameInput(value)
+    onChange({ name: value })
   }
 
   const updateProvinceLabel = (event: ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +144,7 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="road-name">高速名称</Label>
-                <Input id="road-name" value={sign.name} onChange={updateName} placeholder="例如：沈海高速" maxLength={nameLimit} className="h-9" />
+                <Input id="road-name" value={roadNameInput} onChange={updateName} onCompositionStart={() => { composingRoadName.current = true }} onCompositionEnd={finishRoadNameComposition} placeholder="例如：沈海高速" className="h-9" />
                 <p className="text-xs text-muted-foreground">当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。</p>
               </div>
             </>

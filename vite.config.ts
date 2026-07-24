@@ -10,5 +10,5 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, './src'),
     },
   },
-  server: { allowedHosts: ['cn-hk-bgp-4.ofalias.net', 'cn-hk-bgp-5.ofalias.net'] },
+  server: { allowedHosts: [] },
 })
