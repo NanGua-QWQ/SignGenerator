@@ -48,10 +48,7 @@ export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
   const overlay = renderToStaticMarkup(
     <g data-generated="road-fork-preview">
-{/*       {outlinedText(fontChinese, '出口', 790, 25, 74, 29, WHITE, { maxGap: 3 })}
-      {outlinedText(fontLatin, exitNumber, 884, 20, 100, 42, GREEN, { maxGap: 4, minGap: 0 })}
-      {directionPlateNode(fontChinese, leftDirection, 149, 61)}
- */}      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: 226, y: 38, width: 132, height: 104 })}
+      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: 226, y: 38, width: 132, height: 104 })}
       {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: 656, y: 38, width: 132, height: 104 })}
       {directionPlateNode(fontChinese, rightDirection, 802, 61)}
       <rect x="123" y="146" width="240" height="92" fill={GREEN} />

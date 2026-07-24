@@ -112,7 +112,7 @@ export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNod
   const renderedHeight = options.height ?? naturalHeight
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" x={options.x} y={options.y} width={renderedWidth} height={renderedHeight} viewBox={`0 0 ${naturalWidth} ${naturalHeight}`} preserveAspectRatio="none" role={options.ariaLabel ? 'img' : undefined} aria-label={options.ariaLabel} aria-hidden={options.ariaLabel ? undefined : true}>
+    <svg xmlns="http://www.w3.org/2000/svg" x={options.x} y={options.y} width={renderedWidth} height={renderedHeight} viewBox={`0 0 ${naturalWidth} ${naturalHeight}`} preserveAspectRatio="xMidYMid meet" role={options.ariaLabel ? 'img' : undefined} aria-label={options.ariaLabel} aria-hidden={options.ariaLabel ? undefined : true}>
       {expresswayBackgroundNode(naturalWidth, named, bannerColor)}
       {content}
     </svg>

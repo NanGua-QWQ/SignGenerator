@@ -1,35 +1,53 @@
 import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
-import { ChevronDown } from 'lucide-react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface SignSettingsProps {
   sign: Sign
   onChange: (updates: Partial<Sign>) => void
+  expresswaySignList?: Sign[]
 }
 
 const DIRECTION_OPTIONS = ['东', '南', '西', '北']
 
-interface DirectionSelectProps {
-  id: string
-  value: string
-  onChange: (event: ChangeEvent<HTMLSelectElement>) => void
-}
-
-function DirectionSelect({ id, value, onChange }: DirectionSelectProps) {
+function DirectionSelect({ id, value, onValueChange }: { id: string; value: string; onValueChange: (value: string) => void }) {
   return (
-    <div className="relative">
-      <select id={id} value={value} onChange={onChange} className="h-9 w-full appearance-none rounded-md border border-input bg-background px-3 pr-8 text-sm font-medium shadow-xs outline-none transition-[border-color,box-shadow] hover:border-foreground/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
-        {DIRECTION_OPTIONS.map(direction => <option key={direction} value={direction}>{direction}</option>)}
-      </select>
-      <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-    </div>
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger id={id}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {DIRECTION_OPTIONS.map(direction => (
+          <SelectItem key={direction} value={direction}>{direction}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 
-export function SignSettings({ sign, onChange }: SignSettingsProps) {
+function RouteSelect({ id, value, onValueChange, signs }: { id: string; value: string; onValueChange: (value: string) => void; signs: Sign[] }) {
+  const hasMatch = signs.some(s => s.code === value)
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger id={id}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {!hasMatch && <SelectItem value={value}>{value}</SelectItem>}
+        {signs.map(s => (
+          <SelectItem key={s.id} value={s.code}>
+            {s.code}{s.name ? ` ${s.name}` : ''}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
+
+export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSettingsProps) {
   const nameLimit = sign.digits.length === 4 ? 6 : 4
   const composingRoadName = useRef(false)
   const composingExitField = useRef<'name' | 'destination' | null>(null)
@@ -106,14 +124,6 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
     onChange({ rightRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) })
   }
 
-  const updateLeftDirection = (event: ChangeEvent<HTMLSelectElement>) => {
-    onChange({ leftDirection: event.target.value })
-  }
-
-  const updateRightDirection = (event: ChangeEvent<HTMLSelectElement>) => {
-    onChange({ rightDirection: event.target.value })
-  }
-
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
@@ -163,21 +173,27 @@ export function SignSettings({ sign, onChange }: SignSettingsProps) {
               <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="left-route">左侧高速编号</Label>
-                  <Input id="left-route" value={sign.leftRoute} onChange={updateLeftRoute} placeholder="G72" maxLength={5} className="h-9" />
+                  {expresswaySignList.length > 0
+                    ? <RouteSelect id="left-route" value={sign.leftRoute} onValueChange={value => onChange({ leftRoute: value })} signs={expresswaySignList} />
+                    : <Input id="left-route" value={sign.leftRoute} onChange={updateLeftRoute} placeholder="G72" maxLength={5} className="h-9" />
+                  }
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="left-direction">方向</Label>
-                  <DirectionSelect id="left-direction" value={sign.leftDirection} onChange={updateLeftDirection} />
+                  <DirectionSelect id="left-direction" value={sign.leftDirection} onValueChange={value => onChange({ leftDirection: value })} />
                 </div>
               </div>
               <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="right-route">右侧高速编号</Label>
-                  <Input id="right-route" value={sign.rightRoute} onChange={updateRightRoute} placeholder="G80" maxLength={5} className="h-9" />
+                  {expresswaySignList.length > 0
+                    ? <RouteSelect id="right-route" value={sign.rightRoute} onValueChange={value => onChange({ rightRoute: value })} signs={expresswaySignList} />
+                    : <Input id="right-route" value={sign.rightRoute} onChange={updateRightRoute} placeholder="G80" maxLength={5} className="h-9" />
+                  }
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="right-direction">方向</Label>
-                  <DirectionSelect id="right-direction" value={sign.rightDirection} onChange={updateRightDirection} />
+                  <DirectionSelect id="right-direction" value={sign.rightDirection} onValueChange={value => onChange({ rightDirection: value })} />
                 </div>
               </div>
               <div className="space-y-1.5">

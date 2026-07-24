@@ -141,6 +141,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string>(() => signs[0].id)
   const activeTemplate = templateForTab(activeTab)
   const visibleSigns = useMemo(() => signs.filter(sign => sign.template === activeTemplate), [activeTemplate, signs])
+  const expresswaySignList = useMemo(() => signs.filter(sign => sign.template === 'expressway'), [signs])
   const selectedSign = useMemo<Sign>(
     () => visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0],
     [selectedId, visibleSigns],
@@ -192,7 +193,7 @@ export default function App() {
         </div>
         <SignPreview sign={selectedSign} />
         <div className="max-lg:col-span-2 max-lg:max-h-72 max-md:col-span-1 max-md:max-h-none">
-          <SignSettings sign={selectedSign} onChange={updateSign} />
+          <SignSettings sign={selectedSign} onChange={updateSign} expresswaySignList={expresswaySignList} />
         </div>
       </main>
     </div>
