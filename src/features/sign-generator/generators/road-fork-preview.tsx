@@ -1,9 +1,20 @@
 import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Sign } from '../types'
-import { expresswaySignNode } from './expressway'
+import { expresswaySignNaturalSize, expresswaySignNode } from './expressway'
 import { GREEN, WHITE, escapeXml, loadFont, outlinedText } from './svg-text'
-import roadForkPreviewTemplate from '../../../../public/template/道路分岔预告.svg?raw'
+import roadForkPreviewTemplate from '/public/template/道路分岔预告.svg?raw'
+
+const ROUTE_SIGN_HEIGHT = 104
+const LEFT_ROUTE_SIGN_X = 226
+const RIGHT_ROUTE_SIGN_RIGHT = 786
+const ROUTE_SIGN_Y = 38
+const DIRECTION_SIGN_SIZE = 62
+
+function routeSignWidth(code: string): number {
+  const naturalSize = expresswaySignNaturalSize(code)
+  return ROUTE_SIGN_HEIGHT * naturalSize.width / naturalSize.height
+}
 
 function cleanExitText(value: string, fallback: string, limit: number): string {
   const text = Array.from(String(value || '').trim()).slice(0, limit).join('')
@@ -15,7 +26,7 @@ function cleanExitNumber(value: string): string {
 }
 
 function cleanExitDistance(value: string): string {
-  return String(value || '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 5) || '2'
+  return String(value || '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 1) || '2'
 }
 
 function cleanExitRoute(value: string, fallback: string): string {
@@ -30,8 +41,8 @@ function cleanDirection(value: string, fallback: string): string {
 function directionPlateNode(fontChinese: Font, text: string, x: number, y: number) {
   return (
     <>
-      <rect x={x} y={y} width="64" height="64" fill={WHITE} />
-      {outlinedText(fontChinese, text, x + 8, y + 9, 48, 45, GREEN)}
+      <rect x={x} y={y} width={DIRECTION_SIGN_SIZE} height={DIRECTION_SIGN_SIZE} fill={WHITE} />
+      {outlinedText(fontChinese, text, x + 7, y + 8, DIRECTION_SIGN_SIZE - 14, 46, GREEN)}
     </>
   )
 }
@@ -44,21 +55,22 @@ export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
   const destination = cleanExitText(sign.exitDestination, '', 8)
   const leftRoute = cleanExitRoute(sign.leftRoute, 'G72')
   const rightRoute = cleanExitRoute(sign.rightRoute, 'G80')
+  const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
+  const leftRouteWidth = routeSignWidth(leftRoute)
+  const rightRouteWidth = routeSignWidth(rightRoute)
+  const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
+  const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 14
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
   const overlay = renderToStaticMarkup(
     <g data-generated="road-fork-preview">
-      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: 226, y: 38, width: 132, height: 104 })}
-      {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: 656, y: 38, width: 132, height: 104 })}
-      {directionPlateNode(fontChinese, rightDirection, 802, 61)}
-      <rect x="123" y="146" width="240" height="92" fill={GREEN} />
-      {outlinedText(fontChinese, exitName, 123, 164, 240, 56, WHITE, { maxGap: 16 })}
-      <rect x="625" y="146" width="240" height="92" fill={GREEN} />
-      {outlinedText(fontChinese, destination, 625, 164, 240, 56, WHITE, { maxGap: 16 })}
-      <rect x="666" y="251" width="190" height="96" fill={GREEN} />
-      {outlinedText(fontLatin, exitDistance, 668, 254, 76, 68, WHITE, { maxGap: 4, minGap: 0 })}
-      {outlinedText(fontLatin, 'km', 746, 295, 70, 30, WHITE, { align: 'start', maxGap: 2, minGap: 0 })}
-    </g>,
+      {directionPlateNode(fontChinese, leftDirection, 150, 58)}
+      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {directionPlateNode(fontChinese, rightDirection, rightDirectionX, 58)}
+      {outlinedText(fontChinese, exitName, 169.3, 168, 170, 58, WHITE, { maxGap: 18 })}
+      {outlinedText(fontChinese, destination, 670, 168, 175, 58, WHITE, { maxGap: 18 })}
+      {outlinedText(fontChinese, exitDistance, 645, 266, 85, 68, WHITE, { maxGap: 4, minGap: 0 })}    </g>,
   )
   const svg = roadForkPreviewTemplate
     .replace(/<!--rotationCenter:[\s\S]*?-->/, '')

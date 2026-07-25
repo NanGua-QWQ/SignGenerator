@@ -13,6 +13,11 @@ interface Offset {
   y: number
 }
 
+interface BoardPosition {
+  x: number
+  y: number
+}
+
 export function SignPreview({ sign }: { sign: Sign }) {
   const [svg, setSvg] = useState('')
   const [error, setError] = useState('')
@@ -20,6 +25,8 @@ export function SignPreview({ sign }: { sign: Sign }) {
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
+  const [showPosition, setShowPosition] = useState(false)
+  const [boardPosition, setBoardPosition] = useState<BoardPosition | null>(null)
   const previewRef = useRef<HTMLDivElement>(null)
   const dragging = useRef(false)
   const lastPosition = useRef<Offset>({ x: 0, y: 0 })
@@ -48,6 +55,51 @@ export function SignPreview({ sign }: { sign: Sign }) {
     return () => preview.removeEventListener('wheel', handleWheel)
   }, [zoom])
 
+  useEffect(() => {
+    const eventName = 'sign-preview-position-toggle'
+    const togglePosition = () => setShowPosition(current => !current)
+    const previousPositionDescriptor = Object.getOwnPropertyDescriptor(window, 'position')
+
+    window.addEventListener(eventName, togglePosition)
+    if (!previousPositionDescriptor || previousPositionDescriptor.configurable) {
+      Object.defineProperty(window, 'position', {
+        configurable: true,
+        get() {
+          window.dispatchEvent(new Event(eventName))
+          return 'position overlay toggled'
+        },
+      })
+    }
+
+    return () => {
+      window.removeEventListener(eventName, togglePosition)
+      if (previousPositionDescriptor) {
+        Object.defineProperty(window, 'position', previousPositionDescriptor)
+      } else {
+        delete (window as Window & { position?: unknown }).position
+      }
+    }
+  }, [])
+
+  const updateBoardPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!showPosition) return
+    const svgElement = previewRef.current?.querySelector('svg')
+    if (!svgElement) {
+      setBoardPosition(null)
+      return
+    }
+    const rect = svgElement.getBoundingClientRect()
+    const viewBox = svgElement.viewBox.baseVal
+    if (rect.width <= 0 || rect.height <= 0 || viewBox.width <= 0 || viewBox.height <= 0) {
+      setBoardPosition(null)
+      return
+    }
+    setBoardPosition({
+      x: viewBox.x + (event.clientX - rect.left) / rect.width * viewBox.width,
+      y: viewBox.y + (event.clientY - rect.top) / rect.height * viewBox.height,
+    })
+  }
+
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
   const download = () => {
     if (!svg) return
@@ -70,6 +122,7 @@ export function SignPreview({ sign }: { sign: Sign }) {
   }
 
   const moveDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    updateBoardPosition(event)
     if (!dragging.current) return
     setOffset(current => ({
       x: current.x + event.clientX - lastPosition.current.x,
@@ -95,7 +148,12 @@ export function SignPreview({ sign }: { sign: Sign }) {
         </div>
         <Button variant="ghost" size="icon" className="size-7" onClick={download} disabled={!svg} title="下载 SVG"><Download className="size-3.5" /></Button>
       </div>
-      <div ref={previewRef} className={`flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDownCapture={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}>
+      <div ref={previewRef} className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDownCapture={startDrag} onPointerMove={moveDrag} onPointerLeave={() => setBoardPosition(null)} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}>
+        {showPosition && (
+          <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
+            x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y {boardPosition ? boardPosition.y.toFixed(1) : '--'}
+          </output>
+        )}
         {isLoading ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" /> : error ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p> : <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} dangerouslySetInnerHTML={{ __html: svg }} />}
       </div>
     </section>

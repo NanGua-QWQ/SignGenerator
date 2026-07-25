@@ -48,6 +48,14 @@ function parseCode(value: string): { code: string; digits: string; kind: SignKin
   throw new Error('请输入 1 位、2 位或 4 位数字编号')
 }
 
+export function expresswaySignNaturalSize(code: string, name = ''): { width: number; height: number } {
+  const sign = parseCode(code)
+  return {
+    width: sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : 1700,
+    height: name.trim() ? 1200 : 1000,
+  }
+}
+
 interface ExpresswaySignNodeOptions {
   code: string
   name?: string
@@ -62,14 +70,15 @@ interface ExpresswaySignNodeOptions {
   ariaLabel?: string
 }
 
-export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNode {
+function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFourDigit = false): ReactNode {
   const parsedCode = parseCode(options.code)
   const sign = options.kind ? { ...parsedCode, kind: options.kind } : parsedCode
   const nameLimit = sign.digits.length === 4 ? 6 : 4
   const name = Array.from((options.name ?? '').trim()).slice(0, nameLimit).join('')
 
   const named = Boolean(name)
-  const naturalWidth = sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : 1700
+  const naturalSize = expresswaySignNaturalSize(options.code, name)
+  const naturalWidth = naturalSize.width
   const isProvincial = sign.kind === 'provincial'
   const isBeijingTianjinHebei = sign.kind === 'beijing-tianjin-hebei'
   const provinceLabel = cleanProvinceLabel(options.provinceLabel ?? '') || sign.provinceLabel || '粤'
@@ -78,12 +87,14 @@ export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNod
   const bannerTextColor = isProvincial || isBeijingTianjinHebei ? BLACK : WHITE
   const bannerX = sign.digits.length === 4 ? 355 : isProvincial ? (sign.digits.length === 1 ? 250 : 359.1) : (sign.digits.length === 1 ? 150 : 275)
   const bannerWidth = sign.digits.length === 4 ? 990 : isProvincial ? 500 : 700
-  const usesCompactFourDigitSuffix = sign.digits.length === 4 && !isBeijingTianjinHebei
+  const usesInlineFourDigit = sign.digits.length === 4 && inlineFourDigit
+  const usesCompactFourDigitSuffix = sign.digits.length === 4 && !isBeijingTianjinHebei && !usesInlineFourDigit
   const mainCode = usesCompactFourDigitSuffix ? sign.code.slice(0, 3) : sign.code
-  const mainX = isBeijingTianjinHebei && sign.digits.length === 4 ? 100 : sign.digits.length === 1 ? 150 : 90
-  const mainWidth = isBeijingTianjinHebei && sign.digits.length === 4 ? 1500 : sign.digits.length === 1 ? 700 : 1070
-  const mainMaxGap = isBeijingTianjinHebei && sign.digits.length === 4 ? 50 : sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
-  const mainMinGap = named ? 0 : usesCompactFourDigitSuffix ? 25 : 50
+  const usesWideFourDigitLayout = (isBeijingTianjinHebei || usesInlineFourDigit) && sign.digits.length === 4
+  const mainX = usesWideFourDigitLayout ? 100 : sign.digits.length === 1 ? 150 : 90
+  const mainWidth = usesWideFourDigitLayout ? 1500 : sign.digits.length === 1 ? 700 : 1070
+  const mainMaxGap = usesWideFourDigitLayout ? 50 : sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
+  const mainMinGap = named ? 0 : usesCompactFourDigitSuffix ? 25 : usesInlineFourDigit ? 0 : 50
   const mainFont = options.fontLatin
   const bannerY = named ? 110 : 80
   const content: ReactNode[] = [outlinedText(options.fontChinese, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)]
@@ -107,7 +118,7 @@ export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNod
     const nameX = sign.digits.length === 1 ? 100 : 150
     content.push(outlinedText(options.fontChinese, name, nameX, 860, nameWidth, 200, WHITE))
   }
-  const naturalHeight = named ? 1200 : 1000
+  const naturalHeight = naturalSize.height
   const renderedWidth = options.width ?? naturalWidth
   const renderedHeight = options.height ?? naturalHeight
 
@@ -119,10 +130,14 @@ export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNod
   )
 }
 
+export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNode {
+  return renderExpresswaySignNode(options)
+}
+
 export async function generateExpresswaySignSvg(inputCode: string, inputName = '', inputProvinceLabel = '', inputKind?: SignKind): Promise<string> {
   const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
   return renderToStaticMarkup(
-    expresswaySignNode({
+    renderExpresswaySignNode({
       code: inputCode,
       name: inputName,
       provinceLabel: inputProvinceLabel,

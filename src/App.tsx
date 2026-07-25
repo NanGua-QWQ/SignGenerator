@@ -87,10 +87,10 @@ function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'>
     code: buildSignCode(parsed.kind, parsed.digits),
     exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
     exitDistance: cleanExitDistance(overrides.exitDistance ?? '2'),
-    exitName: cleanExitText(overrides.exitName ?? '柳州', '', 6),
-    exitDestination: cleanExitText(overrides.exitDestination ?? '玉林', '', 8),
-    leftRoute: cleanRoute(overrides.leftRoute ?? 'G72', 'G72'),
-    rightRoute: cleanRoute(overrides.rightRoute ?? 'G80', 'G80'),
+    exitName: cleanExitText(overrides.exitName ?? '清远', '', 6),
+    exitDestination: cleanExitText(overrides.exitDestination ?? '东莞 深圳', '', 8),
+    leftRoute: cleanRoute(overrides.leftRoute ?? 'G0421', 'G0421'),
+    rightRoute: cleanRoute(overrides.rightRoute ?? 'G15', 'G15'),
     leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
     rightDirection: cleanDirection(overrides.rightDirection ?? '东', '东'),
   }
@@ -116,10 +116,10 @@ function createInitialSigns(): Sign[] {
   const name = params.get('name') ?? '沈海高速'
   const exitNumber = params.get('exitNumber') ?? '360'
   const exitDistance = params.get('exitDistance') ?? '2'
-  const exitName = params.get('exitName') ?? '柳州'
-  const exitDestination = params.get('exitDestination') ?? '玉林'
-  const leftRoute = params.get('leftRoute') ?? 'G72'
-  const rightRoute = params.get('rightRoute') ?? 'G80'
+  const exitName = params.get('exitName') ?? '清远'
+  const exitDestination = params.get('exitDestination') ?? '东莞 深圳'
+  const leftRoute = params.get('leftRoute') ?? 'G0421'
+  const rightRoute = params.get('rightRoute') ?? 'G15'
   const leftDirection = params.get('leftDirection') ?? '北'
   const rightDirection = params.get('rightDirection') ?? '东'
   return template === 'road-fork-preview'
@@ -131,7 +131,7 @@ function createInitialSigns(): Sign[] {
     : [
         createSign({ code, name, kind }),
         createSign({ code: 'G0421', name: '许广高速' }),
-        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber: '360', exitDistance: '2', exitName: '柳州', exitDestination: '玉林', leftRoute: 'G72', rightRoute: 'G80', leftDirection: '北', rightDirection: '东' }),
+        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber: '360', exitDistance: '2', exitName: '清远', exitDestination: '东莞 深圳', leftRoute: 'G0421', rightRoute: 'G15', leftDirection: '北', rightDirection: '东' }),
       ]
 }
 
