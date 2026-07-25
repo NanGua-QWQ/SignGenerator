@@ -25,4 +25,4 @@ dist-ssr
 *.sw?
 
 # Fonts
-public/fonts/*
+public/fonts/
