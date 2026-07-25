@@ -51,9 +51,21 @@ function templateForTab(tab: WorkspaceTab): SignTemplate {
   return tab === 'fork-guidance' ? 'road-fork-preview' : 'expressway'
 }
 
+function isForkTemplate(template: SignTemplate): boolean {
+  return template === 'road-fork-preview' || template === 'two-lane-interchange-exit'
+}
+
+function isTemplateParam(value: string | null): value is SignTemplate {
+  return value === 'expressway' || value === 'road-fork-preview' || value === 'two-lane-interchange-exit'
+}
+
+function forkSignName(template: SignTemplate): string {
+  return template === 'two-lane-interchange-exit' ? '2车道立交枢纽出口' : '道路分岔预告'
+}
+
 function initialTab(): WorkspaceTab {
   const template = new URLSearchParams(window.location.search).get('template')
-  return template === 'road-fork-preview' || template === 'exit-location' ? 'fork-guidance' : 'signs'
+  return template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location' ? 'fork-guidance' : 'signs'
 }
 
 function parseSignCode(value: string): { kind: Sign['kind']; digits: string; provinceLabel?: string } {
@@ -76,6 +88,7 @@ function parseInitialKind(value: string | null): SignKind | undefined {
 
 function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
   const template = overrides.template ?? 'expressway'
+  const defaultExitDestination = template === 'two-lane-interchange-exit' ? '广州' : '东莞 深圳'
   const parsed = overrides.kind
     ? { kind: overrides.kind, digits: cleanDigits(overrides.digits ?? ''), provinceLabel: overrides.provinceLabel }
     : parseSignCode(overrides.code ?? 'G15')
@@ -88,7 +101,7 @@ function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'>
     exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
     exitDistance: cleanExitDistance(overrides.exitDistance ?? '2'),
     exitName: cleanExitText(overrides.exitName ?? '清远', '', 6),
-    exitDestination: cleanExitText(overrides.exitDestination ?? '东莞 深圳', '', 8),
+    exitDestination: cleanExitText(overrides.exitDestination ?? defaultExitDestination, '', 8),
     leftRoute: cleanRoute(overrides.leftRoute ?? 'G0421', 'G0421'),
     rightRoute: cleanRoute(overrides.rightRoute ?? 'G15', 'G15'),
     leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
@@ -103,28 +116,38 @@ function createSign(overrides: Partial<Sign> = {}): Sign {
     ...sign,
     name: sign.template === 'expressway'
       ? cleanName(overrides.name ?? '沈海高速', sign.digits)
-      : cleanExitText(overrides.name ?? '道路分岔预告', '道路分岔预告', 8),
+      : cleanExitText(overrides.name ?? forkSignName(sign.template), forkSignName(sign.template), 10),
   }
 }
 
 function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
   const requestedTemplate = params.get('template')
-  const template: SignTemplate = requestedTemplate === 'road-fork-preview' || requestedTemplate === 'exit-location' ? 'road-fork-preview' : 'expressway'
+  const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'road-fork-preview' : 'expressway'
   const code = params.get('code') ?? 'G15'
   const kind = parseInitialKind(params.get('kind'))
   const name = params.get('name') ?? '沈海高速'
   const exitNumber = params.get('exitNumber') ?? '360'
   const exitDistance = params.get('exitDistance') ?? '2'
   const exitName = params.get('exitName') ?? '清远'
-  const exitDestination = params.get('exitDestination') ?? '东莞 深圳'
+  const exitDestinationParam = params.get('exitDestination')
+  const roadForkExitDestination = exitDestinationParam ?? '东莞 深圳'
+  const twoLaneExitDestination = exitDestinationParam ?? '广州'
   const leftRoute = params.get('leftRoute') ?? 'G0421'
   const rightRoute = params.get('rightRoute') ?? 'G15'
   const leftDirection = params.get('leftDirection') ?? '北'
   const rightDirection = params.get('rightDirection') ?? '东'
   return template === 'road-fork-preview'
     ? [
-        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ code, name, kind }),
+        createSign({ code: 'G0421', name: '许广高速' }),
+      ]
+    : template === 'two-lane-interchange-exit'
+      ? [
+        createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+        createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
         createSign({ code, name, kind }),
         createSign({ code: 'G0421', name: '许广高速' }),
       ]
@@ -132,6 +155,7 @@ function createInitialSigns(): Sign[] {
         createSign({ code, name, kind }),
         createSign({ code: 'G0421', name: '许广高速' }),
         createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber: '360', exitDistance: '2', exitName: '清远', exitDestination: '东莞 深圳', leftRoute: 'G0421', rightRoute: 'G15', leftDirection: '北', rightDirection: '东' }),
+        createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber: '360', exitDistance: '2', exitName: '清远', exitDestination: '广州', leftRoute: 'G0421', rightRoute: 'G15', leftDirection: '北', rightDirection: '东' }),
       ]
 }
 
@@ -140,7 +164,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>(initialTab)
   const [selectedId, setSelectedId] = useState<string>(() => signs[0].id)
   const activeTemplate = templateForTab(activeTab)
-  const visibleSigns = useMemo(() => signs.filter(sign => sign.template === activeTemplate), [activeTemplate, signs])
+  const visibleSigns = useMemo(
+    () => activeTab === 'fork-guidance' ? signs.filter(sign => isForkTemplate(sign.template)) : signs.filter(sign => sign.template === activeTemplate),
+    [activeTab, activeTemplate, signs],
+  )
   const expresswaySignList = useMemo(() => signs.filter(sign => sign.template === 'expressway'), [signs])
   const selectedSign = useMemo<Sign>(
     () => visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0],
@@ -155,10 +182,10 @@ export default function App() {
 
   const changeTab = useCallback((tab: WorkspaceTab) => {
     const template = templateForTab(tab)
-    const firstSign = signs.find(sign => sign.template === template)
+    const firstSign = signs.find(sign => tab === 'fork-guidance' ? isForkTemplate(sign.template) : sign.template === template)
     if (!firstSign) return
     setActiveTab(tab)
-    setSelectedId(current => signs.some(sign => sign.id === current && sign.template === template) ? current : firstSign.id)
+    setSelectedId(current => signs.some(sign => sign.id === current && (tab === 'fork-guidance' ? isForkTemplate(sign.template) : sign.template === template)) ? current : firstSign.id)
   }, [signs])
 
   const updateSign = useCallback((updates: Partial<Sign>) => {
@@ -169,7 +196,7 @@ export default function App() {
       return {
         ...next,
         ...normalized,
-        name: normalized.template === 'expressway' ? cleanName(next.name, normalized.digits) : cleanExitText(next.name, '道路分岔预告', 8),
+        name: normalized.template === 'expressway' ? cleanName(next.name, normalized.digits) : cleanExitText(next.name, forkSignName(normalized.template), 10),
       }
     }))
   }, [selectedId])

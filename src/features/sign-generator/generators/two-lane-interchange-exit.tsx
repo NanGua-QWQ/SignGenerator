@@ -1,20 +1,17 @@
-import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Sign } from '../types'
-import { routeSignWidth, cleanExitText, cleanExitDistance, cleanExitRoute, cleanDirection } from './generator'
+import type { Font } from '@pdf-lib/fontkit'
+import { routeSignWidth, cleanExitText, cleanExitRoute, cleanDirection } from './generator'
 import { expresswaySignNode } from './expressway'
 import { GREEN, WHITE, escapeXml, loadFont, outlinedText } from './svg-text'
-import roadForkPreviewTemplate from '/public/template/道路分岔预告.svg?raw'
+import twoLaneInterchangeTemplate from '/public/template/2车道立交枢纽出口.svg?raw'
 
-const ROUTE_SIGN_HEIGHT = 104
-const LEFT_ROUTE_SIGN_X = 226
-const RIGHT_ROUTE_SIGN_RIGHT = 786
+const ROUTE_SIGN_HEIGHT = 100
+const LEFT_DIRECTION_X = 128
+const LEFT_ROUTE_SIGN_X = 204.5
+const RIGHT_ROUTE_SIGN_RIGHT = 736.5
 const ROUTE_SIGN_Y = 38
-const DIRECTION_SIGN_SIZE = 62
-
-function cleanExitNumber(value: string): string {
-  return String(value || '').replace(/\D/g, '').slice(0, 4) || '360'
-}
+const DIRECTION_SIGN_SIZE = 60
 
 function directionPlateNode(fontChinese: Font, text: string, x: number, y: number) {
   return (
@@ -25,33 +22,31 @@ function directionPlateNode(fontChinese: Font, text: string, x: number, y: numbe
   )
 }
 
-export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
+export async function generateTwoLaneInterchangeExitSvg(sign: Sign): Promise<string> {
   const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
-  const exitNumber = cleanExitNumber(sign.exitNumber)
-  const exitDistance = cleanExitDistance(sign.exitDistance)
   const exitName = cleanExitText(sign.exitName, '', 6)
   const destination = cleanExitText(sign.exitDestination, '', 6)
-  const leftRoute = cleanExitRoute(sign.leftRoute, 'G72')
-  const rightRoute = cleanExitRoute(sign.rightRoute, 'G80')
+  const leftRoute = cleanExitRoute(sign.leftRoute, 'G0421')
+  const rightRoute = cleanExitRoute(sign.rightRoute, 'G15')
   const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
-  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT)
+  const leftRouteWidth = routeSignWidth(leftRoute,ROUTE_SIGN_HEIGHT)
   const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT)
   const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
-  const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 14
-  const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
+  const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 16
+  const label = escapeXml(`${leftDirection} ${leftRoute} ${exitName} ${rightDirection} ${rightRoute} ${destination}`)
   const overlay = renderToStaticMarkup(
-    <g data-generated="road-fork-preview">
-      {directionPlateNode(fontChinese, leftDirection, 150, 58)}
+    <g data-generated="two-lane-interchange-exit">
+      {directionPlateNode(fontChinese, leftDirection, LEFT_DIRECTION_X, 55)}
       {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {directionPlateNode(fontChinese, rightDirection, rightDirectionX, 58)}
-      {outlinedText(fontChinese, exitName, 169.3, 168, 170, 58, WHITE, { maxGap: 18 })}
-      {outlinedText(fontChinese, destination, 670, 168, 175, 58, WHITE, { maxGap: 18 })}
-      {outlinedText(fontChinese, exitDistance, 645, 266, 85, 68, WHITE, { maxGap: 4, minGap: 0 })}    </g>,
+      {outlinedText(fontChinese, exitName, 130, 166, 190, 56, WHITE, { maxGap: 18 })}
+      {outlinedText(fontChinese, destination, 588, 166, 190, 56, WHITE, { maxGap: 18 })}
+      </g>,
   )
-  const svg = roadForkPreviewTemplate
+  const svg = twoLaneInterchangeTemplate
     .replace(/<!--rotationCenter:[\s\S]*?-->/, '')
-    .replace('<svg ', `<svg role="img" aria-label="${label} 道路分岔预告牌" `)
+    .replace('<svg ', `<svg role="img" aria-label="${label} 2车道立交枢纽出口标志" `)
   return svg.replace('</svg>', `${overlay}</svg>`)
 }

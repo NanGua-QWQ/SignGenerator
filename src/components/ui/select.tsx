@@ -42,7 +42,7 @@ function SelectContent({
       <SelectPrimitive.Content
         position={position}
         className={cn(
-          'bg-background text-foreground relative z-50 min-w-[8rem] overflow-hidden rounded-md border shadow-lg',
+          'bg-background text-foreground relative z-50 min-w-32 overflow-hidden rounded-md border shadow-lg',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
           'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -55,7 +55,7 @@ function SelectContent({
         <SelectPrimitive.Viewport
           className={cn(
             'p-1',
-            position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]',
+            position === 'popper' && 'w-full min-w-(--radix-select-trigger-width)',
           )}
         >
           {children}
@@ -74,7 +74,7 @@ function SelectItem({
     <SelectPrimitive.Item
       className={cn(
         'focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}

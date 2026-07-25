@@ -3,7 +3,7 @@ import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Download, LoaderCircle, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { generateSignSvg, signFilename } from '@/features/sign-generator/generator'
+import { generateSignSvg, signFilename } from '@/features/sign-generator/generators/generator'
 
 const MIN_SCALE = 0.4
 const MAX_SCALE = 3
