@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import type { SignTemplate } from './types'
 
 interface SignSettingsProps {
   sign: Sign
@@ -13,11 +12,6 @@ interface SignSettingsProps {
 }
 
 const DIRECTION_OPTIONS = ['东', '南', '西', '北']
-
-const FORK_TEMPLATE_OPTIONS: Array<{ value: Exclude<SignTemplate, 'expressway'>; label: string }> = [
-  { value: 'road-fork-preview', label: '道路分岔预告' },
-  { value: 'two-lane-interchange-exit', label: '2车道立交枢纽出口' },
-]
 
 function DirectionSelect({ id, value, onValueChange }: { id: string; value: string; onValueChange: (value: string) => void }) {
   return (
@@ -166,19 +160,6 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
             </>
           ) : (
             <>
-              <div className="space-y-1.5">
-                <Label htmlFor="fork-template">指引模板</Label>
-                <Select value={sign.template} onValueChange={value => onChange({ template: value as SignTemplate, name: value === 'two-lane-interchange-exit' ? '2车道立交枢纽出口' : '道路分岔预告' })}>
-                  <SelectTrigger id="fork-template">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FORK_TEMPLATE_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="exit-number">出口编号</Label>

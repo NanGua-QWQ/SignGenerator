@@ -63,6 +63,11 @@ function forkSignName(template: SignTemplate): string {
   return template === 'two-lane-interchange-exit' ? '2车道立交枢纽出口' : '道路分岔预告'
 }
 
+const FORK_ADD_CHOICES: Array<{ value: SignTemplate; label: string }> = [
+  { value: 'road-fork-preview', label: '道路分岔预告' },
+  { value: 'two-lane-interchange-exit', label: '2车道立交枢纽出口' },
+]
+
 function initialTab(): WorkspaceTab {
   const template = new URLSearchParams(window.location.search).get('template')
   return template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location' ? 'fork-guidance' : 'signs'
@@ -174,8 +179,8 @@ export default function App() {
     [selectedId, visibleSigns],
   )
 
-  const addSign = useCallback(() => {
-    const sign = createSign({ template: activeTemplate })
+  const addSign = useCallback((template?: SignTemplate) => {
+    const sign = createSign({ template: template ?? activeTemplate })
     setSigns(current => [...current, sign])
     setSelectedId(sign.id)
   }, [activeTemplate])
@@ -216,7 +221,7 @@ export default function App() {
       <Header activeTab={activeTab} onTabChange={changeTab} />
       <main className="grid min-h-0 flex-1 grid-cols-[14rem_minmax(0,1fr)_20rem] max-lg:grid-cols-[12rem_minmax(0,1fr)] max-md:grid-cols-1 max-md:grid-rows-[auto_minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
         <div>
-          <SignList title={activeTab === 'fork-guidance' ? '分叉指引' : '标志列表'} signs={visibleSigns} selectedId={selectedId} onSelect={setSelectedId} onAdd={addSign} onDelete={deleteSign} />
+          <SignList title={activeTab === 'fork-guidance' ? '分叉指引' : '标志列表'} signs={visibleSigns} selectedId={selectedId} onSelect={setSelectedId} onAdd={addSign} addChoices={activeTab === 'fork-guidance' ? FORK_ADD_CHOICES : undefined} onDelete={deleteSign} />
         </div>
         <SignPreview sign={selectedSign} />
         <div className="max-lg:col-span-2 max-lg:max-h-72 max-md:col-span-1 max-md:max-h-none">

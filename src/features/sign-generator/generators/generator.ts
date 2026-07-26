@@ -1,7 +1,7 @@
 import type { Sign } from '../types'
 import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './expressway'
-import { generateRoadForkPreviewSvg } from './road-fork-preview'
-import { generateTwoLaneInterchangeExitSvg } from './two-lane-interchange-exit'
+import { generateRoadForkPreviewSvg } from './Interchange/road-fork-preview'
+import { generateTwoLaneInterchangeExitSvg } from './Interchange/two-lane-interchange-exit'
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
   if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)

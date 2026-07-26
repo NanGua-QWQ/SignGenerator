@@ -1,11 +1,15 @@
 import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
-import type { Sign } from '../types'
-import { routeSignWidth, cleanExitText, cleanExitDistance, cleanExitRoute, cleanDirection } from './generator'
-import { expresswaySignNode } from './expressway'
-import { GREEN, WHITE, escapeXml, loadFont, outlinedText } from './svg-text'
-import roadForkPreviewTemplate from '/public/template/道路分岔预告.svg?raw'
+import type { Sign } from '../../types'
+import { routeSignWidth, cleanExitText, cleanExitDistance, cleanExitRoute, cleanDirection } from '../generator'
+import { expresswaySignNode } from '../expressway'
+import { GREEN, WHITE, escapeXml, loadFont, outlinedText } from '../svg-text'
+import roadForkPreviewTemplate from '/template/道路分岔预告.svg?raw'
+import { NUMBERED_EXIT_RIGHT_MARGIN, NUMBERED_EXIT_WIDTH, NUMBERED_EXIT_Y, expandCanvasForNumberedExit, numberedExitSignNode } from './numbered-exit'
 
+const TEMPLATE_WIDTH = 1011.98513
+const TEMPLATE_HEIGHT = 371.83044
+const NUMBERED_EXIT_X = TEMPLATE_WIDTH - NUMBERED_EXIT_WIDTH - NUMBERED_EXIT_RIGHT_MARGIN
 const ROUTE_SIGN_HEIGHT = 104
 const LEFT_ROUTE_SIGN_X = 226
 const RIGHT_ROUTE_SIGN_RIGHT = 786
@@ -42,16 +46,18 @@ export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
   const overlay = renderToStaticMarkup(
     <g data-generated="road-fork-preview">
+      {numberedExitSignNode({ exitNumber, fontChinese, fontLatin, x: NUMBERED_EXIT_X, y: NUMBERED_EXIT_Y })}
       {directionPlateNode(fontChinese, leftDirection, 150, 58)}
       {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {directionPlateNode(fontChinese, rightDirection, rightDirectionX, 58)}
       {outlinedText(fontChinese, exitName, 169.3, 168, 170, 58, WHITE, { maxGap: 18 })}
       {outlinedText(fontChinese, destination, 670, 168, 175, 58, WHITE, { maxGap: 18 })}
-      {outlinedText(fontChinese, exitDistance, 645, 266, 85, 68, WHITE, { maxGap: 4, minGap: 0 })}    </g>,
+      {outlinedText(fontChinese, exitDistance, 645, 266, 85, 68, WHITE, { maxGap: 4, minGap: 0 })}
+    </g>,
   )
   const svg = roadForkPreviewTemplate
     .replace(/<!--rotationCenter:[\s\S]*?-->/, '')
     .replace('<svg ', `<svg role="img" aria-label="${label} 道路分岔预告牌" `)
-  return svg.replace('</svg>', `${overlay}</svg>`)
+  return expandCanvasForNumberedExit(svg, TEMPLATE_WIDTH, TEMPLATE_HEIGHT).replace('</svg>', `${overlay}</svg>`)
 }

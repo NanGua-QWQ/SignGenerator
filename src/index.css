@@ -91,4 +91,40 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .animated-title {
+    position: relative;
+    color: transparent;
+    background-image: linear-gradient(to right, white, white, transparent);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-position-x: 200%;
+    transition: background-position-x 1s ease-in-out 0.5s;
+    cursor: pointer;
+  }
+
+  .animated-title.is-filled {
+    background-position-x: 0%;
+  }
+
+  .animated-title::after {
+    content: "道路标志生成器";
+    position: absolute;
+    inset: 0;
+    color: yellow;
+    -webkit-text-stroke: 2px white;
+    -webkit-text-fill-color: transparent;
+    opacity: 0;
+    /* 不透明度将延迟切换，具体延迟由 .is-filled 规则控制 */
+    transition: opacity 0.4s ease-in-out 0s;
+    pointer-events: none;
+  }
+
+  /* 点击后先执行文字填充过渡，再延迟显示描边（delay = background transition delay + duration） */
+  .animated-title.is-filled::after {
+    transition-delay: 1.6s; /* 0.5s delay + 1s duration = 1.5s，留一点余量 */
+    opacity: 1;
+  }
 }
