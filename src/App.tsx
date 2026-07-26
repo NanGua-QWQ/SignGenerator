@@ -1,47 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ExpresswayKind, OrdinaryRoadKind, Sign, SignKind, SignTemplate } from '@/features/sign-generator/types'
+import { cleanExitText, cleanExitDistance, cleanDirection, cleanDigits, cleanProvinceLabel, cleanRoute, cleanName, cleanExitNumber } from './features/sign-generator/generators/generator'
 import { Header, type WorkspaceTab } from '@/components/layout/Header'
 import { SignList } from '@/features/sign-generator/SignList'
 import { SignPreview } from '@/features/sign-generator/SignPreview'
 import { SignSettings } from '@/features/sign-generator/SignSettings'
-
-function cleanDigits(value: string): string {
-  return String(value || '').replace(/\D/g, '').slice(0, 4)
-}
-
-function cleanProvinceLabel(value: string): string {
-  return Array.from(String(value || '').trim()).slice(0, 1).join('')
-}
-
-function nameLimitForDigits(digits: string): number {
-  return digits.length === 4 ? 6 : 4
-}
-
-function cleanName(value: string, digits: string): string {
-  return Array.from(String(value || '')).slice(0, nameLimitForDigits(digits)).join('')
-}
-
-function cleanExitText(value: string, fallback: string, limit: number): string {
-  const text = Array.from(String(value || '').trim()).slice(0, limit).join('')
-  return text || fallback
-}
-
-function cleanExitNumber(value: string): string {
-  return String(value || '').replace(/\D/g, '').slice(0, 4)
-}
-
-function cleanExitDistance(value: string): string {
-  return String(value || '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 5)
-}
-
-function cleanRoute(value: string, fallback: string): string {
-  return String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || fallback
-}
-
-function cleanDirection(value: string, fallback: string): string {
-  const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
-  return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
-}
 
 function isExpresswayKind(value: SignKind | undefined): value is ExpresswayKind {
   return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei'
@@ -89,6 +52,19 @@ const SIGN_ADD_CHOICES: Array<{ value: SignTemplate; label: string }> = [
   { value: 'expressway', label: '高速标识牌' },
   { value: 'ordinary-road', label: '普通道路标识牌' },
 ]
+
+const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
+const WORKSPACE_STORAGE_VERSION = 1
+
+interface WorkspaceState {
+  signs: Sign[]
+  activeTab: WorkspaceTab
+  selectedId: string
+}
+
+interface SavedWorkspace extends WorkspaceState {
+  version: typeof WORKSPACE_STORAGE_VERSION
+}
 
 function initialTab(): WorkspaceTab {
   const template = new URLSearchParams(window.location.search).get('template')
@@ -156,6 +132,37 @@ function createSign(overrides: Partial<Sign> = {}): Sign {
   }
 }
 
+function visibleSignsForTab(signs: Sign[], tab: WorkspaceTab): Sign[] {
+  return tab === 'fork-guidance' ? signs.filter(sign => isForkTemplate(sign.template)) : signs.filter(sign => isRoadSignTemplate(sign.template))
+}
+
+function isWorkspaceTab(value: unknown): value is WorkspaceTab {
+  return value === 'signs' || value === 'fork-guidance'
+}
+
+function restoreSign(value: unknown): Sign | null {
+  if (!value || typeof value !== 'object') return null
+  const raw = value as Partial<Sign>
+  const normalized = normalizeSign(raw)
+  const rawName = typeof raw.name === 'string' ? raw.name : undefined
+  return {
+    id: typeof raw.id === 'string' && raw.id.trim() ? raw.id : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+    ...normalized,
+    name: normalized.template === 'expressway'
+      ? cleanName(rawName ?? '沈海高速', normalized.digits)
+      : normalized.template === 'ordinary-road'
+        ? cleanExitText(rawName ?? '普通道路标识牌', '普通道路标识牌', 10)
+      : cleanExitText(rawName ?? forkSignName(normalized.template), forkSignName(normalized.template), 10),
+  }
+}
+
+function normalizeWorkspace(signs: Sign[], activeTab: WorkspaceTab, selectedId: string): WorkspaceState {
+  const usableTab = visibleSignsForTab(signs, activeTab).length > 0 ? activeTab : 'signs'
+  const visibleSigns = visibleSignsForTab(signs, usableTab)
+  const selectedSign = visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0] ?? signs[0]
+  return { signs, activeTab: usableTab, selectedId: selectedSign.id }
+}
+
 function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
   const requestedTemplate = params.get('template')
@@ -204,10 +211,33 @@ function createInitialSigns(): Sign[] {
       ]
 }
 
+function createInitialWorkspace(): WorkspaceState {
+  const fallbackSigns = createInitialSigns()
+  const fallbackWorkspace = normalizeWorkspace(fallbackSigns, initialTab(), fallbackSigns[0].id)
+  if (typeof window === 'undefined') return fallbackWorkspace
+
+  try {
+    const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
+    if (!raw) return fallbackWorkspace
+    const parsed = JSON.parse(raw) as Partial<SavedWorkspace>
+    if (parsed.version !== WORKSPACE_STORAGE_VERSION || !Array.isArray(parsed.signs)) return fallbackWorkspace
+    const restoredSigns = parsed.signs.map(restoreSign).filter((sign): sign is Sign => Boolean(sign))
+    if (restoredSigns.length === 0) return fallbackWorkspace
+    return normalizeWorkspace(
+      restoredSigns,
+      isWorkspaceTab(parsed.activeTab) ? parsed.activeTab : fallbackWorkspace.activeTab,
+      typeof parsed.selectedId === 'string' ? parsed.selectedId : restoredSigns[0].id,
+    )
+  } catch {
+    return fallbackWorkspace
+  }
+}
+
 export default function App() {
-  const [signs, setSigns] = useState<Sign[]>(createInitialSigns)
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>(initialTab)
-  const [selectedId, setSelectedId] = useState<string>(() => signs[0].id)
+  const [initialWorkspace] = useState<WorkspaceState>(createInitialWorkspace)
+  const [signs, setSigns] = useState<Sign[]>(initialWorkspace.signs)
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>(initialWorkspace.activeTab)
+  const [selectedId, setSelectedId] = useState<string>(initialWorkspace.selectedId)
   const activeTemplate = templateForTab(activeTab)
   const visibleSigns = useMemo(
     () => activeTab === 'fork-guidance' ? signs.filter(sign => isForkTemplate(sign.template)) : signs.filter(sign => isRoadSignTemplate(sign.template)),
@@ -218,6 +248,20 @@ export default function App() {
     () => visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0],
     [selectedId, visibleSigns],
   )
+
+  useEffect(() => {
+    try {
+      const workspace: SavedWorkspace = {
+        version: WORKSPACE_STORAGE_VERSION,
+        signs,
+        activeTab,
+        selectedId,
+      }
+      window.localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(workspace))
+    } catch {
+      // localStorage may be unavailable in private or restricted browser contexts.
+    }
+  }, [activeTab, selectedId, signs])
 
   const addSign = useCallback((template?: SignTemplate) => {
     const sign = createSign({ template: template ?? activeTemplate })

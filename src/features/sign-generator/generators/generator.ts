@@ -48,3 +48,27 @@ export function cleanDirection(value: string, fallback: string): string {
   const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
+
+export function cleanDigits(value: string): string {
+  return String(value || '').replace(/\D/g, '').slice(0, 4)
+}
+
+export function cleanProvinceLabel(value: string): string {
+  return Array.from(String(value || '').trim()).slice(0, 1).join('')
+}
+
+export function nameLimitForDigits(digits: string): number {
+  return digits.length === 4 ? 6 : 4
+}
+
+export function cleanName(value: string, digits: string): string {
+  return Array.from(String(value || '')).slice(0, nameLimitForDigits(digits)).join('')
+}
+
+export function cleanExitNumber(value: string): string {
+  return String(value || '').replace(/\D/g, '').slice(0, 4)
+}
+
+export function cleanRoute(value: string, fallback: string): string {
+  return String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || fallback
+}
