@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 const variants = {
   default: 'bg-primary text-primary-foreground',
   expressway: 'bg-[#359b47] text-white',
+  ordinary: 'bg-white text-black ring-1 ring-border',
   guidance: 'bg-[#050203] text-white',
 } as const
 

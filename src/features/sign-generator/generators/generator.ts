@@ -1,12 +1,14 @@
-import type { Sign } from '../types'
+import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
 import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './expressway'
+import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './ordinary_road'
 import { generateRoadForkPreviewSvg } from './Interchange/road-fork-preview'
 import { generateTwoLaneInterchangeExitSvg } from './Interchange/two-lane-interchange-exit'
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
   if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)
   if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
-  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind)
+  if (sign.template === 'ordinary-road') return generateOrdinaryRoadSignSvg(sign.kind as OrdinaryRoadKind, sign.digits)
+  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind as ExpresswayKind, sign.threeDigitDescend)
 }
 
 export function signFilename(sign: Sign): string {
@@ -14,8 +16,10 @@ export function signFilename(sign: Sign): string {
     ? `道路分岔预告_${sign.exitNumber}`
     : sign.template === 'two-lane-interchange-exit'
       ? `2车道立交枢纽出口_${sign.rightRoute}`
+      : sign.template === 'ordinary-road'
+        ? ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
       : sign.code
-  const name = sign.template === 'expressway' ? sign.name : sign.exitName || sign.name
+  const name = sign.template === 'expressway' || sign.template === 'ordinary-road' ? sign.name : sign.exitName || sign.name
   const safeCode = String(code || 'road-sign').trim().replace(/[<>:"/\\|?*]/g, '_')
   const safeName = String(name || '').trim().replace(/[<>:"/\\|?*]/g, '_')
   const base = `${safeCode}${safeName ? `_${safeName}` : ''}`
@@ -44,4 +48,3 @@ export function cleanDirection(value: string, fallback: string): string {
   const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
-

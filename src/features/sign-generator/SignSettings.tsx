@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
+import type { OrdinaryRoadKind } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,6 +13,12 @@ interface SignSettingsProps {
 }
 
 const DIRECTION_OPTIONS = ['东', '南', '西', '北']
+const ORDINARY_ROAD_OPTIONS: Array<{ value: OrdinaryRoadKind; label: string; prefix: string }> = [
+  { value: 'ordinary-national', label: '国道', prefix: 'G' },
+  { value: 'ordinary-provincial', label: '省道', prefix: 'S' },
+  { value: 'ordinary-county', label: '县道', prefix: 'X' },
+  { value: 'ordinary-township', label: '乡道', prefix: 'Y' },
+]
 
 function DirectionSelect({ id, value, onValueChange }: { id: string; value: string; onValueChange: (value: string) => void }) {
   return (
@@ -127,7 +134,7 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
-        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{sign.template === 'expressway' ? '标志设置' : '分叉指引设置'}</h2>
+        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit' ? '分叉指引设置' : '标志设置'}</h2>
         <div className="flex flex-col gap-4">
           {sign.template === 'expressway' ? (
             <>
@@ -147,15 +154,39 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <Label htmlFor="road-digits">道路编号</Label>
-                  <Input id="road-digits" value={sign.digits} onChange={updateDigits} placeholder="1、15 或 0421" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor="road-digits">道路编号</Label>
+                    {sign.digits.length === 3 && (
+                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <input type="checkbox" checked={sign.threeDigitDescend} onChange={event => onChange({ threeDigitDescend: event.target.checked })} className="size-3.5 accent-primary" />
+                        下沉
+                      </label>
+                    )}
+                  </div>
+                  <Input id="road-digits" value={sign.digits} onChange={updateDigits} placeholder="1、15、105 或 0421" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
                 </div>
-                <p className={`${sign.kind === 'provincial' ? 'col-span-2' : ''} text-xs text-muted-foreground`}>只输入数字，支持 1 位、2 位或 4 位编号。</p>
+                <p className={`${sign.kind === 'provincial' ? 'col-span-2' : ''} text-xs text-muted-foreground`}>只输入数字，支持 1-4 位编号。</p>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="road-name">高速名称</Label>
                 <Input id="road-name" value={roadNameInput} onChange={updateName} onCompositionStart={() => { composingRoadName.current = true }} onCompositionEnd={finishRoadNameComposition} placeholder="例如：沈海高速" className="h-9" />
                 <p className="text-xs text-muted-foreground">当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。</p>
+              </div>
+            </>
+          ) : sign.template === 'ordinary-road' ? (
+            <>
+              <div className="space-y-1.5">
+                <Label>道路类型</Label>
+                <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
+                  {ORDINARY_ROAD_OPTIONS.map(option => (
+                    <Button key={option.value} variant={sign.kind === option.value ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ kind: option.value })}>{option.label}</Button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ordinary-road-digits">道路编号</Label>
+                <Input id="ordinary-road-digits" value={sign.digits} onChange={updateDigits} placeholder="例如：105" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
+                <p className="text-xs text-muted-foreground">自动加前缀：{ORDINARY_ROAD_OPTIONS.find(option => option.value === sign.kind)?.prefix ?? 'G'}{sign.digits || '105'}</p>
               </div>
             </>
           ) : (

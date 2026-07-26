@@ -27,6 +27,8 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
     ? sign.name || '道路分岔预告'
     : sign.template === 'two-lane-interchange-exit'
       ? sign.name || '2车道立交枢纽出口'
+      : sign.template === 'ordinary-road'
+        ? '普通道路标识牌'
       : sign.name || '高速编号牌'
   const signInfo = (sign: Sign) => {
     const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
@@ -72,7 +74,7 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
             return (
               <div key={sign.id} className={`group relative shrink-0 rounded-md transition-colors max-md:w-40 ${sign.id === selectedId ? 'bg-accent text-accent-foreground' : 'bg-muted/50 hover:bg-muted'}`}>
                 <button type="button" onClick={() => onSelect(sign.id)} className="flex w-full items-center gap-2 p-2 pr-8 text-left" title={isForkSign(sign) ? info.join('\n') : signTitle(sign)}>
-                  <Badge variant={sign.template === 'expressway' ? 'expressway' : 'guidance'} >{signBadge(sign)}</Badge>
+                  <Badge variant={sign.template === 'expressway' ? 'expressway' : sign.template === 'ordinary-road' ? 'ordinary' : 'guidance'} >{signBadge(sign)}</Badge>
                   <span className="min-w-0 flex-1 truncate text-xs font-medium">{signTitle(sign)}</span>
                 </button>
                 {isForkSign(sign) && (
