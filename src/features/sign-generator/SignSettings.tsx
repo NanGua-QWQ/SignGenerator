@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
-import type { Sign } from '@/features/sign-generator/types'
+import type { ExpresswayKind, Sign } from '@/features/sign-generator/types'
 import type { OrdinaryRoadKind } from '@/features/sign-generator/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,23 +35,36 @@ function DirectionSelect({ id, value, onValueChange }: { id: string; value: stri
   )
 }
 
-function RouteSelect({ id, value, onValueChange, signs }: { id: string; value: string; onValueChange: (value: string) => void; signs: Sign[] }) {
-  const hasMatch = signs.some(s => s.code === value)
+function RouteSelect({ id, value, selectedSignId, onValueChange, signs }: { id: string; value: string; selectedSignId: string; onValueChange: (sign: Sign) => void; signs: Sign[] }) {
+  const selectedSign = signs.find(s => s.id === selectedSignId) ?? signs.find(s => s.code === value)
+  const selectValue = selectedSign?.id ?? `custom:${value || id}`
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={selectValue} onValueChange={signId => {
+      const selected = signs.find(s => s.id === signId)
+      if (selected) onValueChange(selected)
+    }}>
       <SelectTrigger id={id}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {!hasMatch && <SelectItem value={value}>{value}</SelectItem>}
+        {!selectedSign && <SelectItem value={selectValue}>{value}</SelectItem>}
         {signs.map(s => (
-          <SelectItem key={s.id} value={s.code}>
+          <SelectItem key={s.id} value={s.id}>
             {s.code}{s.name ? ` ${s.name}` : ''}
           </SelectItem>
         ))}
       </SelectContent>
     </Select>
   )
+}
+
+function routeMetadata(sign: Sign | undefined): { kind?: ExpresswayKind; provinceLabel?: string; threeDigitDescend?: boolean } {
+  if (!sign) return {}
+  return {
+    kind: sign.kind as ExpresswayKind,
+    provinceLabel: sign.provinceLabel,
+    threeDigitDescend: sign.threeDigitDescend,
+  }
 }
 
 export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSettingsProps) {
@@ -124,11 +137,45 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
   }
 
   const updateLeftRoute = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ leftRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) })
+    onChange({
+      leftRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5),
+      leftRouteSignId: '',
+      leftRouteKind: undefined,
+      leftRouteProvinceLabel: undefined,
+      leftRouteThreeDigitDescend: undefined,
+    })
   }
 
   const updateRightRoute = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ rightRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) })
+    onChange({
+      rightRoute: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5),
+      rightRouteSignId: '',
+      rightRouteKind: undefined,
+      rightRouteProvinceLabel: undefined,
+      rightRouteThreeDigitDescend: undefined,
+    })
+  }
+
+  const selectLeftRoute = (selected: Sign) => {
+    const metadata = routeMetadata(selected)
+    onChange({
+      leftRoute: selected.code,
+      leftRouteSignId: selected.id,
+      leftRouteKind: metadata.kind,
+      leftRouteProvinceLabel: metadata.provinceLabel,
+      leftRouteThreeDigitDescend: metadata.threeDigitDescend,
+    })
+  }
+
+  const selectRightRoute = (selected: Sign) => {
+    const metadata = routeMetadata(selected)
+    onChange({
+      rightRoute: selected.code,
+      rightRouteSignId: selected.id,
+      rightRouteKind: metadata.kind,
+      rightRouteProvinceLabel: metadata.provinceLabel,
+      rightRouteThreeDigitDescend: metadata.threeDigitDescend,
+    })
   }
 
   return (
@@ -185,7 +232,7 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ordinary-road-digits">道路编号</Label>
-                <Input id="ordinary-road-digits" value={sign.digits} onChange={updateDigits} placeholder="例如：105" inputMode="numeric" pattern="[0-9]*" maxLength={4} className="h-9" />
+                <Input id="ordinary-road-digits" value={sign.digits} onChange={updateDigits} placeholder="例如：105" inputMode="numeric" pattern="[0-9]*" maxLength={3} className="h-9" />
                 <p className="text-xs text-muted-foreground">自动加前缀：{ORDINARY_ROAD_OPTIONS.find(option => option.value === sign.kind)?.prefix ?? 'G'}{sign.digits || '105'}</p>
               </div>
             </>
@@ -207,7 +254,7 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                 <div className="space-y-1.5">
                   <Label htmlFor="left-route">左侧高速编号</Label>
                   {expresswaySignList.length > 0
-                    ? <RouteSelect id="left-route" value={sign.leftRoute} onValueChange={value => onChange({ leftRoute: value })} signs={expresswaySignList} />
+                    ? <RouteSelect id="left-route" value={sign.leftRoute} selectedSignId={sign.leftRouteSignId} onValueChange={selectLeftRoute} signs={expresswaySignList} />
                     : <Input id="left-route" value={sign.leftRoute} onChange={updateLeftRoute} placeholder="G72" maxLength={5} className="h-9" />
                   }
                 </div>
@@ -220,7 +267,7 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                 <div className="space-y-1.5">
                   <Label htmlFor="right-route">右侧高速编号</Label>
                   {expresswaySignList.length > 0
-                    ? <RouteSelect id="right-route" value={sign.rightRoute} onValueChange={value => onChange({ rightRoute: value })} signs={expresswaySignList} />
+                    ? <RouteSelect id="right-route" value={sign.rightRoute} selectedSignId={sign.rightRouteSignId} onValueChange={selectRightRoute} signs={expresswaySignList} />
                     : <Input id="right-route" value={sign.rightRoute} onChange={updateRightRoute} placeholder="G80" maxLength={5} className="h-9" />
                   }
                 </div>

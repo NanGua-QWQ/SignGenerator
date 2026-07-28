@@ -48,8 +48,8 @@ export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
     <g data-generated="road-fork-preview">
       {numberedExitSignNode({ exitNumber, fontChinese, fontLatin, x: NUMBERED_EXIT_X, y: NUMBERED_EXIT_Y })}
       {directionPlateNode(fontChinese, leftDirection, 150, 58)}
-      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
-      {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {expresswaySignNode({ code: leftRoute, kind: sign.leftRouteKind, provinceLabel: sign.leftRouteProvinceLabel, threeDigitDescend: sign.leftRouteThreeDigitDescend, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {expresswaySignNode({ code: rightRoute, kind: sign.rightRouteKind, provinceLabel: sign.rightRouteProvinceLabel, threeDigitDescend: sign.rightRouteThreeDigitDescend, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {directionPlateNode(fontChinese, rightDirection, rightDirectionX, 58)}
       {outlinedText(fontChinese, exitName, 169.3, 168, 170, 58, WHITE, { maxGap: 18 })}
       {outlinedText(fontChinese, destination, 670, 168, 175, 58, WHITE, { maxGap: 18 })}

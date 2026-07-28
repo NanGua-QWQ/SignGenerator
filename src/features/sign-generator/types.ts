@@ -17,7 +17,15 @@ export interface Sign {
   exitName: string
   exitDestination: string
   leftRoute: string
+  leftRouteSignId: string
+  leftRouteKind: ExpresswayKind
+  leftRouteProvinceLabel: string
+  leftRouteThreeDigitDescend: boolean
   rightRoute: string
+  rightRouteSignId: string
+  rightRouteKind: ExpresswayKind
+  rightRouteProvinceLabel: string
+  rightRouteThreeDigitDescend: boolean
   leftDirection: string
   rightDirection: string
 }

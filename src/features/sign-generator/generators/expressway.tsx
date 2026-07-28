@@ -109,10 +109,11 @@ function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFour
     const mainLayout = textLayout(mainFont, mainCode, 450)
     const suffixLayout = textLayout(options.fontLatin, suffixText, 300)
     const mainGap = textGap(mainLayout.usedWidth, mainLayout.glyphs.length, usesCompactThreeDigitSuffix ? 920 : 1180, { maxGap: mainMaxGap, minGap: mainMinGap })
-    const suffixGap = textGap(suffixLayout.usedWidth, suffixLayout.glyphs.length, sign.digits.endsWith('1') ? 280 : 340, { maxGap: sign.digits.endsWith('1') ? 35 : 55 })
+    const suffixTargetWidth = sign.digits.endsWith('1') ? 400 : 420
+    const suffixGap = textGap(suffixLayout.usedWidth, suffixLayout.glyphs.length, suffixTargetWidth, { minGap: 50, maxGap: 50 })
     const mainContentWidth = mainLayout.usedWidth + mainGap * Math.max(0, mainLayout.glyphs.length - 1)
     const suffixContentWidth = suffixLayout.usedWidth + suffixGap * Math.max(0, suffixLayout.glyphs.length - 1)
-    const groupGap = usesCompactThreeDigitSuffix ? 35 : named ? 55 : 45
+    const groupGap = usesCompactThreeDigitSuffix ? 55 : named ? 55 : 45
     const groupWidth = mainContentWidth + groupGap + suffixContentWidth
     const groupX = (naturalWidth - groupWidth) / 2 + (named ? 0 : 24)
     content.push(renderLayout(mainLayout, groupX, mainY, WHITE, mainGap))

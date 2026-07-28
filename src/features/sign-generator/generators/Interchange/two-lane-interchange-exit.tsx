@@ -39,7 +39,7 @@ export async function generateTwoLaneInterchangeExitSvg(sign: Sign): Promise<str
   const rightRoute = cleanExitRoute(sign.rightRoute, 'G15')
   const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
-  const leftRouteWidth = routeSignWidth(leftRoute,ROUTE_SIGN_HEIGHT)
+  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT)
   const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT)
   const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
   const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 16
@@ -48,8 +48,8 @@ export async function generateTwoLaneInterchangeExitSvg(sign: Sign): Promise<str
     <g data-generated="two-lane-interchange-exit">
       {numberedExitSignNode({ exitNumber, fontChinese, fontLatin, x: NUMBERED_EXIT_X, y: NUMBERED_EXIT_Y })}
       {directionPlateNode(fontChinese, leftDirection, LEFT_DIRECTION_X, 55)}
-      {expresswaySignNode({ code: leftRoute, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
-      {expresswaySignNode({ code: rightRoute, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {expresswaySignNode({ code: leftRoute, kind: sign.leftRouteKind, provinceLabel: sign.leftRouteProvinceLabel, threeDigitDescend: sign.leftRouteThreeDigitDescend, fontChinese, fontLatin, x: LEFT_ROUTE_SIGN_X, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
+      {expresswaySignNode({ code: rightRoute, kind: sign.rightRouteKind, provinceLabel: sign.rightRouteProvinceLabel, threeDigitDescend: sign.rightRouteThreeDigitDescend, fontChinese, fontLatin, x: rightRouteX, y: ROUTE_SIGN_Y, width: rightRouteWidth, height: ROUTE_SIGN_HEIGHT })}
       {directionPlateNode(fontChinese, rightDirection, rightDirectionX, 58)}
       {outlinedText(fontChinese, exitName, 130, 166, 190, 56, WHITE, { maxGap: 18 })}
       {outlinedText(fontChinese, destination, 588, 166, 190, 56, WHITE, { maxGap: 18 })}
