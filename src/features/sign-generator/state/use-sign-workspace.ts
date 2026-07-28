@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { WorkspaceTab } from '@/components/layout/Header'
-import type { ExpresswayKind, Sign, SignTemplate } from './types'
+import type { ExpresswayKind, Sign, SignTemplate } from '../types'
 import {
   FORK_ADD_CHOICES,
   SIGN_ADD_CHOICES,
@@ -10,7 +10,7 @@ import {
   normalizeUpdatedSign,
   templateForTab,
   visibleSignsForTab,
-} from './sign-model'
+} from '../lib/sign-model'
 import { createInitialWorkspace, saveWorkspace, type WorkspaceState } from './workspace-storage'
 
 export function useSignWorkspace() {

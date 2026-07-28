@@ -1,16 +1,29 @@
 import type { WorkspaceTab } from '@/components/layout/Header'
-import type { Sign, SignTemplate } from './types'
+import type { Sign, SignTemplate } from '../types'
 import {
   createSign,
   isTemplateParam,
   parseInitialKind,
   restoreSign,
   visibleSignsForTab,
-} from './sign-model'
+} from '../lib/sign-model'
 
 const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
 const WORKSPACE_STORAGE_VERSION = 1
-const DEFAULT_ROAD_FORK_SIGN = {
+const DEFAULT_DIRECTION_GUIDANCE_SIGN = {
+  template: 'direction-guidance',
+  name: '分向指路标志',
+  exitNumber: '360',
+  exitDistance: '2',
+  exitName: '清远',
+  exitDestination: '东莞 深圳',
+  leftRoute: 'G78',
+  rightRoute: 'G15',
+  leftDirection: '东',
+  rightDirection: '西',
+} satisfies Partial<Sign>
+
+const DEFAULT_ROAD_FORK_PREVIEW_SIGN = {
   template: 'road-fork-preview',
   name: '道路分岔预告',
   exitNumber: '360',
@@ -24,7 +37,7 @@ const DEFAULT_ROAD_FORK_SIGN = {
 } satisfies Partial<Sign>
 
 const DEFAULT_TWO_LANE_SIGN = {
-  ...DEFAULT_ROAD_FORK_SIGN,
+  ...DEFAULT_ROAD_FORK_PREVIEW_SIGN,
   template: 'two-lane-interchange-exit',
   name: '2车道立交枢纽出口',
   exitDestination: '广州',
@@ -86,13 +99,13 @@ export function normalizeWorkspace(signs: Sign[], activeTab: WorkspaceTab, selec
 
 function initialTab(): WorkspaceTab {
   const template = new URLSearchParams(window.location.search).get('template')
-  return template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location' ? 'fork-guidance' : 'signs'
+  return template === 'direction-guidance' || template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location' ? 'fork-guidance' : 'signs'
 }
 
 function createInitialSigns(): Sign[] {
   const params = new URLSearchParams(window.location.search)
   const requestedTemplate = params.get('template')
-  const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'road-fork-preview' : 'expressway'
+  const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
   const code = params.get('code') ?? 'G15'
   const kind = parseInitialKind(params.get('kind'))
   const name = params.get('name') ?? '沈海高速'
@@ -107,8 +120,9 @@ function createInitialSigns(): Sign[] {
   const leftDirection = params.get('leftDirection') ?? '北'
   const rightDirection = params.get('rightDirection') ?? '东'
 
-  if (template === 'road-fork-preview') {
+  if (template === 'direction-guidance') {
     return [
+      createSign({ template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
       createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
       createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
       createSign({ code, name, kind }),
@@ -119,6 +133,7 @@ function createInitialSigns(): Sign[] {
   if (template === 'two-lane-interchange-exit') {
     return [
       createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createSign({ template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
       createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
       createSign({ code, name, kind }),
       createSign({ code: 'G0421', name: '许广高速' }),
@@ -130,7 +145,7 @@ function createInitialSigns(): Sign[] {
       createSign({ template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路标识牌' }),
       createSign({ code, name, kind }),
       createSign({ code: 'G0421', name: '许广高速' }),
-      createSign(DEFAULT_ROAD_FORK_SIGN),
+      createSign(DEFAULT_DIRECTION_GUIDANCE_SIGN),
       createSign(DEFAULT_TWO_LANE_SIGN),
     ]
   }
@@ -139,7 +154,8 @@ function createInitialSigns(): Sign[] {
     createSign({ code, name, kind }),
     createSign({ code: 'G0421', name: '许广高速' }),
     createSign({ template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路标识牌' }),
-    createSign(DEFAULT_ROAD_FORK_SIGN),
+    createSign(DEFAULT_DIRECTION_GUIDANCE_SIGN),
+    createSign(DEFAULT_ROAD_FORK_PREVIEW_SIGN),
     createSign(DEFAULT_TWO_LANE_SIGN),
   ]
 }

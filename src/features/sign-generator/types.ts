@@ -1,7 +1,8 @@
 export type ExpresswayKind = 'national' | 'provincial' | 'beijing-tianjin-hebei'
 export type OrdinaryRoadKind = 'ordinary-national' | 'ordinary-provincial' | 'ordinary-county' | 'ordinary-township'
 export type SignKind = ExpresswayKind | OrdinaryRoadKind
-export type SignTemplate = 'expressway' | 'ordinary-road' | 'road-fork-preview' | 'two-lane-interchange-exit'
+export type SignTemplate = 'expressway' | 'ordinary-road' | 'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit'
+export type PopoverColor = 'slate' | 'amber' | 'emerald' | 'sky' | 'rose' | 'violet'
 
 export interface Sign {
   id: string
@@ -28,4 +29,5 @@ export interface Sign {
   rightRouteThreeDigitDescend: boolean
   leftDirection: string
   rightDirection: string
+  popoverColor: PopoverColor
 }

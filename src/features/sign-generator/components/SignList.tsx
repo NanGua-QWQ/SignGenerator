@@ -1,11 +1,12 @@
 import { useState, type DragEvent, type MouseEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
 import { GripVertical, Plus, Trash2 } from 'lucide-react'
-import type { SignTemplate } from './types'
+import type { SignTemplate } from '../types'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { SignListPopoverEditor } from './SignListEditor'
+import { deleteDialogTitle, isForkSign, signBadge, signBadgeVariant, signInfo, signTitle } from '../lib/sign-display'
+import { SignListDialogEditor, SignListPopoverEditor } from './SignListEditor'
 
 interface AddChoice {
   value: SignTemplate
@@ -30,23 +31,9 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(null)
   const [popoverEditor, setPopoverEditor] = useState<{ id: string; x: number; y: number } | null>(null)
+  const [dialogEditorId, setDialogEditorId] = useState<string | null>(null)
   const popoverSign = signs.find(sign => sign.id === popoverEditor?.id)
-  const isForkSign = (sign: Sign) => sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit'
-  const signBadge = (sign: Sign) => sign.template === 'road-fork-preview' ? '分岔' : sign.template === 'two-lane-interchange-exit' ? '出口' : sign.code || 'G15'
-  const signTitle = (sign: Sign) => sign.template === 'road-fork-preview'
-    ? sign.name || '道路分岔预告'
-    : sign.template === 'two-lane-interchange-exit'
-      ? sign.name || '2车道立交枢纽出口'
-      : sign.template === 'ordinary-road'
-        ? '普通道路标识牌'
-      : sign.name || '高速编号牌'
-  const signInfo = (sign: Sign) => {
-    const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
-    const right = `右区：${sign.rightDirection} ${sign.rightRoute} ${sign.exitDestination}`.trim()
-    const distance = sign.template === 'road-fork-preview' ? `距离：${sign.exitDistance || '0'}km` : ''
-    return [left, right, distance].filter(Boolean)
-  }
-  const deleteDialogTitle = (sign: Sign) => isForkSign(sign) ? '删除分叉指引？' : '删除标识牌？'
+  const dialogSign = signs.find(sign => sign.id === dialogEditorId)
   const actionButtonClass = 'flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent-foreground/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-30'
   const deleteButton = (sign: Sign, onClick?: () => void) => (
     <button type="button" onClick={onClick} className={`${actionButtonClass} hover:bg-destructive/10 hover:text-destructive`} aria-label={`删除 ${signTitle(sign)}`}><Trash2 className="size-3" /></button>
@@ -86,7 +73,7 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
     setPopoverEditor({
       id: sign.id,
       x: Math.min(event.clientX, window.innerWidth - 340),
-            y: Math.min(event.clientY, window.innerHeight - 440),
+      y: Math.min(event.clientY, window.innerHeight - 440),
     })
   }
 
@@ -128,7 +115,7 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
                   <GripVertical className="size-3.5" />
                 </button>
                 <button type="button" onClick={() => onSelect(sign.id)} className="flex w-full items-center gap-2 py-2 pl-8 pr-8 text-left" title={isForkSign(sign) ? info.join('\n') : signTitle(sign)}>
-                  <Badge variant={sign.template === 'expressway' ? 'expressway' : sign.template === 'ordinary-road' ? 'ordinary' : 'guidance'} >{signBadge(sign)}</Badge>
+                  <Badge variant={signBadgeVariant(sign)}>{signBadge(sign)}</Badge>
                   <span className="min-w-0 flex-1 truncate text-xs font-medium">{signTitle(sign)}</span>
                 </button>
                 <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100">
@@ -162,6 +149,18 @@ export function SignList({ title, signs, selectedId, onSelect, onAdd, addChoices
             y={popoverEditor.y}
             onChange={updates => onUpdate(popoverSign.id, updates)}
             onClose={() => setPopoverEditor(null)}
+            onOpenDialog={() => {
+              setDialogEditorId(popoverSign.id)
+              setPopoverEditor(null)
+            }}
+          />
+        )}
+        {dialogSign && onUpdate && (
+          <SignListDialogEditor
+            sign={dialogSign}
+            open={Boolean(dialogSign)}
+            onChange={updates => onUpdate(dialogSign.id, updates)}
+            onClose={() => setDialogEditorId(null)}
           />
         )}
       </div>

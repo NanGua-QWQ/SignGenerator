@@ -1,8 +1,8 @@
 import type { Font } from '@pdf-lib/fontkit'
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import type { ExpresswayKind } from '../types'
-import { BLACK, GREEN, RED, WHITE, YELLOW, YELLOW_GREEN, loadFont, outlinedText, renderLayout, textGap, textLayout } from './svg-text'
+import type { ExpresswayKind } from '../../types'
+import { BLACK, GREEN, RED, WHITE, YELLOW, YELLOW_GREEN, loadFont, outlinedText, renderLayout, textGap, textLayout } from '../svg-text'
 
 function expresswayBackgroundNode(width: number, withName: boolean, bannerColor: string): ReactNode {
   const height = withName ? 1200 : 1000

@@ -1,4 +1,4 @@
-import type { ExpresswayKind, OrdinaryRoadKind, Sign, SignKind, SignTemplate } from './types'
+import type { ExpresswayKind, OrdinaryRoadKind, Sign, SignKind, SignTemplate } from '../types'
 import {
   cleanDigits,
   cleanDirection,
@@ -8,10 +8,11 @@ import {
   cleanName,
   cleanProvinceLabel,
   cleanRoute,
-} from './generators/generator'
+} from '../generators/generator'
+import { isPopoverColor } from './popover-options'
 
 type SignWorkspaceTab = 'signs' | 'fork-guidance'
-type ForkTemplate = Extract<SignTemplate, 'road-fork-preview' | 'two-lane-interchange-exit'>
+type ForkTemplate = Extract<SignTemplate, 'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit'>
 
 const ORDINARY_ROAD_PREFIX: Record<OrdinaryRoadKind, string> = {
   'ordinary-national': 'G',
@@ -21,11 +22,13 @@ const ORDINARY_ROAD_PREFIX: Record<OrdinaryRoadKind, string> = {
 }
 
 const FORK_SIGN_NAME: Record<ForkTemplate, string> = {
+  'direction-guidance': '分向指路标志',
   'road-fork-preview': '道路分岔预告',
   'two-lane-interchange-exit': '2车道立交枢纽出口',
 }
 
 export const FORK_ADD_CHOICES: Array<{ value: SignTemplate; label: string }> = [
+  { value: 'direction-guidance', label: '分向指路标志' },
   { value: 'road-fork-preview', label: '道路分岔预告' },
   { value: 'two-lane-interchange-exit', label: '2车道立交枢纽出口' },
 ]
@@ -48,15 +51,15 @@ export function isRoadSignTemplate(template: SignTemplate): boolean {
 }
 
 export function isForkTemplate(template: SignTemplate): boolean {
-  return template === 'road-fork-preview' || template === 'two-lane-interchange-exit'
+  return template === 'direction-guidance' || template === 'road-fork-preview' || template === 'two-lane-interchange-exit'
 }
 
 export function isTemplateParam(value: string | null): value is SignTemplate {
-  return value === 'expressway' || value === 'ordinary-road' || value === 'road-fork-preview' || value === 'two-lane-interchange-exit'
+  return value === 'expressway' || value === 'ordinary-road' || value === 'direction-guidance' || value === 'road-fork-preview' || value === 'two-lane-interchange-exit'
 }
 
 export function templateForTab(tab: SignWorkspaceTab): SignTemplate {
-  return tab === 'fork-guidance' ? 'road-fork-preview' : 'expressway'
+  return tab === 'fork-guidance' ? 'direction-guidance' : 'expressway'
 }
 
 export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab): Sign[] {
@@ -105,6 +108,7 @@ export function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 
     rightRouteThreeDigitDescend: Boolean(overrides.rightRouteThreeDigitDescend),
     leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
     rightDirection: cleanDirection(overrides.rightDirection ?? '东', '东'),
+    popoverColor: isPopoverColor(overrides.popoverColor) ? overrides.popoverColor : 'slate',
   }
 }
 

@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, type ChangeEvent, type PointerEvent, type ReactNode } from 'react'
-import { GripHorizontal, X } from 'lucide-react'
+import { ExternalLink, GripHorizontal, X } from 'lucide-react'
+import { DIRECTION_OPTIONS, EXPRESSWAY_KIND_OPTIONS, ORDINARY_KIND_OPTIONS } from '../lib/sign-options'
+import { POPOVER_COLOR_OPTIONS } from '../lib/popover-options'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import type { ExpresswayKind, OrdinaryRoadKind, Sign } from './types'
+import { defaultSignBadgeVariant } from '../lib/sign-display'
+import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
 
 interface EditorProps {
   sign: Sign
@@ -15,23 +19,17 @@ interface SignListPopoverEditorProps extends EditorProps {
   x: number
   y: number
   onClose: () => void
+  onOpenDialog: () => void
 }
 
-const DIRECTION_OPTIONS = ['东', '南', '西', '北']
-const EXPRESSWAY_KIND_OPTIONS: Array<{ value: ExpresswayKind; label: string }> = [
-  { value: 'national', label: '国家高速' },
-  { value: 'provincial', label: '省高速' },
-  { value: 'beijing-tianjin-hebei', label: '京津冀高速' },
-]
-const ORDINARY_KIND_OPTIONS: Array<{ value: OrdinaryRoadKind; label: string }> = [
-  { value: 'ordinary-national', label: '国道' },
-  { value: 'ordinary-provincial', label: '省道' },
-  { value: 'ordinary-county', label: '县道' },
-  { value: 'ordinary-township', label: '乡道' },
-]
+interface SignListDialogEditorProps extends EditorProps {
+  open: boolean
+  onClose: () => void
+}
 
-export function SignListPopoverEditor({ sign, x, y, onChange, onClose }: SignListPopoverEditorProps) {
+export function SignListPopoverEditor({ sign, x, y, onChange, onClose, onOpenDialog }: SignListPopoverEditorProps) {
   const [position, setPosition] = useState({ x, y })
+  const panelRef = useRef<HTMLDivElement>(null)
   const dragOffset = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -39,14 +37,20 @@ export function SignListPopoverEditor({ sign, x, y, onChange, onClose }: SignLis
   }, [x, y])
 
   useEffect(() => {
-    const close = () => onClose()
+    const close = (event: globalThis.PointerEvent) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+      if (panelRef.current && event.composedPath().includes(panelRef.current)) return
+      if (target.closest('[data-slot="select-content"], [data-radix-popper-content-wrapper]')) return
+      onClose()
+    }
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
-    window.addEventListener('click', close)
+    window.addEventListener('pointerdown', close)
     window.addEventListener('keydown', closeOnEscape)
     return () => {
-      window.removeEventListener('click', close)
+      window.removeEventListener('pointerdown', close)
       window.removeEventListener('keydown', closeOnEscape)
     }
   }, [onClose])
@@ -67,15 +71,64 @@ export function SignListPopoverEditor({ sign, x, y, onChange, onClose }: SignLis
   }
 
   return (
-    <div className="fixed z-50 w-80 rounded-md border bg-background p-3 text-foreground shadow-xl" style={{ left: position.x, top: position.y }} onClick={event => event.stopPropagation()}>
-      <div className="mb-3 flex cursor-move touch-none items-center justify-between gap-2 rounded-sm px-1 py-0.5" onPointerDown={startMove} onPointerMove={move}>
-        <div className="flex min-w-0 items-center gap-1.5">
+    <div ref={panelRef} className="fixed z-50 w-80 rounded-md border bg-background p-3 text-foreground shadow-xl" style={{ left: position.x, top: position.y }} onClick={event => event.stopPropagation()}>
+      <div className="mb-3 flex items-center justify-between gap-2 rounded-sm px-1 py-0.5">
+        <div className="flex min-w-0 flex-1 cursor-move touch-none items-center gap-1.5" onPointerDown={startMove} onPointerMove={move}>
           <GripHorizontal className="size-3.5 shrink-0 text-muted-foreground" />
           <h3 className="truncate text-sm font-semibold">Popover 编辑</h3>
         </div>
-        <Button variant="ghost" size="icon" className="size-7" onClick={onClose} title="关闭"><X className="size-3.5" /></Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="size-7" onClick={onOpenDialog} title="打开 Dialog 编辑"><ExternalLink className="size-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="size-7" onClick={onClose} title="关闭"><X className="size-3.5" /></Button>
+        </div>
       </div>
       <QuickSignEditFields sign={sign} onChange={onChange} compact />
+    </div>
+  )
+}
+
+export function SignListDialogEditor({ sign, open, onChange, onClose }: SignListDialogEditorProps) {
+  useEffect(() => {
+    if (!open) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [onClose, open])
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" onMouseDown={onClose}>
+      <div className="w-full max-w-md rounded-md border bg-background p-4 text-foreground shadow-xl" onMouseDown={event => event.stopPropagation()}>
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h3 className="truncate text-sm font-semibold">Dialog 编辑</h3>
+          <Button variant="ghost" size="icon" className="size-7" onClick={onClose} title="关闭"><X className="size-3.5" /></Button>
+        </div>
+        <QuickSignEditFields sign={sign} onChange={onChange} />
+        <div className="mt-4 flex justify-end">
+          <Button onClick={onClose}>完成</Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ColorBadgePicker({ sign, onValueChange }: { sign: Sign; onValueChange: (value: Sign['popoverColor']) => void }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {POPOVER_COLOR_OPTIONS.map(option => {
+        const active = sign.popoverColor === option.value
+        const variant = option.value === 'slate' ? defaultSignBadgeVariant(sign) : option.value
+        return (
+          <button key={option.value} type="button" className="rounded p-0" onClick={() => onValueChange(option.value)}>
+            <Badge variant={variant} className={`pointer-events-none ${active ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : 'opacity-80'}`}>
+              {option.label}
+            </Badge>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -91,6 +144,9 @@ function QuickSignEditFields({ sign, onChange, compact = false }: EditorProps & 
   const update = (updates: Partial<Sign>) => {
     setDraft(current => ({ ...current, ...updates }))
     onChange(updates)
+  }
+  const updatePopoverColor = (value: Sign['popoverColor']) => {
+    update({ popoverColor: value })
   }
   const updateText = (key: keyof Pick<Sign, 'name' | 'exitName' | 'exitDestination'>, limit: number) => (event: ChangeEvent<HTMLInputElement>) => {
     update({ [key]: Array.from(event.target.value).slice(0, limit).join('') })
@@ -115,6 +171,9 @@ function QuickSignEditFields({ sign, onChange, compact = false }: EditorProps & 
   if (sign.template === 'expressway') {
     return (
       <div className={`grid ${gapClass}`}>
+        <Field label="颜色">
+          <ColorBadgePicker sign={draft} onValueChange={updatePopoverColor} />
+        </Field>
         <Field label="高速类型">
           <Select value={draft.kind} onValueChange={value => update({ kind: value as ExpresswayKind, provinceLabel: value === 'provincial' ? draft.provinceLabel || '粤' : '' })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -133,6 +192,9 @@ function QuickSignEditFields({ sign, onChange, compact = false }: EditorProps & 
   if (sign.template === 'ordinary-road') {
     return (
       <div className={`grid ${gapClass}`}>
+        <Field label="颜色">
+          <ColorBadgePicker sign={draft} onValueChange={updatePopoverColor} />
+        </Field>
         <Field label="道路类型">
           <Select value={draft.kind} onValueChange={value => update({ kind: value as OrdinaryRoadKind })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -144,8 +206,25 @@ function QuickSignEditFields({ sign, onChange, compact = false }: EditorProps & 
     )
   }
 
+  if (sign.template === 'direction-guidance') {
+    return (
+      <div className={`grid ${gapClass}`}>
+        <Field label="颜色">
+          <ColorBadgePicker sign={draft} onValueChange={updatePopoverColor} />
+        </Field>
+        <div className="grid grid-cols-2 gap-2">
+          <Field label="左区方向"><Input value={draft.leftDirection} onChange={event => update({ leftDirection: Array.from(event.target.value.trim()).slice(0, 1).join('') })} maxLength={1} /></Field>
+          <Field label="右区方向"><Input value={draft.rightDirection} onChange={event => update({ rightDirection: Array.from(event.target.value.trim()).slice(0, 1).join('') })} maxLength={1} /></Field>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={`grid ${gapClass}`}>
+      <Field label="颜色">
+        <ColorBadgePicker sign={draft} onValueChange={updatePopoverColor} />
+      </Field>
       <div className="grid grid-cols-2 gap-2">
         <Field label="出口编号"><Input value={draft.exitNumber} onChange={updateExitNumber} inputMode="numeric" maxLength={4} /></Field>
         {sign.template === 'road-fork-preview' && <Field label="距离 km"><Input value={draft.exitDistance} onChange={updateExitDistance} inputMode="decimal" maxLength={5} /></Field>}

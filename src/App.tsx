@@ -1,8 +1,8 @@
 import { Header } from '@/components/layout/Header'
-import { SignList } from '@/features/sign-generator/SignList'
-import { SignPreview } from '@/features/sign-generator/SignPreview'
-import { SignSettings } from '@/features/sign-generator/SignSettings'
-import { useSignWorkspace } from '@/features/sign-generator/use-sign-workspace'
+import { SignList } from '@/features/sign-generator/components/SignList'
+import { SignPreview } from '@/features/sign-generator/components/SignPreview'
+import { SignSettings } from '@/features/sign-generator/components/SignSettings'
+import { useSignWorkspace } from '@/features/sign-generator/state/use-sign-workspace'
 
 export default function App() {
   const workspace = useSignWorkspace()

@@ -1,10 +1,12 @@
 import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
-import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './expressway'
-import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './ordinary_road'
-import { generateRoadForkPreviewSvg } from './Interchange/road-fork-preview'
-import { generateTwoLaneInterchangeExitSvg } from './Interchange/two-lane-interchange-exit'
+import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
+import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
+import { generateDirectionGuidanceSvg } from './interchange/direction-guidance'
+import { generateRoadForkPreviewSvg } from './interchange/road-fork-preview'
+import { generateTwoLaneInterchangeExitSvg } from './interchange/two-lane-interchange-exit'
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
+  if (sign.template === 'direction-guidance') return generateDirectionGuidanceSvg(sign)
   if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)
   if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
   if (sign.template === 'ordinary-road') return generateOrdinaryRoadSignSvg(sign.kind as OrdinaryRoadKind, sign.digits)
@@ -14,6 +16,8 @@ export async function generateSignSvg(sign: Sign): Promise<string> {
 export function signFilename(sign: Sign): string {
   const code = sign.template === 'road-fork-preview'
     ? `道路分岔预告_${sign.exitNumber}`
+    : sign.template === 'direction-guidance'
+      ? `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
     : sign.template === 'two-lane-interchange-exit'
       ? `2车道立交枢纽出口_${sign.rightRoute}`
       : sign.template === 'ordinary-road'

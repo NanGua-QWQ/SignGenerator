@@ -2,10 +2,10 @@ import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Sign } from '../../types'
 import { routeSignWidth, cleanExitText, cleanExitDistance, cleanExitRoute, cleanDirection } from '../generator'
-import { expresswaySignNode } from '../expressway'
+import { expresswaySignNode } from '../sign/expressway'
 import { GREEN, WHITE, escapeXml, loadFont, outlinedText } from '../svg-text'
 import roadForkPreviewTemplate from '/template/道路分岔预告.svg?raw'
-import { NUMBERED_EXIT_RIGHT_MARGIN, NUMBERED_EXIT_WIDTH, NUMBERED_EXIT_Y, expandCanvasForNumberedExit, numberedExitSignNode } from './numbered-exit'
+import { NUMBERED_EXIT_RIGHT_MARGIN, NUMBERED_EXIT_WIDTH, NUMBERED_EXIT_Y, expandCanvasForNumberedExit, numberedExitSignNode } from '../numbered-exit'
 
 const TEMPLATE_WIDTH = 1011.98513
 const TEMPLATE_HEIGHT = 371.83044

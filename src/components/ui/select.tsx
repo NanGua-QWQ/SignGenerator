@@ -40,6 +40,7 @@ function SelectContent({
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
+        data-slot="select-content"
         position={position}
         className={cn(
           'bg-background text-foreground relative z-50 min-w-32 overflow-hidden rounded-md border shadow-lg',
