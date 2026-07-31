@@ -1,6 +1,6 @@
 import type { Font } from '@pdf-lib/fontkit'
+import { use } from 'react'
 import type { ReactNode } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
 import type { ExpresswayKind } from '../../types'
 import { BLACK, GREEN, RED, WHITE, YELLOW, YELLOW_GREEN, loadFont, OutlinedText, Layout, textGap, textLayout } from '../svg-text'
 
@@ -148,18 +148,36 @@ export function ExpresswaySignNode(options: ExpresswaySignNodeOptions & { inline
   )
 }
 
-export async function generateExpresswaySignSvg(inputCode: string, inputName = '', inputProvinceLabel = '', inputKind?: ExpresswayKind, threeDigitDescend = false): Promise<string> {
-  const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
-  return renderToStaticMarkup(
+interface ExpresswaySignSvgProps {
+  code: string
+  name?: string
+  provinceLabel?: string
+  kind?: ExpresswayKind
+  threeDigitDescend?: boolean
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  ariaLabel?: string
+}
+
+export function ExpresswaySignSvg({ code, name = '', provinceLabel = '', kind, threeDigitDescend = false, x, y, width, height, ariaLabel }: ExpresswaySignSvgProps): ReactNode {
+  const fontChinese = use(loadFont('a'))
+  const fontLatin = use(loadFont('b'))
+  return (
     <ExpresswaySignNode
-      code={inputCode}
-      name={inputName}
-      provinceLabel={inputProvinceLabel}
-      kind={inputKind}
+      code={code}
+      name={name}
+      provinceLabel={provinceLabel}
+      kind={kind}
       threeDigitDescend={threeDigitDescend}
+      x={x}
+      y={y}
+      width={width}
+      height={height}
       fontChinese={fontChinese}
       fontLatin={fontLatin}
-      ariaLabel={`${inputCode} ${inputName.trim()}`.trim() + ' 道路编号牌'}
-    />,
+      ariaLabel={ariaLabel ?? `${code} ${name.trim()}`.trim() + ' 道路编号牌'}
+    />
   )
 }

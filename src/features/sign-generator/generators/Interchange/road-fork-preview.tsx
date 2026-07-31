@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react'
+import { use } from 'react'
 import type { Font } from '@pdf-lib/fontkit'
-import { renderToStaticMarkup } from 'react-dom/server'
 import type { Sign } from '../../types'
 import { routeSignWidth, cleanExitText, cleanExitDistance, cleanExitRoute, cleanDirection } from '../generator'
 import { ExpresswaySignNode } from '../sign/expressway'
 import { GREEN, WHITE, escapeXml, loadFont, OutlinedText } from '../svg-text'
+import { RawSvg } from '../raw-svg'
 import roadForkPreviewTemplate from '/template/道路分岔预告.svg?raw'
 import { NUMBERED_EXIT_RIGHT_MARGIN, NUMBERED_EXIT_WIDTH, NUMBERED_EXIT_Y, expandCanvasForNumberedExit, NumberedExitSignNode } from '../numbered-exit'
 
@@ -35,8 +37,9 @@ function DirectionPlate({ fontChinese, text, x, y }: DirectionPlateProps) {
   )
 }
 
-export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
-  const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
+export function RoadForkPreviewSign({ sign }: { sign: Sign }): ReactNode {
+  const fontChinese = use(loadFont('a'))
+  const fontLatin = use(loadFont('b'))
   const exitNumber = cleanExitNumber(sign.exitNumber)
   const exitDistance = cleanExitDistance(sign.exitDistance)
   const exitName = cleanExitText(sign.exitName, '', 6)
@@ -50,20 +53,23 @@ export async function generateRoadForkPreviewSvg(sign: Sign): Promise<string> {
   const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
   const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 14
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
-  const overlay = renderToStaticMarkup(
-    <g data-generated="road-fork-preview">
-      <NumberedExitSignNode exitNumber={exitNumber} fontChinese={fontChinese} fontLatin={fontLatin} x={NUMBERED_EXIT_X} y={NUMBERED_EXIT_Y} />
-      <DirectionPlate fontChinese={fontChinese} text={leftDirection} x={150} y={58} />
-      <ExpresswaySignNode code={leftRoute} kind={sign.leftRouteKind} provinceLabel={sign.leftRouteProvinceLabel} threeDigitDescend={sign.leftRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={LEFT_ROUTE_SIGN_X} y={ROUTE_SIGN_Y} width={leftRouteWidth} height={ROUTE_SIGN_HEIGHT} />
-      <ExpresswaySignNode code={rightRoute} kind={sign.rightRouteKind} provinceLabel={sign.rightRouteProvinceLabel} threeDigitDescend={sign.rightRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={rightRouteX} y={ROUTE_SIGN_Y} width={rightRouteWidth} height={ROUTE_SIGN_HEIGHT} />
-      <DirectionPlate fontChinese={fontChinese} text={rightDirection} x={rightDirectionX} y={58} />
-      <OutlinedText font={fontChinese} text={exitName} startX={169.3} startY={168} width={170} height={58} fill={WHITE} options={{ maxGap: 18 }} />
-      <OutlinedText font={fontChinese} text={destination} startX={670} startY={168} width={175} height={58} fill={WHITE} options={{ maxGap: 18 }} />
-      <OutlinedText font={fontChinese} text={exitDistance} startX={645} startY={266} width={85} height={68} fill={WHITE} options={{ maxGap: 4, minGap: 0 }} />
-    </g>,
+  const template = expandCanvasForNumberedExit(
+    roadForkPreviewTemplate.replace(/<!--rotationCenter:[\s\S]*?-->/, ''),
+    TEMPLATE_WIDTH,
+    TEMPLATE_HEIGHT,
   )
-  const svg = roadForkPreviewTemplate
-    .replace(/<!--rotationCenter:[\s\S]*?-->/, '')
-    .replace('<svg ', `<svg role="img" aria-label="${label} 道路分岔预告牌" `)
-  return expandCanvasForNumberedExit(svg, TEMPLATE_WIDTH, TEMPLATE_HEIGHT).replace('</svg>', `${overlay}</svg>`)
+  return (
+    <RawSvg template={template} label={`${label} 道路分岔预告牌`} width={TEMPLATE_WIDTH} height={TEMPLATE_HEIGHT}>
+      <g data-generated="road-fork-preview">
+        <NumberedExitSignNode exitNumber={exitNumber} fontChinese={fontChinese} fontLatin={fontLatin} x={NUMBERED_EXIT_X} y={NUMBERED_EXIT_Y} />
+        <DirectionPlate fontChinese={fontChinese} text={leftDirection} x={150} y={58} />
+        <ExpresswaySignNode code={leftRoute} kind={sign.leftRouteKind} provinceLabel={sign.leftRouteProvinceLabel} threeDigitDescend={sign.leftRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={LEFT_ROUTE_SIGN_X} y={ROUTE_SIGN_Y} width={leftRouteWidth} height={ROUTE_SIGN_HEIGHT} />
+        <ExpresswaySignNode code={rightRoute} kind={sign.rightRouteKind} provinceLabel={sign.rightRouteProvinceLabel} threeDigitDescend={sign.rightRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={rightRouteX} y={ROUTE_SIGN_Y} width={rightRouteWidth} height={ROUTE_SIGN_HEIGHT} />
+        <DirectionPlate fontChinese={fontChinese} text={rightDirection} x={rightDirectionX} y={58} />
+        <OutlinedText font={fontChinese} text={exitName} startX={169.3} startY={168} width={170} height={58} fill={WHITE} options={{ maxGap: 18 }} />
+        <OutlinedText font={fontChinese} text={destination} startX={670} startY={168} width={175} height={58} fill={WHITE} options={{ maxGap: 18 }} />
+        <OutlinedText font={fontChinese} text={exitDistance} startX={645} startY={266} width={85} height={68} fill={WHITE} options={{ maxGap: 4, minGap: 0 }} />
+      </g>
+    </RawSvg>
+  )
 }

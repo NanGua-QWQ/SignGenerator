@@ -1,5 +1,6 @@
 import type { Font } from '@pdf-lib/fontkit'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { use } from 'react'
+import type { ReactNode } from 'react'
 import type { OrdinaryRoadKind } from '../../types'
 import { BLACK, RED, WHITE, YELLOW, loadFont, OutlinedText } from '../svg-text'
 
@@ -80,9 +81,14 @@ function OrdinaryRoadNode({ kind, digits, fontLatin }: OrdinaryRoadNodeProps) {
   )
 }
 
-export async function generateOrdinaryRoadSignSvg(kind: OrdinaryRoadKind, digits: string): Promise<string> {
-  const [fontLatin] = await Promise.all([loadFont('b')])
-  return renderToStaticMarkup(<OrdinaryRoadNode kind={kind} digits={digits} fontLatin={fontLatin} />)
+interface OrdinaryRoadSignSvgProps {
+  kind: OrdinaryRoadKind
+  digits: string
+}
+
+export function OrdinaryRoadSignSvg({ kind, digits }: OrdinaryRoadSignSvgProps): ReactNode {
+  const fontLatin = use(loadFont('b'))
+  return <OrdinaryRoadNode kind={kind} digits={digits} fontLatin={fontLatin} />
 }
 
 export function ordinaryRoadFilename(kind: OrdinaryRoadKind, digits: string): string {

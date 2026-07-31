@@ -1,18 +1,30 @@
+import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
-import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
-import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
-import { generateDirectionGuidanceSvg } from './Interchange/direction-guidance'
-import { generateEntrancePreviewTwoDirectionsSvg } from './Interchange/entrance-preview-two-directions'
-import { generateRoadForkPreviewSvg } from './Interchange/road-fork-preview'
-import { generateTwoLaneInterchangeExitSvg } from './Interchange/two-lane-interchange-exit'
+import { ExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
+import { OrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
+import { DirectionGuidanceSign } from './Interchange/direction-guidance'
+import { EntrancePreviewTwoDirectionsSign } from './Interchange/entrance-preview-two-directions'
+import { RoadForkPreviewSign } from './Interchange/road-fork-preview'
+import { TwoLaneInterchangeExitSign } from './Interchange/two-lane-interchange-exit'
 
-export async function generateSignSvg(sign: Sign): Promise<string> {
-  if (sign.template === 'direction-guidance') return generateDirectionGuidanceSvg(sign)
-  if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)
-  if (sign.template === 'entrance-preview-two-directions') return generateEntrancePreviewTwoDirectionsSvg(sign)
-  if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
-  if (sign.template === 'ordinary-road') return generateOrdinaryRoadSignSvg(sign.kind as OrdinaryRoadKind, sign.digits)
-  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind as ExpresswayKind, sign.threeDigitDescend)
+const SIGN_FALLBACK: ReactNode = null
+
+function SignSvgContent(sign: Sign): ReactNode {
+  if (sign.template === 'direction-guidance') return <DirectionGuidanceSign sign={sign} />
+  if (sign.template === 'two-lane-interchange-exit') return <TwoLaneInterchangeExitSign sign={sign} />
+  if (sign.template === 'entrance-preview-two-directions') return <EntrancePreviewTwoDirectionsSign sign={sign} />
+  if (sign.template === 'road-fork-preview') return <RoadForkPreviewSign sign={sign} />
+  if (sign.template === 'ordinary-road') return <OrdinaryRoadSignSvg kind={sign.kind as OrdinaryRoadKind} digits={sign.digits} />
+  return <ExpresswaySignSvg code={sign.code} name={sign.name} provinceLabel={sign.provinceLabel} kind={sign.kind as ExpresswayKind} threeDigitDescend={sign.threeDigitDescend} />
+}
+
+export function SignSvg({ sign }: { sign: Sign }): ReactNode {
+  return (
+    <Suspense fallback={SIGN_FALLBACK}>
+      {SignSvgContent(sign)}
+    </Suspense>
+  )
 }
 
 export function signFilename(sign: Sign): string {
