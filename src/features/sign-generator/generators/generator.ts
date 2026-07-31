@@ -1,10 +1,10 @@
 import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
 import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
 import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
-import { generateDirectionGuidanceSvg } from './interchange/direction-guidance'
-import { generateEntrancePreviewTwoDirectionsSvg } from './interchange/entrance-preview-two-directions'
-import { generateRoadForkPreviewSvg } from './interchange/road-fork-preview'
-import { generateTwoLaneInterchangeExitSvg } from './interchange/two-lane-interchange-exit'
+import { generateDirectionGuidanceSvg } from './Interchange/direction-guidance'
+import { generateEntrancePreviewTwoDirectionsSvg } from './Interchange/entrance-preview-two-directions'
+import { generateRoadForkPreviewSvg } from './Interchange/road-fork-preview'
+import { generateTwoLaneInterchangeExitSvg } from './Interchange/two-lane-interchange-exit'
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
   if (sign.template === 'direction-guidance') return generateDirectionGuidanceSvg(sign)
@@ -16,17 +16,27 @@ export async function generateSignSvg(sign: Sign): Promise<string> {
 }
 
 export function signFilename(sign: Sign): string {
-  const code = sign.template === 'road-fork-preview'
-    ? `道路分岔预告_${sign.exitNumber}`
-    : sign.template === 'direction-guidance'
-      ? `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
-    : sign.template === 'two-lane-interchange-exit'
-      ? `2车道立交枢纽出口_${sign.rightRoute}`
-      : sign.template === 'entrance-preview-two-directions'
-        ? `入口预告-2方向_${sign.rightRoute}`
-      : sign.template === 'ordinary-road'
-        ? ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
-      : sign.code
+  let code: string
+  switch (sign.template) {
+    case 'road-fork-preview':
+      code = `道路分岔预告_${sign.exitNumber}`
+      break
+    case 'direction-guidance':
+      code = `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
+      break
+    case 'two-lane-interchange-exit':
+      code = `2车道立交枢纽出口_${sign.rightRoute}`
+      break
+    case 'entrance-preview-two-directions':
+      code = `入口预告-2方向_${sign.rightRoute}`
+      break
+    case 'ordinary-road':
+      code = ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
+      break
+    default:
+      code = sign.code
+      break
+  }
   const name = sign.template === 'expressway' || sign.template === 'ordinary-road' ? sign.name : sign.exitName || sign.name
   const safeCode = String(code || 'road-sign').trim().replace(/[<>:"/\\|?*]/g, '_')
   const safeName = String(name || '').trim().replace(/[<>:"/\\|?*]/g, '_')

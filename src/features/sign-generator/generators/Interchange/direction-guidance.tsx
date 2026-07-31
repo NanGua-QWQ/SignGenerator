@@ -1,8 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Sign } from '../../types'
-import { expresswaySignNode } from '../sign/expressway'
+import { ExpresswaySignNode } from '../sign/expressway'
 import { cleanDirection, cleanExitRoute, routeSignWidth } from '../generator'
-import { GREEN, escapeXml, loadFont, outlinedText } from '../svg-text'
+import { GREEN, escapeXml, loadFont, OutlinedText } from '../svg-text'
 import directionGuidanceTemplate from '/template/分向指路标志.svg?raw'
 
 const TEMPLATE_WIDTH = 200.07
@@ -21,9 +21,9 @@ export async function generateDirectionGuidanceSvg(sign: Sign): Promise<string> 
 
   const overlay = renderToStaticMarkup(
     <g data-generated="direction-guidance">
-      {outlinedText(fontChinese, leftDirection, 106, 29.8, 58, 48, GREEN, { maxGap: 8, minGap: 8 })}
-      {expresswaySignNode({ code: route, kind: sign.leftRouteKind, provinceLabel: sign.leftRouteProvinceLabel, threeDigitDescend: sign.leftRouteThreeDigitDescend, fontChinese, fontLatin, x: leftRouteX, y: ROUTE_SIGN_Y, width: leftRouteWidth, height: ROUTE_SIGN_HEIGHT })}
-      {outlinedText(fontChinese, rightDirection, 38, 225, 53, 43, GREEN, { maxGap: 8, minGap: 8 })}
+      <OutlinedText font={fontChinese} text={leftDirection} startX={106} startY={29.8} width={58} height={48} fill={GREEN} options={{ maxGap: 8, minGap: 8 }} />
+      <ExpresswaySignNode code={route} kind={sign.leftRouteKind} provinceLabel={sign.leftRouteProvinceLabel} threeDigitDescend={sign.leftRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={leftRouteX} y={ROUTE_SIGN_Y} width={leftRouteWidth} height={ROUTE_SIGN_HEIGHT} />
+      <OutlinedText font={fontChinese} text={rightDirection} startX={38} startY={225} width={53} height={43} fill={GREEN} options={{ maxGap: 8, minGap: 8 }} />
     </g>,
   )
 

@@ -1,5 +1,4 @@
 import type { Font, Glyph } from '@pdf-lib/fontkit'
-import type { ReactNode } from 'react'
 
 const FONT_URLS = {
   han: '/fonts/SourceHanSansSC-Bold.otf',
@@ -105,7 +104,20 @@ export function textGap(usedWidth: number, glyphCount: number, width: number, op
   return Math.max(minGap, cappedGap)
 }
 
-export function renderLayout(layout: TextLayout, startX: number, startY: number, fill: string, gap: number): ReactNode[] {
+interface LayoutProps {
+  layout: TextLayout
+  startX: number
+  startY: number
+  children: string
+  gap: number
+}
+export function Layout({
+  layout,
+  startX,
+  startY,
+  children: fill,
+  gap
+}: LayoutProps) {
   let x = startX
   return layout.glyphs.map(({ box, scale, width: glyphWidth, path, isWhitespace }, index) => {
     if (isWhitespace || !path) {
@@ -118,10 +130,22 @@ export function renderLayout(layout: TextLayout, startX: number, startY: number,
   })
 }
 
-export function outlinedText(font: Font, text: string, startX: number, startY: number, width: number, height: number, fill: string, options: LayoutOptions = {}): ReactNode[] {
+interface OutlinedTextProps {
+  font: Font
+  text: string
+  startX: number
+  startY: number
+  width: number
+  height: number
+  fill: string
+  options?: LayoutOptions
+}
+export function OutlinedText({ font, text, startX, startY, width, height, fill, options = {} }: OutlinedTextProps) {
   const layout = textLayout(font, text, height)
   const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
   const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
   const x = options.align === 'start' ? startX : startX + (width - contentWidth) / 2
-  return renderLayout(layout, x, startY, fill, gap)
+  return <Layout layout={layout} startX={x} startY={startY} gap={gap}>
+    {fill}
+  </Layout>
 }

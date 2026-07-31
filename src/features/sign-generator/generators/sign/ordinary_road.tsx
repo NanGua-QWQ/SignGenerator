@@ -1,7 +1,7 @@
 import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { OrdinaryRoadKind } from '../../types'
-import { BLACK, RED, WHITE, YELLOW, loadFont, outlinedText } from '../svg-text'
+import { BLACK, RED, WHITE, YELLOW, loadFont, OutlinedText } from '../svg-text'
 
 const WIDTH = 213.51
 const HEIGHT = 102.59
@@ -55,7 +55,12 @@ function ordinaryRoadCode(kind: OrdinaryRoadKind, digits: string): string {
   return `${ROAD_CONFIG[kind].codePrefix}${cleanDigits(digits)}`
 }
 
-function ordinaryRoadNode(kind: OrdinaryRoadKind, digits: string, fontLatin: Font) {
+interface OrdinaryRoadNodeProps {
+  kind: OrdinaryRoadKind
+  digits: string
+  fontLatin: Font
+}
+function OrdinaryRoadNode({ kind, digits, fontLatin }: OrdinaryRoadNodeProps) {
   const config = ROAD_CONFIG[kind]
   const code = ordinaryRoadCode(kind, digits)
 {/*       <g transform={REFERENCE_PATH_TRANSFORM} opacity={0.45}>
@@ -70,14 +75,14 @@ function ordinaryRoadNode(kind: OrdinaryRoadKind, digits: string, fontLatin: Fon
         <rect x={MIDDLE_INSET_X} y={MIDDLE_INSET_Y} width={MIDDLE_WIDTH} height={MIDDLE_HEIGHT} rx={MIDDLE_RADIUS} fill={config.border} stroke="none" strokeMiterlimit={10} />
         <rect x={INNER_INSET_X} y={INNER_INSET_Y} width={INNER_WIDTH} height={INNER_HEIGHT} rx={INNER_RADIUS} fill={config.fill} stroke="none" strokeMiterlimit={10} />
 
-        {outlinedText(fontLatin, code, CODE_X, CODE_Y, CODE_WIDTH, CODE_HEIGHT, config.text, { maxGap: 13, minGap: 9 })}
+        <OutlinedText font={fontLatin} text={code} startX={CODE_X} startY={CODE_Y} width={CODE_WIDTH} height={CODE_HEIGHT} fill={config.text} options={{ maxGap: 13, minGap: 9 }} />
     </svg>
   )
 }
 
 export async function generateOrdinaryRoadSignSvg(kind: OrdinaryRoadKind, digits: string): Promise<string> {
   const [fontLatin] = await Promise.all([loadFont('b')])
-  return renderToStaticMarkup(ordinaryRoadNode(kind, digits, fontLatin))
+  return renderToStaticMarkup(<OrdinaryRoadNode kind={kind} digits={digits} fontLatin={fontLatin} />)
 }
 
 export function ordinaryRoadFilename(kind: OrdinaryRoadKind, digits: string): string {

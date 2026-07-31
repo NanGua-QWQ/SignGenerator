@@ -158,13 +158,13 @@ export function SignPreview({ sign }: { sign: Sign }) {
     const lockHorizontal = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
     return lockHorizontal
       ? {
-          board: { x: next.board.x, y: start.start.y },
-          point: { x: next.point.x, y: start.startPoint.y },
-        }
+        board: { x: next.board.x, y: start.start.y },
+        point: { x: next.point.x, y: start.startPoint.y },
+      }
       : {
-          board: { x: start.start.x, y: next.board.y },
-          point: { x: start.startPoint.x, y: next.point.y },
-        }
+        board: { x: start.start.x, y: next.board.y },
+        point: { x: start.startPoint.x, y: next.point.y },
+      }
   }
 
   const updateBoardPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -234,10 +234,10 @@ export function SignPreview({ sign }: { sign: Sign }) {
 
   const measureDelta = measurement
     ? {
-        x: measurement.end.x - measurement.start.x,
-        y: measurement.end.y - measurement.start.y,
-        length: Math.hypot(measurement.end.x - measurement.start.x, measurement.end.y - measurement.start.y),
-      }
+      x: measurement.end.x - measurement.start.x,
+      y: measurement.end.y - measurement.start.y,
+      length: Math.hypot(measurement.end.x - measurement.start.x, measurement.end.y - measurement.start.y),
+    }
     : null
 
   return (
@@ -265,7 +265,13 @@ export function SignPreview({ sign }: { sign: Sign }) {
             {measurement && <PixelMeasureOverlay measurement={measurement} />}
           </>
         )}
-        {isLoading ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" /> : error ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p> : <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} dangerouslySetInnerHTML={{ __html: svg }} />}
+        {isLoading
+          ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" />
+          : error
+            ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p>
+            : <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{
+              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`
+            }} dangerouslySetInnerHTML={{ __html: svg }} />}
       </div>
     </section>
   )
