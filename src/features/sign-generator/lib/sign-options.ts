@@ -1,6 +1,12 @@
-import type { ExpresswayKind, OrdinaryRoadKind } from '../types'
+import type { EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind } from '../types'
 
 export const DIRECTION_OPTIONS = ['东', '南', '西', '北']
+
+export const ENTRANCE_ARROW_DIRECTION_OPTIONS: Array<{ value: EntranceArrowDirection; label: string }> = [
+  { value: 'front', label: '前' },
+  { value: 'left', label: '左' },
+  { value: 'right', label: '右' },
+]
 
 export const EXPRESSWAY_KIND_OPTIONS: Array<{ value: ExpresswayKind; label: string }> = [
   { value: 'national', label: '国家高速' },

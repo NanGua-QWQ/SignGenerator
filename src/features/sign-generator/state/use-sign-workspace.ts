@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { WorkspaceTab } from '@/components/layout/Header'
 import type { ExpresswayKind, Sign, SignTemplate } from '../types'
 import {
-  FORK_ADD_CHOICES,
+  ENTRANCE_EXIT_ADD_CHOICES,
+  INTERCHANGE_ADD_CHOICES,
   SIGN_ADD_CHOICES,
   createSign,
   isExpresswayKind,
@@ -11,13 +12,14 @@ import {
   templateForTab,
   visibleSignsForTab,
 } from '../lib/sign-model'
-import { createInitialWorkspace, saveWorkspace, type WorkspaceState } from './workspace-storage'
+import { createInitialWorkspace, loadSavedWorkspace, saveWorkspace, type WorkspaceState } from './workspace-storage'
 
 export function useSignWorkspace() {
   const [initialWorkspace] = useState<WorkspaceState>(createInitialWorkspace)
   const [signs, setSigns] = useState<Sign[]>(initialWorkspace.signs)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>(initialWorkspace.activeTab)
   const [selectedId, setSelectedId] = useState<string>(initialWorkspace.selectedId)
+  const [readyToSave, setReadyToSave] = useState(false)
   const activeTemplate = templateForTab(activeTab)
   const visibleSigns = useMemo(() => visibleSignsForTab(signs, activeTab), [activeTab, signs])
   const expresswaySignList = useMemo(() => signs.filter(sign => sign.template === 'expressway'), [signs])
@@ -27,8 +29,19 @@ export function useSignWorkspace() {
   )
 
   useEffect(() => {
+    const savedWorkspace = loadSavedWorkspace(initialWorkspace)
+    if (savedWorkspace) {
+      setSigns(savedWorkspace.signs)
+      setActiveTab(savedWorkspace.activeTab)
+      setSelectedId(savedWorkspace.selectedId)
+    }
+    setReadyToSave(true)
+  }, [initialWorkspace])
+
+  useEffect(() => {
+    if (!readyToSave) return
     saveWorkspace({ signs, activeTab, selectedId })
-  }, [activeTab, selectedId, signs])
+  }, [activeTab, readyToSave, selectedId, signs])
 
   const addSign = useCallback((template?: SignTemplate) => {
     const sign = createSign({ template: template ?? activeTemplate })
@@ -82,13 +95,24 @@ export function useSignWorkspace() {
     setSelectedId(id)
   }, [activeTab])
 
+  const addChoices = activeTab === 'interchange-guidance'
+    ? INTERCHANGE_ADD_CHOICES
+    : activeTab === 'entrance-exit-guidance'
+      ? ENTRANCE_EXIT_ADD_CHOICES
+      : SIGN_ADD_CHOICES
+  const signListTitle = activeTab === 'interchange-guidance'
+    ? '立交枢纽指引'
+    : activeTab === 'entrance-exit-guidance'
+      ? '出入口指引'
+      : '道路名称标识'
+
   return {
     activeTab,
-    addChoices: activeTab === 'fork-guidance' ? FORK_ADD_CHOICES : SIGN_ADD_CHOICES,
+    addChoices,
     expresswaySignList,
     selectedId,
     selectedSign,
-    signListTitle: activeTab === 'fork-guidance' ? '分叉指引' : '标志列表',
+    signListTitle,
     visibleSigns,
     addSign,
     changeTab,

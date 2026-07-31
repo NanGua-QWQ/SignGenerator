@@ -1,7 +1,6 @@
 import type { WorkspaceTab } from '@/components/layout/Header'
 import type { Sign, SignTemplate } from '../types'
 import {
-  createSign,
   isTemplateParam,
   parseInitialKind,
   restoreSign,
@@ -43,6 +42,18 @@ const DEFAULT_TWO_LANE_SIGN = {
   exitDestination: '广州',
 } satisfies Partial<Sign>
 
+const DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN = {
+  template: 'entrance-preview-two-directions',
+  name: '入口预告-2方向',
+  exitDistance: '500',
+  exitName: '汕头',
+  exitDestination: '深圳',
+  rightRoute: 'G15',
+  entranceSecondDirectionEnabled: true,
+  entranceCardinalDirection: '南',
+  entranceArrowDirection: 'front',
+} satisfies Partial<Sign>
+
 export interface WorkspaceState {
   signs: Sign[]
   activeTab: WorkspaceTab
@@ -55,30 +66,34 @@ interface SavedWorkspace extends WorkspaceState {
 
 export function createInitialWorkspace(): WorkspaceState {
   const fallbackSigns = createInitialSigns()
-  const fallbackWorkspace = normalizeWorkspace(fallbackSigns, initialTab(), fallbackSigns[0].id)
-  if (typeof window === 'undefined') return fallbackWorkspace
+  return normalizeWorkspace(fallbackSigns, initialTab(), fallbackSigns[0].id)
+}
 
+export function loadSavedWorkspace(fallbackWorkspace: WorkspaceState): WorkspaceState | null {
+  if (typeof window === 'undefined') return null
   try {
     const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
-    if (!raw) return fallbackWorkspace
+    if (!raw) return null
 
     const parsed = JSON.parse(raw) as Partial<SavedWorkspace>
-    if (parsed.version !== WORKSPACE_STORAGE_VERSION || !Array.isArray(parsed.signs)) return fallbackWorkspace
+    if (parsed.version !== WORKSPACE_STORAGE_VERSION || !Array.isArray(parsed.signs)) return null
 
     const restoredSigns = parsed.signs.map(restoreSign).filter((sign): sign is Sign => Boolean(sign))
-    if (restoredSigns.length === 0) return fallbackWorkspace
+    if (restoredSigns.length === 0) return null
 
     return normalizeWorkspace(
       restoredSigns,
-      isWorkspaceTab(parsed.activeTab) ? parsed.activeTab : fallbackWorkspace.activeTab,
+      savedWorkspaceTab(parsed.activeTab) ?? fallbackWorkspace.activeTab,
       typeof parsed.selectedId === 'string' ? parsed.selectedId : restoredSigns[0].id,
     )
   } catch {
-    return fallbackWorkspace
+    return null
   }
 }
 
 export function saveWorkspace(workspace: WorkspaceState): void {
+  if (typeof window === 'undefined') return
+
   try {
     const savedWorkspace: SavedWorkspace = {
       version: WORKSPACE_STORAGE_VERSION,
@@ -98,12 +113,14 @@ export function normalizeWorkspace(signs: Sign[], activeTab: WorkspaceTab, selec
 }
 
 function initialTab(): WorkspaceTab {
-  const template = new URLSearchParams(window.location.search).get('template')
-  return template === 'direction-guidance' || template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location' ? 'fork-guidance' : 'signs'
+  const template = new URLSearchParams(currentSearch()).get('template')
+  if (template === 'entrance-preview-two-directions') return 'entrance-exit-guidance'
+  if (template === 'direction-guidance' || template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'exit-location') return 'interchange-guidance'
+  return 'signs'
 }
 
 function createInitialSigns(): Sign[] {
-  const params = new URLSearchParams(window.location.search)
+  const params = new URLSearchParams(currentSearch())
   const requestedTemplate = params.get('template')
   const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
   const code = params.get('code') ?? 'G15'
@@ -122,44 +139,74 @@ function createInitialSigns(): Sign[] {
 
   if (template === 'direction-guidance') {
     return [
-      createSign({ template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
-      createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
-      createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
-      createSign({ code, name, kind }),
-      createSign({ code: 'G0421', name: '许广高速' }),
+      createInitialSign('initial-direction-guidance', { template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
+      createInitialSign('initial-road-fork-preview', { template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createInitialSign('initial-entrance-preview-two-directions', DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN),
+      createInitialSign('initial-two-lane-interchange-exit', { template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createInitialSign('initial-expressway-primary', { code, name, kind }),
+      createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
     ]
   }
 
   if (template === 'two-lane-interchange-exit') {
     return [
-      createSign({ template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
-      createSign({ template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
-      createSign({ template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
-      createSign({ code, name, kind }),
-      createSign({ code: 'G0421', name: '许广高速' }),
+      createInitialSign('initial-two-lane-interchange-exit', { template: 'two-lane-interchange-exit', name: '2车道立交枢纽出口', exitNumber, exitDistance, exitName, exitDestination: twoLaneExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createInitialSign('initial-direction-guidance', { template: 'direction-guidance', name: '分向指路标志', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute: 'G78', rightRoute: 'G15', leftDirection: '东', rightDirection: '西' }),
+      createInitialSign('initial-road-fork-preview', { template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createInitialSign('initial-entrance-preview-two-directions', DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN),
+      createInitialSign('initial-expressway-primary', { code, name, kind }),
+      createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
+    ]
+  }
+
+  if (template === 'entrance-preview-two-directions') {
+    return [
+      createInitialSign('initial-entrance-preview-two-directions', { ...DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN, exitDistance: params.get('exitDistance') ?? '500', exitName: params.get('exitName') ?? '汕头', exitDestination: exitDestinationParam ?? '深圳', rightRoute }),
+      createInitialSign('initial-road-fork-preview', { template: 'road-fork-preview', name: '道路分岔预告', exitNumber, exitDistance, exitName, exitDestination: roadForkExitDestination, leftRoute, rightRoute, leftDirection, rightDirection }),
+      createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
+      createInitialSign('initial-expressway-primary', { code, name, kind }),
+      createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
     ]
   }
 
   if (template === 'ordinary-road') {
     return [
-      createSign({ template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路标识牌' }),
-      createSign({ code, name, kind }),
-      createSign({ code: 'G0421', name: '许广高速' }),
-      createSign(DEFAULT_DIRECTION_GUIDANCE_SIGN),
-      createSign(DEFAULT_TWO_LANE_SIGN),
+      createInitialSign('initial-ordinary-road', { template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路名称标识' }),
+      createInitialSign('initial-expressway-primary', { code, name, kind }),
+      createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
+      createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
+      createInitialSign('initial-two-lane-interchange-exit', DEFAULT_TWO_LANE_SIGN),
+      createInitialSign('initial-entrance-preview-two-directions', DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN),
     ]
   }
 
   return [
-    createSign({ code, name, kind }),
-    createSign({ code: 'G0421', name: '许广高速' }),
-    createSign({ template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路标识牌' }),
-    createSign(DEFAULT_DIRECTION_GUIDANCE_SIGN),
-    createSign(DEFAULT_ROAD_FORK_PREVIEW_SIGN),
-    createSign(DEFAULT_TWO_LANE_SIGN),
+    createInitialSign('initial-expressway-primary', { code, name, kind }),
+    createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
+    createInitialSign('initial-ordinary-road', { template: 'ordinary-road', kind: 'ordinary-national', digits: '105', name: '普通道路名称标识' }),
+    createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
+    createInitialSign('initial-road-fork-preview', DEFAULT_ROAD_FORK_PREVIEW_SIGN),
+    createInitialSign('initial-two-lane-interchange-exit', DEFAULT_TWO_LANE_SIGN),
+    createInitialSign('initial-entrance-preview-two-directions', DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN),
   ]
 }
 
 function isWorkspaceTab(value: unknown): value is WorkspaceTab {
-  return value === 'signs' || value === 'fork-guidance'
+  return value === 'signs' || value === 'interchange-guidance' || value === 'entrance-exit-guidance'
+}
+
+function savedWorkspaceTab(value: unknown): WorkspaceTab | null {
+  if (value === 'fork-guidance') return 'interchange-guidance'
+  return isWorkspaceTab(value) ? value : null
+}
+
+function currentSearch(): string {
+  if (typeof window !== 'undefined') return window.location.search
+  return (globalThis as { __SIGN_GENERATOR_SEARCH__?: string }).__SIGN_GENERATOR_SEARCH__ ?? ''
+}
+
+function createInitialSign(id: string, overrides: Partial<Sign>): Sign {
+  const sign = restoreSign({ id, ...overrides })
+  if (!sign) throw new Error(`无法创建默认标志：${id}`)
+  return sign
 }

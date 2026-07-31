@@ -2,12 +2,14 @@ import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
 import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
 import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
 import { generateDirectionGuidanceSvg } from './interchange/direction-guidance'
+import { generateEntrancePreviewTwoDirectionsSvg } from './interchange/entrance-preview-two-directions'
 import { generateRoadForkPreviewSvg } from './interchange/road-fork-preview'
 import { generateTwoLaneInterchangeExitSvg } from './interchange/two-lane-interchange-exit'
 
 export async function generateSignSvg(sign: Sign): Promise<string> {
   if (sign.template === 'direction-guidance') return generateDirectionGuidanceSvg(sign)
   if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)
+  if (sign.template === 'entrance-preview-two-directions') return generateEntrancePreviewTwoDirectionsSvg(sign)
   if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
   if (sign.template === 'ordinary-road') return generateOrdinaryRoadSignSvg(sign.kind as OrdinaryRoadKind, sign.digits)
   return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind as ExpresswayKind, sign.threeDigitDescend)
@@ -20,6 +22,8 @@ export function signFilename(sign: Sign): string {
       ? `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
     : sign.template === 'two-lane-interchange-exit'
       ? `2车道立交枢纽出口_${sign.rightRoute}`
+      : sign.template === 'entrance-preview-two-directions'
+        ? `入口预告-2方向_${sign.rightRoute}`
       : sign.template === 'ordinary-road'
         ? ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
       : sign.code
@@ -44,6 +48,10 @@ export function cleanExitDistance(value: string): string {
   return String(value || '').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 1) || ' '
 }
 
+export function cleanEntranceDistance(value: string): string {
+  return String(value || '').replace(/\D/g, '').slice(0, 4) || '500'
+}
+
 export function cleanExitRoute(value: string, fallback: string): string {
   return String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || fallback
 }
@@ -51,6 +59,10 @@ export function cleanExitRoute(value: string, fallback: string): string {
 export function cleanDirection(value: string, fallback: string): string {
   const direction = Array.from(String(value || '').trim()).slice(0, 1).join('')
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
+}
+
+export function cleanEntranceArrowDirection(value: string | undefined): 'front' | 'left' | 'right' {
+  return value === 'left' || value === 'right' || value === 'front' ? value : 'front'
 }
 
 export function cleanDigits(value: string): string {

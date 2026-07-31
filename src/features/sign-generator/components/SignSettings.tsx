@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from 'react'
 import type { ExpresswayKind, Sign } from '@/features/sign-generator/types'
-import { DIRECTION_OPTIONS, ORDINARY_KIND_OPTIONS } from '../lib/sign-options'
+import { DIRECTION_OPTIONS, ENTRANCE_ARROW_DIRECTION_OPTIONS, ORDINARY_KIND_OPTIONS } from '../lib/sign-options'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,6 +24,20 @@ function DirectionSelect({ id, value, onValueChange }: { id: string; value: stri
         ))}
       </SelectContent>
     </Select>
+  )
+}
+
+function InlineSwitch({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onCheckedChange(!checked)}
+      className={`relative h-5 w-9 rounded-full border transition-colors ${checked ? 'border-primary bg-primary' : 'border-input bg-muted'}`}
+    >
+      <span className={`absolute top-0.5 size-3.5 rounded-full bg-background shadow-sm transition-transform ${checked ? 'left-4.5' : 'left-0.5'}`} />
+    </button>
   )
 }
 
@@ -102,6 +116,10 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
     onChange({ exitDistance: event.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 5) })
   }
 
+  const updateEntranceDistance = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange({ exitDistance: event.target.value.replace(/\D/g, '').slice(0, 4) })
+  }
+
   const updateExitName = (event: ChangeEvent<HTMLInputElement>) => {
     setExitNameInput(event.target.value)
     if (composingExitField.current === 'name') return
@@ -159,14 +177,21 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
     })
   }
 
-  function selectRightRoute(): void {
-    throw new Error('Function not implemented.')
+  const selectRightRoute = (selected: Sign) => {
+    const metadata = routeMetadata(selected)
+    onChange({
+      rightRoute: selected.code,
+      rightRouteSignId: selected.id,
+      rightRouteKind: metadata.kind,
+      rightRouteProvinceLabel: metadata.provinceLabel,
+      rightRouteThreeDigitDescend: metadata.threeDigitDescend,
+    })
   }
 
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
-        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{sign.template === 'direction-guidance' || sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit' ? '分叉指引设置' : '标志设置'}</h2>
+        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">{sign.template === 'entrance-preview-two-directions' ? '出入口指引设置' : sign.template === 'direction-guidance' || sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit' ? '立交枢纽指引设置' : '道路名称标识设置'}</h2>
         <div className="flex flex-col gap-4">
           {sign.template === 'expressway' ? (
             <>
@@ -241,6 +266,43 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                     : <Input id="left-route" value={sign.leftRoute} onChange={updateLeftRoute} placeholder="G78" maxLength={5} className="h-9" />
                   }
                 </div>
+              </div>
+            </>
+          ) : sign.template === 'entrance-preview-two-directions' ? (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="right-route">高速编号</Label>
+                {expresswaySignList.length > 0
+                  ? <RouteSelect id="right-route" value={sign.rightRoute} selectedSignId={sign.rightRouteSignId} onValueChange={selectRightRoute} signs={expresswaySignList} />
+                  : <Input id="right-route" value={sign.rightRoute} onChange={updateRightRoute} placeholder="G15" maxLength={5} className="h-9" />
+                }
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="exit-name">方向一</Label>
+                <Input id="exit-name" value={exitNameInput} onChange={updateExitName} onCompositionStart={() => { composingExitField.current = 'name' }} onCompositionEnd={finishExitNameComposition} placeholder="汕头" className="h-9" />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="exit-destination">方向二</Label>
+                  <InlineSwitch checked={sign.entranceSecondDirectionEnabled} onCheckedChange={checked => onChange({ entranceSecondDirectionEnabled: checked })} />
+                </div>
+                {sign.entranceSecondDirectionEnabled ? (
+                  <Input id="exit-destination" value={exitDestinationInput} onChange={updateExitDestination} onCompositionStart={() => { composingExitField.current = 'destination' }} onCompositionEnd={finishExitDestinationComposition} placeholder="深圳" className="h-9" />
+                ) : (
+                  <DirectionSelect id="entrance-cardinal-direction" value={sign.entranceCardinalDirection} onValueChange={value => onChange({ entranceCardinalDirection: value })} />
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label>入口方向</Label>
+                <div className="grid grid-cols-3 gap-1 rounded-md bg-muted p-1">
+                  {ENTRANCE_ARROW_DIRECTION_OPTIONS.map(option => (
+                    <Button key={option.value} variant={sign.entranceArrowDirection === option.value ? 'default' : 'ghost'} className="h-8 rounded-sm" onClick={() => onChange({ entranceArrowDirection: option.value })}>{option.label}</Button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="exit-distance">入口距离 m</Label>
+                <Input id="exit-distance" value={sign.exitDistance} onChange={updateEntranceDistance} placeholder="500" inputMode="numeric" maxLength={4} className="h-9" />
               </div>
             </>
           ) : (

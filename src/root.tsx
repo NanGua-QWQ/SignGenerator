@@ -1,0 +1,14 @@
+import { StrictMode } from 'react'
+import { ThemeProvider } from '@/components/theme-provider'
+import App from './App'
+import './index.css'
+
+export function Root() {
+  return (
+    <StrictMode>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <App />
+      </ThemeProvider>
+    </StrictMode>
+  )
+}

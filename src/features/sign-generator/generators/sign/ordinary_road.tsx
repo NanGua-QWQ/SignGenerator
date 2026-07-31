@@ -1,6 +1,6 @@
 import type { Font } from '@pdf-lib/fontkit'
 import { renderToStaticMarkup } from 'react-dom/server'
-import type { OrdinaryRoadKind } from '../types'
+import type { OrdinaryRoadKind } from '../../types'
 import { BLACK, RED, WHITE, YELLOW, loadFont, outlinedText } from '../svg-text'
 
 const WIDTH = 213.51
