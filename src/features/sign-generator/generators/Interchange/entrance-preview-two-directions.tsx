@@ -6,21 +6,33 @@ import { expresswaySignNode } from '../sign/expressway'
 import { GREEN, WHITE, YELLOW, escapeXml, loadFont, outlinedText } from '../svg-text'
 import entrancePreviewLeftTemplate from '/template/入口预告-2方向-左.svg?raw'
 import entrancePreviewTemplate from '/template/入口预告-2方向.svg?raw'
+import entrancePreviewLeftTemplateOne from '/template/入口预告-1方向-左.svg?raw'
+import entrancePreviewTemplateOne from '/template/入口预告-1方向.svg?raw'
 
 const FRONT_TEMPLATE_WIDTH = 277.68
 const TURN_TEMPLATE_WIDTH = 277.26
+const ONE_DIRECTION_FRONT_TEMPLATE_WIDTH = 269
+const ONE_DIRECTION_TURN_TEMPLATE_WIDTH = 268.58
 const ROUTE_SIGN_HEIGHT = 80.5
 const DIRECTION_PLATE_SIZE = 44
 
-function templateForArrowDirection(direction: Sign['entranceArrowDirection']): { svg: string; width: number } {
-  if (direction === 'left') return { svg: entrancePreviewLeftTemplate, width: TURN_TEMPLATE_WIDTH }
+function templateForArrowDirection(direction: Sign['entranceArrowDirection'], usesSecondDestination: boolean): { svg: string; width: number } {
+  const frontTemplate = usesSecondDestination ? entrancePreviewTemplate : entrancePreviewTemplateOne
+  const leftTemplate = usesSecondDestination ? entrancePreviewLeftTemplate : entrancePreviewLeftTemplateOne
+  const frontWidth = usesSecondDestination ? FRONT_TEMPLATE_WIDTH : ONE_DIRECTION_FRONT_TEMPLATE_WIDTH
+  const turnWidth = usesSecondDestination ? TURN_TEMPLATE_WIDTH : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
+
+  if (direction === 'left') return { svg: leftTemplate, width: turnWidth }
   if (direction === 'right') {
+    const transform = usesSecondDestination
+      ? 'transform="translate(378.63,-50.57) scale(-1,1)"'
+      : 'transform="translate(374.29,-51.19) scale(-1,1)"'
     return {
-      svg: entrancePreviewLeftTemplate.replace('transform="translate(-101.37,-50.57)"', 'transform="translate(378.63,-50.57) scale(-1,1)"'),
-      width: TURN_TEMPLATE_WIDTH,
+      svg: leftTemplate.replace(/transform="translate\([^)]*\)"/, transform),
+      width: turnWidth,
     }
   }
-  return { svg: entrancePreviewTemplate, width: FRONT_TEMPLATE_WIDTH }
+  return { svg: frontTemplate, width: frontWidth }
 }
 
 function directionPlateNode(fontChinese: Font, text: string, x: number, y: number) {
@@ -35,10 +47,10 @@ function directionPlateNode(fontChinese: Font, text: string, x: number, y: numbe
 export async function generateEntrancePreviewTwoDirectionsSvg(sign: Sign): Promise<string> {
   const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
   const arrowDirection = cleanEntranceArrowDirection(sign.entranceArrowDirection)
-  const { svg: baseTemplate, width: templateWidth } = templateForArrowDirection(arrowDirection)
+  const usesSecondDestination = sign.entranceSecondDirectionEnabled
+  const { svg: baseTemplate, width: templateWidth } = templateForArrowDirection(arrowDirection, usesSecondDestination)
   const route = cleanExitRoute(sign.rightRoute, 'G15')
   const routeWidth = routeSignWidth(route, ROUTE_SIGN_HEIGHT)
-  const usesSecondDestination = sign.entranceSecondDirectionEnabled
   const routeDigitsLength = route.replace(/\D/g, '').length
   const isTwoDigitLayout = routeDigitsLength === 2
   const cardinalDirection = cleanDirection(sign.entranceCardinalDirection, '南')
@@ -57,8 +69,10 @@ export async function generateEntrancePreviewTwoDirectionsSvg(sign: Sign): Promi
           {expresswaySignNode({ code: route, kind: sign.rightRouteKind, provinceLabel: sign.rightRouteProvinceLabel, threeDigitDescend: sign.rightRouteThreeDigitDescend, fontChinese, fontLatin, x: routeX, y: 27.5, width: routeWidth, height: 78 })}
           {arrowDirection === 'front' ? (
             <>
+              {outlinedText(fontChinese, '入', 20, 192, 32, 32, WHITE, { maxGap: 7 , minGap: 4 })}
+              {outlinedText(fontChinese, '口', 57, 196, 26, 26, WHITE, { maxGap: 7 , minGap: 4 })}
               {outlinedText(fontLatin, distance, 115.5, 190, 38, 35.5, WHITE, { maxGap: 6, minGap: 5 })}
-              {outlinedText(fontLatin, 'm', 179.5, 209, 17.6, 17.6, WHITE)}
+              {outlinedText(fontLatin, 'm', 180, 209, 16.5, 16.5, WHITE)}
             </>
           ) : (
             <>
