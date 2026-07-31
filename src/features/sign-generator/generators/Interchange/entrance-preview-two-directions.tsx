@@ -8,21 +8,33 @@ import { GREEN, WHITE, YELLOW, escapeXml, loadFont, OutlinedText } from '../svg-
 import { RawSvg } from '../raw-svg'
 import entrancePreviewLeftTemplate from '/template/入口预告-2方向-左.svg?raw'
 import entrancePreviewTemplate from '/template/入口预告-2方向.svg?raw'
+import entrancePreviewLeftTemplateOne from '/template/入口预告-1方向-左.svg?raw'
+import entrancePreviewTemplateOne from '/template/入口预告-1方向.svg?raw'
 
 const FRONT_TEMPLATE_WIDTH = 277.68
 const TURN_TEMPLATE_WIDTH = 277.26
+const ONE_DIRECTION_FRONT_TEMPLATE_WIDTH = 269
+const ONE_DIRECTION_TURN_TEMPLATE_WIDTH = 268.58
 const ROUTE_SIGN_HEIGHT = 80.5
 const DIRECTION_PLATE_SIZE = 44
 
-function templateForArrowDirection(direction: Sign['entranceArrowDirection']): { svg: string; width: number } {
-  if (direction === 'left') return { svg: entrancePreviewLeftTemplate, width: TURN_TEMPLATE_WIDTH }
+function templateForArrowDirection(direction: Sign['entranceArrowDirection'], usesSecondDestination: boolean): { svg: string; width: number } {
+  const frontTemplate = usesSecondDestination ? entrancePreviewTemplate : entrancePreviewTemplateOne
+  const leftTemplate = usesSecondDestination ? entrancePreviewLeftTemplate : entrancePreviewLeftTemplateOne
+  const frontWidth = usesSecondDestination ? FRONT_TEMPLATE_WIDTH : ONE_DIRECTION_FRONT_TEMPLATE_WIDTH
+  const turnWidth = usesSecondDestination ? TURN_TEMPLATE_WIDTH : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
+
+  if (direction === 'left') return { svg: leftTemplate, width: turnWidth }
   if (direction === 'right') {
+    const transform = usesSecondDestination
+      ? 'transform="translate(378.63,-50.57) scale(-1,1)"'
+      : 'transform="translate(374.29,-51.19) scale(-1,1)"'
     return {
-      svg: entrancePreviewLeftTemplate.replace('transform="translate(-101.37,-50.57)"', 'transform="translate(378.63,-50.57) scale(-1,1)"'),
-      width: TURN_TEMPLATE_WIDTH,
+      svg: leftTemplate.replace(/transform="translate\([^)]*\)"/, transform),
+      width: turnWidth,
     }
   }
-  return { svg: entrancePreviewTemplate, width: FRONT_TEMPLATE_WIDTH }
+  return { svg: frontTemplate, width: frontWidth }
 }
 
 interface DirectionPlateProps {
@@ -44,10 +56,10 @@ export function EntrancePreviewTwoDirectionsSign({ sign }: { sign: Sign }): Reac
   const fontChinese = use(loadFont('a'))
   const fontLatin = use(loadFont('b'))
   const arrowDirection = cleanEntranceArrowDirection(sign.entranceArrowDirection)
-  const { svg: baseTemplate, width: templateWidth } = templateForArrowDirection(arrowDirection)
+  const usesSecondDestination = sign.entranceSecondDirectionEnabled
+  const { svg: baseTemplate, width: templateWidth } = templateForArrowDirection(arrowDirection, usesSecondDestination)
   const route = cleanExitRoute(sign.rightRoute, 'G15')
   const routeWidth = routeSignWidth(route, ROUTE_SIGN_HEIGHT)
-  const usesSecondDestination = sign.entranceSecondDirectionEnabled
   const routeDigitsLength = route.replace(/\D/g, '').length
   const isTwoDigitLayout = routeDigitsLength === 2
   const cardinalDirection = cleanDirection(sign.entranceCardinalDirection, '南')
@@ -67,6 +79,8 @@ export function EntrancePreviewTwoDirectionsSign({ sign }: { sign: Sign }): Reac
             <ExpresswaySignNode code={route} kind={sign.rightRouteKind} provinceLabel={sign.rightRouteProvinceLabel} threeDigitDescend={sign.rightRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={routeX} y={27.5} width={routeWidth} height={78} />
             {arrowDirection === 'front' ? (
               <>
+                <OutlinedText font={fontChinese} text="入" startX={20} startY={192} width={32} height={32} fill={WHITE} options={{ { maxGap: 7 , minGap: 4 }}} />
+                <OutlinedText font={fontChinese} text="口" startX={57} startY={196} width={26} height={26} fill={WHITE} options={{ { maxGap: 7 , minGap: 4 }}} />
                 <OutlinedText font={fontLatin} text={distance} startX={115.5} startY={190} width={38} height={35.5} fill={WHITE} options={{ maxGap: 6, minGap: 5 }} />
                 <OutlinedText font={fontLatin} text="m" startX={179.5} startY={209} width={17.6} height={17.6} fill={WHITE} />
               </>
