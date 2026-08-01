@@ -4,7 +4,7 @@ import type { Font } from '@pdf-lib/fontkit'
 import type { Sign } from '../../types'
 import { cleanDirection, cleanEntranceArrowDirection, cleanEntranceDistance, cleanExitRoute, cleanExitText, routeSignWidth } from '../generator'
 import { ExpresswaySignNode } from '../sign/expressway'
-import { GREEN, WHITE, YELLOW, escapeXml, loadFont, OutlinedText } from '../svg-text'
+import { GREEN, WHITE, escapeXml, loadFont, OutlinedText } from '../svg-text'
 import { RawSvg } from '../raw-svg'
 import entrancePreviewLeftTemplate from '/template/入口预告-2方向-左.svg?raw'
 import entrancePreviewTemplate from '/template/入口预告-2方向.svg?raw'
@@ -87,8 +87,8 @@ export function EntrancePreviewTwoDirectionsSign({ sign }: { sign: Sign }): Reac
             ) : (
               <>
                 {/* 入口文字 */}
-                <OutlinedText font={fontChinese} text="入" startX={arrowDirection === 'right' ? 176.4 : 29} startY={192.5} width={29} height={29} fill={YELLOW} options={{ maxGap: 7, minGap: 4 }} />
-                <OutlinedText font={fontChinese} text="口" startX={arrowDirection === 'right' ? 214 : 67.4} startY={196.5} width={23} height={23} fill={YELLOW} options={{ maxGap: 7, minGap: 4 }} />
+                <OutlinedText font={fontChinese} text="入" startX={arrowDirection === 'right' ? 179 : 29} startY={192.5} width={29} height={29} fill={WHITE} options={{ maxGap: 7, minGap: 4 }} />
+                <OutlinedText font={fontChinese} text="口" startX={arrowDirection === 'right' ? 217.5 : 67.5} startY={196.5} width={23} height={23} fill={WHITE} options={{ maxGap: 7, minGap: 4 }} />
               </>
             )}
           </>
