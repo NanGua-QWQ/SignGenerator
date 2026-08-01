@@ -6,7 +6,7 @@ import './index.css'
 export function Root() {
   return (
     <StrictMode>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider>
         <App />
       </ThemeProvider>
     </StrictMode>

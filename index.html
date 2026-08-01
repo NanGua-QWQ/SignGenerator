@@ -7,6 +7,23 @@
     <title>高速编号牌生成器</title>
   </head>
   <body>
+    <script>
+      // 在 SSR/ hydration 前确定主题，避免暗色模式闪烁
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          var root = document.documentElement
+          root.classList.toggle('dark', theme === 'dark')
+          root.style.colorScheme = theme
+        } catch (e) {}
+      })()
+    </script>
     <div id="root"><!--app-html--></div>
     <div
       id="file-protocol-notice"
