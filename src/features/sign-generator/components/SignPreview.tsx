@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Component, Suspense, useCallback, useEffect, useRef, useState, type ErrorInfo, type ReactNode } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Download, LoaderCircle, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { generateSignSvg, signFilename } from '@/features/sign-generator/generators/generator'
+import { SignSvg, signFilename } from '@/features/sign-generator/generators/generator'
 
 const MIN_SCALE = 0.4
 const MAX_SCALE = 3
@@ -26,9 +26,6 @@ interface Measurement {
 }
 
 export function SignPreview({ sign }: { sign: Sign }) {
-  const [svg, setSvg] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
@@ -40,16 +37,6 @@ export function SignPreview({ sign }: { sign: Sign }) {
   const dragging = useRef(false)
   const measuring = useRef(false)
   const lastPosition = useRef<Offset>({ x: 0, y: 0 })
-
-  useEffect(() => {
-    let active = true
-    setError('')
-    setIsLoading(true)
-    generateSignSvg(sign)
-      .then(result => { if (active) { setSvg(result); setIsLoading(false) } })
-      .catch(reason => { if (active) { setSvg(''); setError(reason.message); setIsLoading(false) } })
-    return () => { active = false }
-  }, [sign])
 
   const zoom = useCallback((multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
 
@@ -158,13 +145,13 @@ export function SignPreview({ sign }: { sign: Sign }) {
     const lockHorizontal = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
     return lockHorizontal
       ? {
-          board: { x: next.board.x, y: start.start.y },
-          point: { x: next.point.x, y: start.startPoint.y },
-        }
+        board: { x: next.board.x, y: start.start.y },
+        point: { x: next.point.x, y: start.startPoint.y },
+      }
       : {
-          board: { x: start.start.x, y: next.board.y },
-          point: { x: start.startPoint.x, y: next.point.y },
-        }
+        board: { x: start.start.x, y: next.board.y },
+        point: { x: start.startPoint.x, y: next.point.y },
+      }
   }
 
   const updateBoardPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -179,8 +166,10 @@ export function SignPreview({ sign }: { sign: Sign }) {
 
   const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
   const download = () => {
-    if (!svg) return
-    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
+    const svgElement = document.querySelector("svg[role=img]")
+    if (!svgElement) return
+    const svgString = svgElement.outerHTML
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -234,10 +223,10 @@ export function SignPreview({ sign }: { sign: Sign }) {
 
   const measureDelta = measurement
     ? {
-        x: measurement.end.x - measurement.start.x,
-        y: measurement.end.y - measurement.start.y,
-        length: Math.hypot(measurement.end.x - measurement.start.x, measurement.end.y - measurement.start.y),
-      }
+      x: measurement.end.x - measurement.start.x,
+      y: measurement.end.y - measurement.start.y,
+      length: Math.hypot(measurement.end.x - measurement.start.x, measurement.end.y - measurement.start.y),
+    }
     : null
 
   return (
@@ -249,7 +238,7 @@ export function SignPreview({ sign }: { sign: Sign }) {
           <Button variant="ghost" size="icon" className="size-7" onClick={() => zoom(1.25)} title="放大"><ZoomIn className="size-3.5" /></Button>
           <Button variant="ghost" size="icon" className="size-7" onClick={reset} title="复位"><RotateCcw className="size-3.5" /></Button>
         </div>
-        <Button variant="ghost" size="icon" className="size-7" onClick={download} disabled={!svg} title="下载 SVG"><Download className="size-3.5" /></Button>
+        <Button variant="ghost" size="icon" className="size-7" onClick={download} title="下载 SVG"><Download className="size-3.5" /></Button>
       </div>
       <div ref={previewRef} className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${showPixelMeasure ? 'cursor-crosshair' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDownCapture={startDrag} onPointerMove={moveDrag} onPointerLeave={() => setBoardPosition(null)} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}>
         {showPosition && (
@@ -265,7 +254,15 @@ export function SignPreview({ sign }: { sign: Sign }) {
             {measurement && <PixelMeasureOverlay measurement={measurement} />}
           </>
         )}
-        {isLoading ? <LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" /> : error ? <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{error}</p> : <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} dangerouslySetInnerHTML={{ __html: svg }} />}
+        <Suspense fallback={<LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" />}>
+          <SignErrorBoundary>
+            <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{
+              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`
+            }}>
+              <SignSvg sign={sign} />
+            </div>
+          </SignErrorBoundary>
+        </Suspense>
       </div>
     </section>
   )
@@ -291,4 +288,27 @@ function PixelMeasureOverlay({ measurement }: { measurement: Measurement }) {
       <span className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: x2, top: y2 }} />
     </div>
   )
+}
+
+interface SignErrorBoundaryState {
+  error: Error | null
+}
+
+class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoundaryState> {
+  state: SignErrorBoundaryState = { error: null }
+
+  static getDerivedStateFromError(error: Error): SignErrorBoundaryState {
+    return { error }
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('标志预览渲染失败', error, info)
+  }
+
+  render() {
+    if (this.state.error) {
+      return <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{this.state.error.message}</p>
+    }
+    return this.props.children
+  }
 }

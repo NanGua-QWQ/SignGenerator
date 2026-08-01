@@ -1,10 +1,15 @@
 import type { Font } from '@pdf-lib/fontkit'
+import { use } from 'react'
 import type { ReactNode } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
 import type { ExpresswayKind } from '../../types'
-import { BLACK, GREEN, RED, WHITE, YELLOW, YELLOW_GREEN, loadFont, outlinedText, renderLayout, textGap, textLayout } from '../svg-text'
+import { BLACK, GREEN, RED, WHITE, YELLOW, YELLOW_GREEN, loadFont, OutlinedText, Layout, textGap, textLayout } from '../svg-text'
 
-function expresswayBackgroundNode(width: number, withName: boolean, bannerColor: string): ReactNode {
+interface ExpresswayBackgroundProps {
+  width: number
+  withName: boolean
+  bannerColor: string
+}
+function ExpresswayBackground({ width, withName, bannerColor }: ExpresswayBackgroundProps) {
   const height = withName ? 1200 : 1000
   const x = withName ? 60 : 30
   const top = withName ? 60 : 30
@@ -71,7 +76,8 @@ interface ExpresswaySignNodeOptions {
   threeDigitDescend?: boolean
 }
 
-function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFourDigit = false): ReactNode {
+export function ExpresswaySignNode(options: ExpresswaySignNodeOptions & { inlineFourDigit?: boolean }): ReactNode {
+  const inlineFourDigit = options.inlineFourDigit ?? false
   const parsedCode = parseCode(options.code)
   const sign = options.kind ? { ...parsedCode, kind: options.kind } : parsedCode
   const nameLimit = sign.digits.length === 4 ? 6 : 4
@@ -103,7 +109,7 @@ function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFour
   const mainY = named ? 340 : 370
   const mainFont = options.fontLatin
   const bannerY = named ? 110 : 80
-  const content: ReactNode[] = [outlinedText(options.fontChinese, bannerText, bannerX, bannerY, bannerWidth, 100, bannerTextColor)]
+  const content: ReactNode[] = [<OutlinedText font={options.fontChinese} text={bannerText} startX={bannerX} startY={bannerY} width={bannerWidth} height={100} fill={bannerTextColor} />]
   if (usesCompactSuffix) {
     const suffixText = sign.code.slice(3)
     const mainLayout = textLayout(mainFont, mainCode, 450)
@@ -116,15 +122,19 @@ function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFour
     const groupGap = usesCompactThreeDigitSuffix ? 55 : named ? 55 : 45
     const groupWidth = mainContentWidth + groupGap + suffixContentWidth
     const groupX = (naturalWidth - groupWidth) / 2 + (named ? 0 : 24)
-    content.push(renderLayout(mainLayout, groupX, mainY, WHITE, mainGap))
-    content.push(renderLayout(suffixLayout, groupX + mainContentWidth + groupGap, named ? 490 : 520, WHITE, suffixGap))
+    content.push(<Layout layout={mainLayout} startX={groupX} startY={mainY} gap={mainGap}>
+      {WHITE}
+    </Layout>)
+    content.push(<Layout layout={suffixLayout} startX={groupX + mainContentWidth + groupGap} startY={named ? 490 : 520} gap={suffixGap}>
+      {WHITE}
+    </Layout>)
   } else {
-    content.push(outlinedText(mainFont, mainCode, mainX, mainY, mainWidth, 450, WHITE, { maxGap: mainMaxGap, minGap: mainMinGap }))
+    content.push(<OutlinedText font={mainFont} text={mainCode} startX={mainX} startY={mainY} width={mainWidth} height={450} fill={WHITE} options={{ maxGap: mainMaxGap, minGap: mainMinGap }} />)
   }
   if (named) {
     const nameWidth = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : sign.digits.length === 3 ? 1200 : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
-    content.push(outlinedText(options.fontChinese, name, nameX, 860, nameWidth, 200, WHITE))
+    content.push(<OutlinedText font={options.fontChinese} text={name} startX={nameX} startY={860} width={nameWidth} height={200} fill={WHITE} />)
   }
   const naturalHeight = naturalSize.height
   const renderedWidth = options.width ?? naturalWidth
@@ -132,28 +142,42 @@ function renderExpresswaySignNode(options: ExpresswaySignNodeOptions, inlineFour
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" x={options.x} y={options.y} width={renderedWidth} height={renderedHeight} viewBox={`0 0 ${naturalWidth} ${naturalHeight}`} preserveAspectRatio="xMidYMid meet" role={options.ariaLabel ? 'img' : undefined} aria-label={options.ariaLabel} aria-hidden={options.ariaLabel ? undefined : true}>
-      {expresswayBackgroundNode(naturalWidth, named, bannerColor)}
+      <ExpresswayBackground width={naturalWidth} withName={named} bannerColor={bannerColor} />
       {content}
     </svg>
   )
 }
 
-export function expresswaySignNode(options: ExpresswaySignNodeOptions): ReactNode {
-  return renderExpresswaySignNode(options)
+interface ExpresswaySignSvgProps {
+  code: string
+  name?: string
+  provinceLabel?: string
+  kind?: ExpresswayKind
+  threeDigitDescend?: boolean
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  ariaLabel?: string
 }
 
-export async function generateExpresswaySignSvg(inputCode: string, inputName = '', inputProvinceLabel = '', inputKind?: ExpresswayKind, threeDigitDescend = false): Promise<string> {
-  const [fontChinese, fontLatin] = await Promise.all([loadFont('a'), loadFont('b')])
-  return renderToStaticMarkup(
-    renderExpresswaySignNode({
-      code: inputCode,
-      name: inputName,
-      provinceLabel: inputProvinceLabel,
-      kind: inputKind,
-      threeDigitDescend,
-      fontChinese,
-      fontLatin,
-      ariaLabel: `${inputCode} ${inputName.trim()}`.trim() + ' 道路编号牌',
-    }),
+export function ExpresswaySignSvg({ code, name = '', provinceLabel = '', kind, threeDigitDescend = false, x, y, width, height, ariaLabel }: ExpresswaySignSvgProps): ReactNode {
+  const fontChinese = use(loadFont('a'))
+  const fontLatin = use(loadFont('b'))
+  return (
+    <ExpresswaySignNode
+      code={code}
+      name={name}
+      provinceLabel={provinceLabel}
+      kind={kind}
+      threeDigitDescend={threeDigitDescend}
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fontChinese={fontChinese}
+      fontLatin={fontLatin}
+      ariaLabel={ariaLabel ?? `${code} ${name.trim()}`.trim() + ' 道路编号牌'}
+    />
   )
 }

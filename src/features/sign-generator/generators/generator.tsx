@@ -1,32 +1,54 @@
+import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
-import { generateExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
-import { generateOrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
-import { generateDirectionGuidanceSvg } from './interchange/direction-guidance'
-import { generateEntrancePreviewTwoDirectionsSvg } from './interchange/entrance-preview-two-directions'
-import { generateRoadForkPreviewSvg } from './interchange/road-fork-preview'
-import { generateTwoLaneInterchangeExitSvg } from './interchange/two-lane-interchange-exit'
+import { ExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
+import { OrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
+import { DirectionGuidanceSign } from './Interchange/direction-guidance'
+import { EntrancePreviewTwoDirectionsSign } from './Interchange/entrance-preview-two-directions'
+import { RoadForkPreviewSign } from './Interchange/road-fork-preview'
+import { TwoLaneInterchangeExitSign } from './Interchange/two-lane-interchange-exit'
 
-export async function generateSignSvg(sign: Sign): Promise<string> {
-  if (sign.template === 'direction-guidance') return generateDirectionGuidanceSvg(sign)
-  if (sign.template === 'two-lane-interchange-exit') return generateTwoLaneInterchangeExitSvg(sign)
-  if (sign.template === 'entrance-preview-two-directions') return generateEntrancePreviewTwoDirectionsSvg(sign)
-  if (sign.template === 'road-fork-preview') return generateRoadForkPreviewSvg(sign)
-  if (sign.template === 'ordinary-road') return generateOrdinaryRoadSignSvg(sign.kind as OrdinaryRoadKind, sign.digits)
-  return generateExpresswaySignSvg(sign.code, sign.name, sign.provinceLabel, sign.kind as ExpresswayKind, sign.threeDigitDescend)
+const SIGN_FALLBACK: ReactNode = null
+
+function SignSvgContent(sign: Sign): ReactNode {
+  if (sign.template === 'direction-guidance') return <DirectionGuidanceSign sign={sign} />
+  if (sign.template === 'two-lane-interchange-exit') return <TwoLaneInterchangeExitSign sign={sign} />
+  if (sign.template === 'entrance-preview-two-directions') return <EntrancePreviewTwoDirectionsSign sign={sign} />
+  if (sign.template === 'road-fork-preview') return <RoadForkPreviewSign sign={sign} />
+  if (sign.template === 'ordinary-road') return <OrdinaryRoadSignSvg kind={sign.kind as OrdinaryRoadKind} digits={sign.digits} />
+  return <ExpresswaySignSvg code={sign.code} name={sign.name} provinceLabel={sign.provinceLabel} kind={sign.kind as ExpresswayKind} threeDigitDescend={sign.threeDigitDescend} />
+}
+
+export function SignSvg({ sign }: { sign: Sign }): ReactNode {
+  return (
+    <Suspense fallback={SIGN_FALLBACK}>
+      {SignSvgContent(sign)}
+    </Suspense>
+  )
 }
 
 export function signFilename(sign: Sign): string {
-  const code = sign.template === 'road-fork-preview'
-    ? `道路分岔预告_${sign.exitNumber}`
-    : sign.template === 'direction-guidance'
-      ? `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
-    : sign.template === 'two-lane-interchange-exit'
-      ? `2车道立交枢纽出口_${sign.rightRoute}`
-      : sign.template === 'entrance-preview-two-directions'
-        ? `入口预告-2方向_${sign.rightRoute}`
-      : sign.template === 'ordinary-road'
-        ? ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
-      : sign.code
+  let code: string
+  switch (sign.template) {
+    case 'road-fork-preview':
+      code = `道路分岔预告_${sign.exitNumber}`
+      break
+    case 'direction-guidance':
+      code = `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
+      break
+    case 'two-lane-interchange-exit':
+      code = `2车道立交枢纽出口_${sign.rightRoute}`
+      break
+    case 'entrance-preview-two-directions':
+      code = `入口预告-2方向_${sign.rightRoute}`
+      break
+    case 'ordinary-road':
+      code = ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
+      break
+    default:
+      code = sign.code
+      break
+  }
   const name = sign.template === 'expressway' || sign.template === 'ordinary-road' ? sign.name : sign.exitName || sign.name
   const safeCode = String(code || 'road-sign').trim().replace(/[<>:"/\\|?*]/g, '_')
   const safeName = String(name || '').trim().replace(/[<>:"/\\|?*]/g, '_')

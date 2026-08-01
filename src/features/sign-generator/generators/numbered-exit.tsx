@@ -1,5 +1,5 @@
 import type { Font } from '@pdf-lib/fontkit'
-import { GREEN, WHITE, outlinedText, textLayout } from './svg-text'
+import { GREEN, WHITE, OutlinedText, textLayout } from './svg-text'
 import numberedExitTemplate from '/template/数字出口.svg?raw'
 
 export const NUMBERED_EXIT_WIDTH = 221.64
@@ -40,7 +40,7 @@ function fittedNumberHeight(font: Font, text: string): number {
   return NUMBER_MIN_HEIGHT
 }
 
-export function numberedExitSignNode({ exitNumber, fontChinese, fontLatin, x, y, width = NUMBERED_EXIT_WIDTH }: NumberedExitSignNodeProps) {
+export function NumberedExitSignNode({ exitNumber, fontChinese, fontLatin, x, y, width = NUMBERED_EXIT_WIDTH }: NumberedExitSignNodeProps) {
   const number = cleanExitNumber(exitNumber)
   const numberHeight = fittedNumberHeight(fontLatin, number)
   const renderedHeight = width * NUMBERED_EXIT_HEIGHT / NUMBERED_EXIT_WIDTH
@@ -48,8 +48,8 @@ export function numberedExitSignNode({ exitNumber, fontChinese, fontLatin, x, y,
   return (
     <svg x={x} y={y} width={width} height={renderedHeight} viewBox={VIEW_BOX} aria-hidden="true">
       <g dangerouslySetInnerHTML={{ __html: baseMarkup }} />
-      {outlinedText(fontChinese, '出口', 15, 30, 70, 30, WHITE, { maxGap: 12, minGap: 12 })}
-      {outlinedText(fontLatin, number, NUMBER_BOX_X, 28, NUMBER_BOX_WIDTH, numberHeight, GREEN, { maxGap: 5, minGap: 1 })}
+      <OutlinedText font={fontChinese} text="出口" startX={15} startY={30} width={70} height={30} fill={WHITE} options={{ maxGap: 12, minGap: 12 }} />
+      <OutlinedText font={fontLatin} text={number} startX={NUMBER_BOX_X} startY={28} width={NUMBER_BOX_WIDTH} height={numberHeight} fill={GREEN} options={{ maxGap: 5, minGap: 1 }} />
     </svg>
   )
 }
