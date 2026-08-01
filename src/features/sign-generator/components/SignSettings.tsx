@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { CircleQuestionMark } from 'lucide-react'
 
 interface SignSettingsProps {
   sign: Sign
@@ -55,17 +56,12 @@ function InlineSwitch({
   onCheckedChange: (checked: boolean) => void
 }) {
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onCheckedChange(!checked)}
-      className={`relative h-5 w-9 rounded-full border transition-colors ${checked ? 'border-primary bg-primary' : 'border-input bg-muted'}`}
-    >
-      <span
-        className={`absolute top-0.5 size-3.5 rounded-full bg-background shadow-sm transition-transform ${checked ? 'left-4.5' : 'left-0.5'}`}
-      />
-    </button>
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={event => onCheckedChange(event.target.checked)}
+      className="size-3.5 accent-primary"
+    />
   )
 }
 
@@ -125,18 +121,32 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
   const nameLimit = sign.digits.length === 4 ? 6 : 4
   const composingRoadName = useRef(false)
   const composingExitField = useRef<'name' | 'destination' | null>(null)
+  const [roadDigitsInput, setRoadDigitsInput] = useState(sign.digits)
+  const [roadDigitsError, setRoadDigitsError] = useState('')
   const [roadNameInput, setRoadNameInput] = useState(sign.name)
   const [exitNameInput, setExitNameInput] = useState(sign.exitName)
   const [exitDestinationInput, setExitDestinationInput] = useState(sign.exitDestination)
 
   useEffect(() => {
+    if (sign.template === 'expressway' || sign.template === 'ordinary-road') {
+      setRoadDigitsInput(sign.digits)
+      setRoadDigitsError('')
+    }
     if (!composingRoadName.current) setRoadNameInput(sign.name)
     if (composingExitField.current !== 'name') setExitNameInput(sign.exitName)
     if (composingExitField.current !== 'destination') setExitDestinationInput(sign.exitDestination)
-  }, [sign.exitDestination, sign.exitName, sign.name])
+  }, [sign.digits, sign.exitDestination, sign.exitName, sign.id, sign.name, sign.template])
 
   const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ digits: event.target.value.replace(/\D/g, '').slice(0, 4) })
+    const maxLength = sign.template === 'ordinary-road' ? 3 : 4
+    const digits = event.target.value.replace(/\D/g, '').slice(0, maxLength)
+    setRoadDigitsInput(digits)
+    if ((sign.template === 'expressway' || sign.template === 'ordinary-road') && !digits) {
+      setRoadDigitsError('不能为空')
+      return
+    }
+    setRoadDigitsError('')
+    onChange({ digits })
   }
 
   const updateName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -255,7 +265,8 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
             ? '出入口指引设置'
             : sign.template === 'direction-guidance' ||
                 sign.template === 'road-fork-preview' ||
-                sign.template === 'two-lane-interchange-exit'
+                sign.template === 'two-lane-interchange-exit' ||
+                sign.template === 'dual-exit-interchange-preview'
               ? '立交枢纽指引设置'
               : '道路名称标识设置'}
         </h2>
@@ -323,19 +334,26 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                   </div>
                   <Input
                     id="road-digits"
-                    value={sign.digits}
+                    value={roadDigitsInput}
                     onChange={updateDigits}
                     placeholder="1、15、105 或 0421"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={4}
+                    aria-invalid={Boolean(roadDigitsError)}
+                    aria-describedby="road-digits-message"
                     className="h-9"
                   />
                 </div>
                 <p
+                  id="road-digits-message"
                   className={`${sign.kind === 'provincial' ? 'col-span-2' : ''} text-xs text-muted-foreground`}
                 >
-                  只输入数字，支持 1-4 位编号。
+                  {roadDigitsError ? (
+                    <span className="text-destructive">{roadDigitsError}</span>
+                  ) : (
+                    '只输入数字，支持 1-4 位编号。'
+                  )}
                 </p>
               </div>
               <div className="space-y-1.5">
@@ -377,18 +395,27 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                 <Label htmlFor="ordinary-road-digits">道路编号</Label>
                 <Input
                   id="ordinary-road-digits"
-                  value={sign.digits}
+                  value={roadDigitsInput}
                   onChange={updateDigits}
                   placeholder="例如：105"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={3}
+                  aria-invalid={Boolean(roadDigitsError)}
+                  aria-describedby="ordinary-road-digits-message"
                   className="h-9"
                 />
-                <p className="text-xs text-muted-foreground">
-                  自动加前缀：
-                  {ORDINARY_KIND_OPTIONS.find(option => option.value === sign.kind)?.prefix ?? 'G'}
-                  {sign.digits || '105'}
+                <p id="ordinary-road-digits-message" className="text-xs text-muted-foreground">
+                  {roadDigitsError ? (
+                    <span className="text-destructive">{roadDigitsError}</span>
+                  ) : (
+                    <>
+                      自动加前缀：
+                      {ORDINARY_KIND_OPTIONS.find(option => option.value === sign.kind)?.prefix ??
+                        'G'}
+                      {sign.digits || '105'}
+                    </>
+                  )}
                 </p>
               </div>
             </>
@@ -476,12 +503,16 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="exit-destination">方向二</Label>
-                  <InlineSwitch
-                    checked={sign.entranceSecondDirectionEnabled}
-                    onCheckedChange={checked =>
-                      onChange({ entranceSecondDirectionEnabled: checked })
-                    }
-                  />
+                  <Label className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                    <InlineSwitch
+                      checked={sign.entranceSecondDirectionEnabled}
+                      onCheckedChange={checked =>
+                        onChange({ entranceSecondDirectionEnabled: checked })
+                      }
+                    />
+                    单方向
+                    <CircleQuestionMark style={{ width: 12, height: 12 }}/>
+                  </Label>
                 </div>
                 {sign.entranceSecondDirectionEnabled ? (
                   <Input
@@ -527,6 +558,91 @@ export function SignSettings({ sign, onChange, expresswaySignList = [] }: SignSe
                   placeholder="500"
                   inputMode="numeric"
                   maxLength={4}
+                  className="h-9"
+                />
+              </div>
+            </>
+          ) : sign.template === 'dual-exit-interchange-preview' ? (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="left-route">上方高速编号</Label>
+                {expresswaySignList.length > 0 ? (
+                  <RouteSelect
+                    id="left-route"
+                    value={sign.leftRoute}
+                    selectedSignId={sign.leftRouteSignId}
+                    onValueChange={selectLeftRoute}
+                    signs={expresswaySignList}
+                  />
+                ) : (
+                  <Input
+                    id="left-route"
+                    value={sign.leftRoute}
+                    onChange={updateLeftRoute}
+                    placeholder="G55"
+                    maxLength={5}
+                    className="h-9"
+                  />
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="exit-name">上方目的地</Label>
+                <Input
+                  id="exit-name"
+                  value={exitNameInput}
+                  onChange={updateExitName}
+                  onCompositionStart={() => {
+                    composingExitField.current = 'name'
+                  }}
+                  onCompositionEnd={finishExitNameComposition}
+                  placeholder="永州"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="right-route">下方高速编号</Label>
+                {expresswaySignList.length > 0 ? (
+                  <RouteSelect
+                    id="right-route"
+                    value={sign.rightRoute}
+                    selectedSignId={sign.rightRouteSignId}
+                    onValueChange={selectRightRoute}
+                    signs={expresswaySignList}
+                  />
+                ) : (
+                  <Input
+                    id="right-route"
+                    value={sign.rightRoute}
+                    onChange={updateRightRoute}
+                    placeholder="G55"
+                    maxLength={5}
+                    className="h-9"
+                  />
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="exit-destination">下方目的地</Label>
+                <Input
+                  id="exit-destination"
+                  value={exitDestinationInput}
+                  onChange={updateExitDestination}
+                  onCompositionStart={() => {
+                    composingExitField.current = 'destination'
+                  }}
+                  onCompositionEnd={finishExitDestinationComposition}
+                  placeholder="广州"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="exit-distance">距离 km</Label>
+                <Input
+                  id="exit-distance"
+                  value={sign.exitDistance}
+                  onChange={updateExitDistance}
+                  placeholder="3"
+                  inputMode="decimal"
+                  maxLength={5}
                   className="h-9"
                 />
               </div>

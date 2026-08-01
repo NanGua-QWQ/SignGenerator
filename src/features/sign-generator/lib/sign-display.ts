@@ -20,6 +20,7 @@ export function isForkSign(sign: Sign): boolean {
     sign.template === 'direction-guidance' ||
     sign.template === 'road-fork-preview' ||
     sign.template === 'two-lane-interchange-exit' ||
+    sign.template === 'dual-exit-interchange-preview' ||
     sign.template === 'entrance-preview-two-directions'
   )
 }
@@ -28,6 +29,7 @@ export function signBadge(sign: Sign): string {
   if (sign.template === 'direction-guidance') return '分向'
   if (sign.template === 'road-fork-preview') return '分岔'
   if (sign.template === 'two-lane-interchange-exit') return '出口'
+  if (sign.template === 'dual-exit-interchange-preview') return '双出'
   if (sign.template === 'entrance-preview-two-directions') return '入口'
   if (sign.template === 'ordinary-road') {
     if (sign.kind === 'ordinary-provincial') return '省道'
@@ -43,6 +45,7 @@ export function defaultSignBadgeVariant(sign: Sign): SignBadgeVariant {
     sign.template === 'direction-guidance' ||
     sign.template === 'road-fork-preview' ||
     sign.template === 'two-lane-interchange-exit' ||
+    sign.template === 'dual-exit-interchange-preview' ||
     sign.template === 'entrance-preview-two-directions'
   )
     return 'fork'
@@ -66,6 +69,8 @@ export function signTitle(sign: Sign): string {
   if (sign.template === 'direction-guidance') return sign.name || '分向指路标志'
   if (sign.template === 'road-fork-preview') return sign.name || '道路分岔预告'
   if (sign.template === 'two-lane-interchange-exit') return sign.name || '2车道立交枢纽出口'
+  if (sign.template === 'dual-exit-interchange-preview')
+    return sign.name || '双出口枢纽式互通立体交叉出口预告'
   if (sign.template === 'entrance-preview-two-directions') return sign.name || '入口预告-2方向'
   if (sign.template === 'ordinary-road') return sign.name || '普通道路名称标识'
   return sign.name || '高速道路名称标识'
@@ -77,6 +82,13 @@ export function signInfo(sign: Sign): string[] {
       `高速：${sign.rightRoute}`,
       `方向：${sign.exitName} / ${sign.exitDestination}`,
       `距离：${sign.exitDistance || '500'}m`,
+    ]
+  }
+  if (sign.template === 'dual-exit-interchange-preview') {
+    return [
+      `上方：${sign.leftRoute} ${sign.exitName}`.trim(),
+      `下方：${sign.rightRoute} ${sign.exitDestination}`.trim(),
+      `距离：${sign.exitDistance || '3'}km`,
     ]
   }
   const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()

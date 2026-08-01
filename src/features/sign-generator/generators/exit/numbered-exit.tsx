@@ -1,5 +1,5 @@
 import type { Font } from '@pdf-lib/fontkit'
-import { GREEN, WHITE, OutlinedText, textLayout } from './svg-text'
+import { GREEN, WHITE, OutlinedText, textLayout } from '../svg-text'
 import numberedExitTemplate from '/template/数字出口.svg?raw'
 
 export const NUMBERED_EXIT_WIDTH = 221.64

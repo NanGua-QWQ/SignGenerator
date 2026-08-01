@@ -19,7 +19,7 @@ import {
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
   NumberedExitSignNode,
-} from '../numbered-exit'
+} from '../exit/numbered-exit'
 
 const TEMPLATE_WIDTH = 1011.98513
 const TEMPLATE_HEIGHT = 371.83044
@@ -29,6 +29,11 @@ const LEFT_ROUTE_SIGN_X = 226
 const RIGHT_ROUTE_SIGN_RIGHT = 786
 const ROUTE_SIGN_Y = 38
 const DIRECTION_SIGN_SIZE = 62
+const DESTINATION_TEXT_OPTIONS = {
+  scaleMode: 'reference' as const,
+  referenceText: '清远玉林',
+  maxGap: 18,
+}
 
 function cleanExitNumber(value: string): string {
   return (
@@ -136,7 +141,7 @@ export function RoadForkPreviewSign({ sign }: { sign: Sign }): ReactNode {
           width={170}
           height={58}
           fill={WHITE}
-          options={{ maxGap: 18 }}
+          options={DESTINATION_TEXT_OPTIONS}
         />
         <OutlinedText
           font={fontChinese}
@@ -146,7 +151,7 @@ export function RoadForkPreviewSign({ sign }: { sign: Sign }): ReactNode {
           width={175}
           height={58}
           fill={WHITE}
-          options={{ maxGap: 18 }}
+          options={DESTINATION_TEXT_OPTIONS}
         />
         <OutlinedText
           font={fontChinese}

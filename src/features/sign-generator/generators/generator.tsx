@@ -5,12 +5,15 @@ import { OrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
 import { DirectionGuidanceSign } from './interchange/direction-guidance'
 import { EntrancePreviewTwoDirectionsSign } from './interchange/entrance-preview-two-directions'
 import { RoadForkPreviewSign } from './interchange/road-fork-preview'
-import { TwoLaneInterchangeExitSign } from './interchange/two-lane-interchange-exit'
+import { DualExitInterchangePreviewSign } from './exit/dual-exit-interchange-preview'
+import { TwoLaneInterchangeExitSign } from './exit/two-lane-interchange-exit'
 
 function SignSvgContent(sign: Sign): ReactNode {
   if (sign.template === 'direction-guidance') return <DirectionGuidanceSign sign={sign} />
   if (sign.template === 'two-lane-interchange-exit')
     return <TwoLaneInterchangeExitSign sign={sign} />
+  if (sign.template === 'dual-exit-interchange-preview')
+    return <DualExitInterchangePreviewSign sign={sign} />
   if (sign.template === 'entrance-preview-two-directions')
     return <EntrancePreviewTwoDirectionsSign sign={sign} />
   if (sign.template === 'road-fork-preview') return <RoadForkPreviewSign sign={sign} />
@@ -44,6 +47,10 @@ export function signFilename(sign: Sign): string {
     }
     case 'two-lane-interchange-exit': {
       code = `2车道立交枢纽出口_${sign.rightRoute}`
+      break
+    }
+    case 'dual-exit-interchange-preview': {
+      code = `双出口枢纽式互通立体交叉出口预告_${sign.leftRoute}_${sign.rightRoute}`
       break
     }
     case 'entrance-preview-two-directions': {

@@ -19,11 +19,15 @@ type ForkTemplate = Extract<
   | 'direction-guidance'
   | 'road-fork-preview'
   | 'two-lane-interchange-exit'
+  | 'dual-exit-interchange-preview'
   | 'entrance-preview-two-directions'
 >
 type InterchangeTemplate = Extract<
   SignTemplate,
-  'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit'
+  | 'direction-guidance'
+  | 'road-fork-preview'
+  | 'two-lane-interchange-exit'
+  | 'dual-exit-interchange-preview'
 >
 type EntranceExitTemplate = Extract<SignTemplate, 'entrance-preview-two-directions'>
 
@@ -38,6 +42,7 @@ const FORK_SIGN_NAME: Record<ForkTemplate, string> = {
   'direction-guidance': '分向指路标志',
   'road-fork-preview': '道路分岔预告',
   'two-lane-interchange-exit': '2车道立交枢纽出口',
+  'dual-exit-interchange-preview': '双出口枢纽式互通立体交叉出口预告',
   'entrance-preview-two-directions': '入口预告-2方向',
 }
 
@@ -45,6 +50,7 @@ export const INTERCHANGE_ADD_CHOICES: Array<{ value: InterchangeTemplate; label:
   { value: 'direction-guidance', label: '分向指路标志' },
   { value: 'road-fork-preview', label: '道路分岔预告' },
   { value: 'two-lane-interchange-exit', label: '2车道立交枢纽出口' },
+  { value: 'dual-exit-interchange-preview', label: '双出口枢纽式互通立体交叉出口预告' },
 ]
 
 export const ENTRANCE_EXIT_ADD_CHOICES: Array<{ value: EntranceExitTemplate; label: string }> = [
@@ -78,6 +84,7 @@ export function isForkTemplate(template: SignTemplate): boolean {
     template === 'direction-guidance' ||
     template === 'road-fork-preview' ||
     template === 'two-lane-interchange-exit' ||
+    template === 'dual-exit-interchange-preview' ||
     template === 'entrance-preview-two-directions'
   )
 }
@@ -89,6 +96,7 @@ export function isTemplateParam(value: string | null): value is SignTemplate {
     value === 'direction-guidance' ||
     value === 'road-fork-preview' ||
     value === 'two-lane-interchange-exit' ||
+    value === 'dual-exit-interchange-preview' ||
     value === 'entrance-preview-two-directions'
   )
 }
@@ -105,7 +113,8 @@ export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab): Sign[]
       sign =>
         sign.template === 'direction-guidance' ||
         sign.template === 'road-fork-preview' ||
-        sign.template === 'two-lane-interchange-exit',
+        sign.template === 'two-lane-interchange-exit' ||
+        sign.template === 'dual-exit-interchange-preview',
     )
   if (tab === 'entrance-exit-guidance')
     return signs.filter(sign => sign.template === 'entrance-preview-two-directions')
@@ -121,20 +130,30 @@ export function parseInitialKind(value: string | null): ExpresswayKind | undefin
 export function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
   const template = overrides.template ?? 'expressway'
   const isEntrancePreview = template === 'entrance-preview-two-directions'
-  const defaultExitDestination = template === 'two-lane-interchange-exit' ? '广州' : '东莞 深圳'
-  const leftRoute = cleanRoute(overrides.leftRoute ?? 'G0421', 'G0421')
-  const rightRoute = cleanRoute(overrides.rightRoute ?? 'G15', 'G15')
+  const isDualExitPreview = template === 'dual-exit-interchange-preview'
+  const defaultExitDestination =
+    template === 'two-lane-interchange-exit' || isDualExitPreview ? '广州' : '东莞 深圳'
+  const defaultLeftRoute = isDualExitPreview ? 'G55' : 'G0421'
+  const defaultRightRoute = isDualExitPreview ? 'G55' : 'G15'
+  const leftRoute = cleanRoute(overrides.leftRoute ?? defaultLeftRoute, defaultLeftRoute)
+  const rightRoute = cleanRoute(overrides.rightRoute ?? defaultRightRoute, defaultRightRoute)
   const parsed =
     template === 'ordinary-road'
       ? {
           kind: isOrdinaryRoadKind(overrides.kind) ? overrides.kind : 'ordinary-national',
-          digits: cleanDigits(overrides.digits ?? overrides.code ?? '') || '105',
+          digits:
+            overrides.digits === undefined
+              ? cleanDigits(overrides.code ?? '') || '105'
+              : cleanDigits(overrides.digits) || '105',
           provinceLabel: '',
         }
       : overrides.kind && isExpresswayKind(overrides.kind)
         ? {
             kind: overrides.kind,
-            digits: cleanDigits(overrides.digits ?? ''),
+            digits:
+              overrides.digits === undefined
+                ? cleanDigits(overrides.code ?? '') || '15'
+                : cleanDigits(overrides.digits) || '15',
             provinceLabel: overrides.provinceLabel,
           }
         : parseSignCode(overrides.code ?? 'G15')
@@ -154,8 +173,12 @@ export function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 
     exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
     exitDistance: isEntrancePreview
       ? cleanEntranceDistance(overrides.exitDistance ?? '500')
-      : cleanExitDistance(overrides.exitDistance ?? '2'),
-    exitName: cleanExitText(overrides.exitName ?? (isEntrancePreview ? '汕头' : '清远'), '', 6),
+      : cleanExitDistance(overrides.exitDistance ?? (isDualExitPreview ? '3' : '2')),
+    exitName: cleanExitText(
+      overrides.exitName ?? (isEntrancePreview ? '汕头' : isDualExitPreview ? '永州' : '清远'),
+      '',
+      6,
+    ),
     exitDestination: cleanExitText(
       overrides.exitDestination ?? (isEntrancePreview ? '深圳' : defaultExitDestination),
       '',

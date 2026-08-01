@@ -8,6 +8,7 @@ export type SignTemplate =
   | 'direction-guidance'
   | 'road-fork-preview'
   | 'two-lane-interchange-exit'
+  | 'dual-exit-interchange-preview'
   | 'entrance-preview-two-directions'
 export type PopoverColor = 'slate' | 'amber' | 'emerald' | 'sky' | 'rose' | 'violet'
 export type EntranceArrowDirection = 'front' | 'left' | 'right'

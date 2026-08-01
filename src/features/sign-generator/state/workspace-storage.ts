@@ -42,6 +42,16 @@ const DEFAULT_TWO_LANE_SIGN = {
   exitDestination: '广州',
 } satisfies Partial<Sign>
 
+const DEFAULT_DUAL_EXIT_INTERCHANGE_PREVIEW_SIGN = {
+  template: 'dual-exit-interchange-preview',
+  name: '双出口枢纽式互通立体交叉出口预告',
+  exitDistance: '3',
+  exitName: '永州',
+  exitDestination: '广州',
+  leftRoute: 'G55',
+  rightRoute: 'G55',
+} satisfies Partial<Sign>
+
 const DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN = {
   template: 'entrance-preview-two-directions',
   name: '入口预告-2方向',
@@ -126,6 +136,7 @@ function initialTab(): WorkspaceTab {
     template === 'direction-guidance' ||
     template === 'road-fork-preview' ||
     template === 'two-lane-interchange-exit' ||
+    template === 'dual-exit-interchange-preview' ||
     template === 'exit-location'
   )
     return 'interchange-guidance'
@@ -149,8 +160,11 @@ function createInitialSigns(): Sign[] {
   const exitDestinationParam = params.get('exitDestination')
   const roadForkExitDestination = exitDestinationParam ?? '东莞 深圳'
   const twoLaneExitDestination = exitDestinationParam ?? '广州'
+  const dualExitDestination = exitDestinationParam ?? '广州'
   const leftRoute = params.get('leftRoute') ?? 'G0421'
   const rightRoute = params.get('rightRoute') ?? 'G15'
+  const dualLeftRoute = params.get('leftRoute') ?? 'G55'
+  const dualRightRoute = params.get('rightRoute') ?? 'G55'
   const leftDirection = params.get('leftDirection') ?? '北'
   const rightDirection = params.get('rightDirection') ?? '东'
 
@@ -195,6 +209,15 @@ function createInitialSigns(): Sign[] {
         rightRoute,
         leftDirection,
         rightDirection,
+      }),
+      createInitialSign('initial-dual-exit-interchange-preview', {
+        template: 'dual-exit-interchange-preview',
+        name: '双出口枢纽式互通立体交叉出口预告',
+        exitDistance: params.get('exitDistance') ?? '3',
+        exitName: params.get('exitName') ?? '永州',
+        exitDestination: dualExitDestination,
+        leftRoute: dualLeftRoute,
+        rightRoute: dualRightRoute,
       }),
       createInitialSign('initial-expressway-primary', { code, name, kind }),
       createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
@@ -243,8 +266,35 @@ function createInitialSigns(): Sign[] {
         'initial-entrance-preview-two-directions',
         DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,
       ),
+      createInitialSign(
+        'initial-dual-exit-interchange-preview',
+        DEFAULT_DUAL_EXIT_INTERCHANGE_PREVIEW_SIGN,
+      ),
       createInitialSign('initial-expressway-primary', { code, name, kind }),
       createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
+    ]
+  }
+
+  if (template === 'dual-exit-interchange-preview') {
+    return [
+      createInitialSign('initial-dual-exit-interchange-preview', {
+        template: 'dual-exit-interchange-preview',
+        name: '双出口枢纽式互通立体交叉出口预告',
+        exitDistance: params.get('exitDistance') ?? '3',
+        exitName: params.get('exitName') ?? '永州',
+        exitDestination: dualExitDestination,
+        leftRoute: dualLeftRoute,
+        rightRoute: dualRightRoute,
+      }),
+      createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
+      createInitialSign('initial-road-fork-preview', DEFAULT_ROAD_FORK_PREVIEW_SIGN),
+      createInitialSign('initial-two-lane-interchange-exit', DEFAULT_TWO_LANE_SIGN),
+      createInitialSign(
+        'initial-entrance-preview-two-directions',
+        DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,
+      ),
+      createInitialSign('initial-expressway-primary', { code, name, kind }),
+      createInitialSign('initial-expressway-g55', { code: 'G55', name: '二广高速' }),
     ]
   }
 
@@ -269,6 +319,10 @@ function createInitialSigns(): Sign[] {
         leftDirection,
         rightDirection,
       }),
+      createInitialSign(
+        'initial-dual-exit-interchange-preview',
+        DEFAULT_DUAL_EXIT_INTERCHANGE_PREVIEW_SIGN,
+      ),
       createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
       createInitialSign('initial-expressway-primary', { code, name, kind }),
       createInitialSign('initial-expressway-g0421', { code: 'G0421', name: '许广高速' }),
@@ -288,6 +342,10 @@ function createInitialSigns(): Sign[] {
       createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
       createInitialSign('initial-two-lane-interchange-exit', DEFAULT_TWO_LANE_SIGN),
       createInitialSign(
+        'initial-dual-exit-interchange-preview',
+        DEFAULT_DUAL_EXIT_INTERCHANGE_PREVIEW_SIGN,
+      ),
+      createInitialSign(
         'initial-entrance-preview-two-directions',
         DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,
       ),
@@ -306,6 +364,10 @@ function createInitialSigns(): Sign[] {
     createInitialSign('initial-direction-guidance', DEFAULT_DIRECTION_GUIDANCE_SIGN),
     createInitialSign('initial-road-fork-preview', DEFAULT_ROAD_FORK_PREVIEW_SIGN),
     createInitialSign('initial-two-lane-interchange-exit', DEFAULT_TWO_LANE_SIGN),
+    createInitialSign(
+      'initial-dual-exit-interchange-preview',
+      DEFAULT_DUAL_EXIT_INTERCHANGE_PREVIEW_SIGN,
+    ),
     createInitialSign(
       'initial-entrance-preview-two-directions',
       DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,

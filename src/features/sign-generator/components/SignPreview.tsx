@@ -46,6 +46,23 @@ export function SignPreview({ sign }: { sign: Sign }) {
   const dragging = useRef(false)
   const measuring = useRef(false)
   const lastPosition = useRef<Offset>({ x: 0, y: 0 })
+  const previewResetKey = [
+    sign.id,
+    sign.template,
+    sign.kind,
+    sign.code,
+    sign.digits,
+    sign.threeDigitDescend,
+    sign.provinceLabel,
+    sign.leftRoute,
+    sign.rightRoute,
+    sign.leftRouteKind,
+    sign.rightRouteKind,
+    sign.leftRouteProvinceLabel,
+    sign.rightRouteProvinceLabel,
+    sign.leftRouteThreeDigitDescend,
+    sign.rightRouteThreeDigitDescend,
+  ].join('|')
 
   const zoom = useCallback(
     (multiplier: number) =>
@@ -335,7 +352,7 @@ export function SignPreview({ sign }: { sign: Sign }) {
             />
           }
         >
-          <SignErrorBoundary>
+          <SignErrorBoundary key={previewResetKey}>
             <div
               className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
               style={{

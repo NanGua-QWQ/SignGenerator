@@ -6,14 +6,14 @@ import { routeSignWidth, cleanExitText, cleanExitRoute, cleanDirection } from '.
 import { ExpresswaySignNode } from '../sign/expressway'
 import { GREEN, WHITE, escapeXml, loadFont, OutlinedText } from '../svg-text'
 import { RawSvg } from '../raw-svg'
-import twoLaneInterchangeTemplate from '/template/2车道立交枢纽出口.svg?raw'
+import twoLaneInterchangeTemplate from '/template/双车道立交枢纽出口.svg?raw'
 import {
   NUMBERED_EXIT_RIGHT_MARGIN,
   NUMBERED_EXIT_WIDTH,
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
   NumberedExitSignNode,
-} from '../numbered-exit'
+} from './numbered-exit'
 
 const TEMPLATE_WIDTH = 934.65054
 const TEMPLATE_HEIGHT = 349.84285
@@ -24,6 +24,11 @@ const LEFT_ROUTE_SIGN_X = 204.5
 const RIGHT_ROUTE_SIGN_RIGHT = 736.5
 const ROUTE_SIGN_Y = 38
 const DIRECTION_SIGN_SIZE = 60
+const DESTINATION_TEXT_OPTIONS = {
+  scaleMode: 'reference' as const,
+  referenceText: '清远玉林',
+  maxGap: 18,
+}
 
 function cleanExitNumber(value: string): string {
   return (
@@ -137,7 +142,7 @@ export function TwoLaneInterchangeExitSign({ sign }: { sign: Sign }): ReactNode 
           width={190}
           height={56}
           fill={WHITE}
-          options={{ maxGap: 18 }}
+          options={DESTINATION_TEXT_OPTIONS}
         />
         <OutlinedText
           font={fontChinese}
@@ -147,7 +152,7 @@ export function TwoLaneInterchangeExitSign({ sign }: { sign: Sign }): ReactNode 
           width={190}
           height={56}
           fill={WHITE}
-          options={{ maxGap: 18 }}
+          options={DESTINATION_TEXT_OPTIONS}
         />
       </g>
     </RawSvg>
