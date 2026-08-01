@@ -14,8 +14,17 @@ import {
 import { isPopoverColor } from './popover-options'
 
 type SignWorkspaceTab = 'signs' | 'interchange-guidance' | 'entrance-exit-guidance'
-type ForkTemplate = Extract<SignTemplate, 'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit' | 'entrance-preview-two-directions'>
-type InterchangeTemplate = Extract<SignTemplate, 'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit'>
+type ForkTemplate = Extract<
+  SignTemplate,
+  | 'direction-guidance'
+  | 'road-fork-preview'
+  | 'two-lane-interchange-exit'
+  | 'entrance-preview-two-directions'
+>
+type InterchangeTemplate = Extract<
+  SignTemplate,
+  'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit'
+>
 type EntranceExitTemplate = Extract<SignTemplate, 'entrance-preview-two-directions'>
 
 const ORDINARY_ROAD_PREFIX: Record<OrdinaryRoadKind, string> = {
@@ -52,7 +61,12 @@ export function isExpresswayKind(value: SignKind | undefined): value is Expressw
 }
 
 export function isOrdinaryRoadKind(value: SignKind | undefined): value is OrdinaryRoadKind {
-  return value === 'ordinary-national' || value === 'ordinary-provincial' || value === 'ordinary-county' || value === 'ordinary-township'
+  return (
+    value === 'ordinary-national' ||
+    value === 'ordinary-provincial' ||
+    value === 'ordinary-county' ||
+    value === 'ordinary-township'
+  )
 }
 
 export function isRoadSignTemplate(template: SignTemplate): boolean {
@@ -60,11 +74,23 @@ export function isRoadSignTemplate(template: SignTemplate): boolean {
 }
 
 export function isForkTemplate(template: SignTemplate): boolean {
-  return template === 'direction-guidance' || template === 'road-fork-preview' || template === 'two-lane-interchange-exit' || template === 'entrance-preview-two-directions'
+  return (
+    template === 'direction-guidance' ||
+    template === 'road-fork-preview' ||
+    template === 'two-lane-interchange-exit' ||
+    template === 'entrance-preview-two-directions'
+  )
 }
 
 export function isTemplateParam(value: string | null): value is SignTemplate {
-  return value === 'expressway' || value === 'ordinary-road' || value === 'direction-guidance' || value === 'road-fork-preview' || value === 'two-lane-interchange-exit' || value === 'entrance-preview-two-directions'
+  return (
+    value === 'expressway' ||
+    value === 'ordinary-road' ||
+    value === 'direction-guidance' ||
+    value === 'road-fork-preview' ||
+    value === 'two-lane-interchange-exit' ||
+    value === 'entrance-preview-two-directions'
+  )
 }
 
 export function templateForTab(tab: SignWorkspaceTab): SignTemplate {
@@ -74,13 +100,22 @@ export function templateForTab(tab: SignWorkspaceTab): SignTemplate {
 }
 
 export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab): Sign[] {
-  if (tab === 'interchange-guidance') return signs.filter(sign => sign.template === 'direction-guidance' || sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit')
-  if (tab === 'entrance-exit-guidance') return signs.filter(sign => sign.template === 'entrance-preview-two-directions')
+  if (tab === 'interchange-guidance')
+    return signs.filter(
+      sign =>
+        sign.template === 'direction-guidance' ||
+        sign.template === 'road-fork-preview' ||
+        sign.template === 'two-lane-interchange-exit',
+    )
+  if (tab === 'entrance-exit-guidance')
+    return signs.filter(sign => sign.template === 'entrance-preview-two-directions')
   return signs.filter(sign => isRoadSignTemplate(sign.template))
 }
 
 export function parseInitialKind(value: string | null): ExpresswayKind | undefined {
-  return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei' ? value : undefined
+  return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei'
+    ? value
+    : undefined
 }
 
 export function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 'name'> {
@@ -89,40 +124,72 @@ export function normalizeSign(overrides: Partial<Sign> = {}): Omit<Sign, 'id' | 
   const defaultExitDestination = template === 'two-lane-interchange-exit' ? '广州' : '东莞 深圳'
   const leftRoute = cleanRoute(overrides.leftRoute ?? 'G0421', 'G0421')
   const rightRoute = cleanRoute(overrides.rightRoute ?? 'G15', 'G15')
-  const parsed = template === 'ordinary-road'
-    ? {
-        kind: isOrdinaryRoadKind(overrides.kind) ? overrides.kind : 'ordinary-national',
-        digits: cleanDigits(overrides.digits ?? overrides.code ?? '') || '105',
-        provinceLabel: '',
-      }
-    : overrides.kind && isExpresswayKind(overrides.kind)
-      ? { kind: overrides.kind, digits: cleanDigits(overrides.digits ?? ''), provinceLabel: overrides.provinceLabel }
-      : parseSignCode(overrides.code ?? 'G15')
+  const parsed =
+    template === 'ordinary-road'
+      ? {
+          kind: isOrdinaryRoadKind(overrides.kind) ? overrides.kind : 'ordinary-national',
+          digits: cleanDigits(overrides.digits ?? overrides.code ?? '') || '105',
+          provinceLabel: '',
+        }
+      : overrides.kind && isExpresswayKind(overrides.kind)
+        ? {
+            kind: overrides.kind,
+            digits: cleanDigits(overrides.digits ?? ''),
+            provinceLabel: overrides.provinceLabel,
+          }
+        : parseSignCode(overrides.code ?? 'G15')
 
   return {
     template,
     kind: parsed.kind,
     digits: parsed.digits,
     threeDigitDescend: Boolean(overrides.threeDigitDescend),
-    provinceLabel: parsed.kind === 'provincial' ? (parsed.provinceLabel === undefined ? '粤' : cleanProvinceLabel(parsed.provinceLabel)) : '',
+    provinceLabel:
+      parsed.kind === 'provincial'
+        ? parsed.provinceLabel === undefined
+          ? '粤'
+          : cleanProvinceLabel(parsed.provinceLabel)
+        : '',
     code: buildSignCode(parsed.kind, parsed.digits),
     exitNumber: cleanExitNumber(overrides.exitNumber ?? '360'),
-    exitDistance: isEntrancePreview ? cleanEntranceDistance(overrides.exitDistance ?? '500') : cleanExitDistance(overrides.exitDistance ?? '2'),
+    exitDistance: isEntrancePreview
+      ? cleanEntranceDistance(overrides.exitDistance ?? '500')
+      : cleanExitDistance(overrides.exitDistance ?? '2'),
     exitName: cleanExitText(overrides.exitName ?? (isEntrancePreview ? '汕头' : '清远'), '', 6),
-    exitDestination: cleanExitText(overrides.exitDestination ?? (isEntrancePreview ? '深圳' : defaultExitDestination), '', 8),
+    exitDestination: cleanExitText(
+      overrides.exitDestination ?? (isEntrancePreview ? '深圳' : defaultExitDestination),
+      '',
+      8,
+    ),
     leftRoute,
     leftRouteSignId: typeof overrides.leftRouteSignId === 'string' ? overrides.leftRouteSignId : '',
-    leftRouteKind: isExpresswayKind(overrides.leftRouteKind) ? overrides.leftRouteKind : routeKindFromCode(leftRoute),
-    leftRouteProvinceLabel: cleanRouteProvinceLabel(overrides.leftRouteKind, overrides.leftRouteProvinceLabel, leftRoute),
+    leftRouteKind: isExpresswayKind(overrides.leftRouteKind)
+      ? overrides.leftRouteKind
+      : routeKindFromCode(leftRoute),
+    leftRouteProvinceLabel: cleanRouteProvinceLabel(
+      overrides.leftRouteKind,
+      overrides.leftRouteProvinceLabel,
+      leftRoute,
+    ),
     leftRouteThreeDigitDescend: Boolean(overrides.leftRouteThreeDigitDescend),
     rightRoute,
-    rightRouteSignId: typeof overrides.rightRouteSignId === 'string' ? overrides.rightRouteSignId : '',
-    rightRouteKind: isExpresswayKind(overrides.rightRouteKind) ? overrides.rightRouteKind : routeKindFromCode(rightRoute),
-    rightRouteProvinceLabel: cleanRouteProvinceLabel(overrides.rightRouteKind, overrides.rightRouteProvinceLabel, rightRoute),
+    rightRouteSignId:
+      typeof overrides.rightRouteSignId === 'string' ? overrides.rightRouteSignId : '',
+    rightRouteKind: isExpresswayKind(overrides.rightRouteKind)
+      ? overrides.rightRouteKind
+      : routeKindFromCode(rightRoute),
+    rightRouteProvinceLabel: cleanRouteProvinceLabel(
+      overrides.rightRouteKind,
+      overrides.rightRouteProvinceLabel,
+      rightRoute,
+    ),
     rightRouteThreeDigitDescend: Boolean(overrides.rightRouteThreeDigitDescend),
     leftDirection: cleanDirection(overrides.leftDirection ?? '北', '北'),
     rightDirection: cleanDirection(overrides.rightDirection ?? '东', '东'),
-    entranceSecondDirectionEnabled: typeof overrides.entranceSecondDirectionEnabled === 'boolean' ? overrides.entranceSecondDirectionEnabled : true,
+    entranceSecondDirectionEnabled:
+      typeof overrides.entranceSecondDirectionEnabled === 'boolean'
+        ? overrides.entranceSecondDirectionEnabled
+        : true,
     entranceCardinalDirection: cleanDirection(overrides.entranceCardinalDirection ?? '南', '南'),
     entranceArrowDirection: cleanEntranceArrowDirection(overrides.entranceArrowDirection),
     popoverColor: isPopoverColor(overrides.popoverColor) ? overrides.popoverColor : 'slate',
@@ -158,7 +225,10 @@ export function normalizeUpdatedSign(sign: Sign, updates: Partial<Sign>): Sign {
   return {
     ...next,
     ...normalized,
-    name: hasNameUpdate || sign.name === '' ? cleanEditableSignName(normalized, next.name) : signName(normalized, next.name),
+    name:
+      hasNameUpdate || sign.name === ''
+        ? cleanEditableSignName(normalized, next.name)
+        : signName(normalized, next.name),
   }
 }
 
@@ -173,8 +243,14 @@ function buildSignCode(kind: Sign['kind'], digits: string): string {
   return `${kind === 'national' ? 'G' : 'S'}${digits}`
 }
 
-function parseSignCode(value: string): { kind: Sign['kind']; digits: string; provinceLabel?: string } {
-  const code = String(value || '').trim().toUpperCase()
+function parseSignCode(value: string): {
+  kind: Sign['kind']
+  digits: string
+  provinceLabel?: string
+} {
+  const code = String(value || '')
+    .trim()
+    .toUpperCase()
   const national = /^G(\d{1,4})$/.exec(code)
   if (national) return { kind: 'national', digits: national[1] }
 
@@ -182,7 +258,8 @@ function parseSignCode(value: string): { kind: Sign['kind']; digits: string; pro
   if (provincial) return { kind: 'provincial', digits: provincial[1], provinceLabel: '粤' }
 
   const legacyProvincial = /^(.)(S(\d{1,4}))$/u.exec(code)
-  if (legacyProvincial) return { kind: 'provincial', digits: legacyProvincial[3], provinceLabel: legacyProvincial[1] }
+  if (legacyProvincial)
+    return { kind: 'provincial', digits: legacyProvincial[3], provinceLabel: legacyProvincial[1] }
 
   return { kind: 'national', digits: cleanDigits(code) || '15' }
 }
@@ -191,20 +268,27 @@ function routeKindFromCode(code: string): ExpresswayKind {
   return code.startsWith('S') ? 'provincial' : 'national'
 }
 
-function cleanRouteProvinceLabel(kind: Sign['leftRouteKind'] | undefined, value: string | undefined, code: string): string {
+function cleanRouteProvinceLabel(
+  kind: Sign['leftRouteKind'] | undefined,
+  value: string | undefined,
+  code: string,
+): string {
   const routeKind = isExpresswayKind(kind) ? kind : routeKindFromCode(code)
   return routeKind === 'provincial' ? cleanProvinceLabel(value === undefined ? '粤' : value) : ''
 }
 
 function signName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined): string {
   if (sign.template === 'expressway') return cleanName(name ?? defaultOptionName(sign), sign.digits)
-  if (sign.template === 'ordinary-road') return cleanExitText(name ?? defaultOptionName(sign), defaultOptionName(sign), 10)
+  if (sign.template === 'ordinary-road')
+    return cleanExitText(name ?? defaultOptionName(sign), defaultOptionName(sign), 10)
   return cleanExitText(name ?? defaultOptionName(sign), defaultOptionName(sign), 10)
 }
 
 function cleanEditableSignName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined): string {
   if (sign.template === 'expressway') return cleanName(name ?? '', sign.digits)
-  return Array.from(String(name ?? '')).slice(0, 10).join('')
+  return Array.from(String(name ?? ''))
+    .slice(0, 10)
+    .join('')
 }
 
 function createSignId(): string {

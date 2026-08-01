@@ -1,9 +1,27 @@
 import type { Sign } from '../types'
 
-export type SignBadgeVariant = 'fork' | 'expressway' | 'national' | 'provincial' | 'county' | 'township' | 'default' | 'slate' | 'amber' | 'emerald' | 'sky' | 'rose' | 'violet'
+export type SignBadgeVariant =
+  | 'fork'
+  | 'expressway'
+  | 'national'
+  | 'provincial'
+  | 'county'
+  | 'township'
+  | 'default'
+  | 'slate'
+  | 'amber'
+  | 'emerald'
+  | 'sky'
+  | 'rose'
+  | 'violet'
 
 export function isForkSign(sign: Sign): boolean {
-  return sign.template === 'direction-guidance' || sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit' || sign.template === 'entrance-preview-two-directions'
+  return (
+    sign.template === 'direction-guidance' ||
+    sign.template === 'road-fork-preview' ||
+    sign.template === 'two-lane-interchange-exit' ||
+    sign.template === 'entrance-preview-two-directions'
+  )
 }
 
 export function signBadge(sign: Sign): string {
@@ -21,7 +39,13 @@ export function signBadge(sign: Sign): string {
 }
 
 export function defaultSignBadgeVariant(sign: Sign): SignBadgeVariant {
-  if (sign.template === 'direction-guidance' || sign.template === 'road-fork-preview' || sign.template === 'two-lane-interchange-exit' || sign.template === 'entrance-preview-two-directions') return 'fork'
+  if (
+    sign.template === 'direction-guidance' ||
+    sign.template === 'road-fork-preview' ||
+    sign.template === 'two-lane-interchange-exit' ||
+    sign.template === 'entrance-preview-two-directions'
+  )
+    return 'fork'
   if (sign.template === 'expressway') return 'expressway'
   if (sign.template === 'ordinary-road') {
     if (sign.kind === 'ordinary-provincial') return 'provincial'
@@ -33,7 +57,9 @@ export function defaultSignBadgeVariant(sign: Sign): SignBadgeVariant {
 }
 
 export function signBadgeVariant(sign: Sign): SignBadgeVariant {
-  return sign.popoverColor && sign.popoverColor !== 'slate' ? sign.popoverColor : defaultSignBadgeVariant(sign)
+  return sign.popoverColor && sign.popoverColor !== 'slate'
+    ? sign.popoverColor
+    : defaultSignBadgeVariant(sign)
 }
 
 export function signTitle(sign: Sign): string {
@@ -47,11 +73,16 @@ export function signTitle(sign: Sign): string {
 
 export function signInfo(sign: Sign): string[] {
   if (sign.template === 'entrance-preview-two-directions') {
-    return [`高速：${sign.rightRoute}`, `方向：${sign.exitName} / ${sign.exitDestination}`, `距离：${sign.exitDistance || '500'}m`]
+    return [
+      `高速：${sign.rightRoute}`,
+      `方向：${sign.exitName} / ${sign.exitDestination}`,
+      `距离：${sign.exitDistance || '500'}m`,
+    ]
   }
   const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
   const right = `右区：${sign.rightDirection} ${sign.rightRoute} ${sign.exitDestination}`.trim()
-  const distance = sign.template === 'road-fork-preview' ? `距离：${sign.exitDistance || '0'}km` : ''
+  const distance =
+    sign.template === 'road-fork-preview' ? `距离：${sign.exitDistance || '0'}km` : ''
   return [left, right, distance].filter(Boolean)
 }
 

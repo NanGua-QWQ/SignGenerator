@@ -23,11 +23,45 @@ export function DirectionGuidanceSign({ sign }: { sign: Sign }): ReactNode {
   const label = escapeXml(`${leftDirection} ${route} ${rightDirection}`)
 
   return (
-    <RawSvg template={directionGuidanceTemplate} label={`${label} 分向指路标志`} width={TEMPLATE_WIDTH} height={TEMPLATE_HEIGHT}>
+    <RawSvg
+      template={directionGuidanceTemplate}
+      label={`${label} 分向指路标志`}
+      width={TEMPLATE_WIDTH}
+      height={TEMPLATE_HEIGHT}
+    >
       <g data-generated="direction-guidance">
-        <OutlinedText font={fontChinese} text={leftDirection} startX={106} startY={29.8} width={58} height={48} fill={GREEN} options={{ maxGap: 8, minGap: 8 }} />
-        <ExpresswaySignNode code={route} kind={sign.leftRouteKind} provinceLabel={sign.leftRouteProvinceLabel} threeDigitDescend={sign.leftRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={leftRouteX} y={ROUTE_SIGN_Y} width={leftRouteWidth} height={ROUTE_SIGN_HEIGHT} />
-        <OutlinedText font={fontChinese} text={rightDirection} startX={38} startY={225} width={53} height={43} fill={GREEN} options={{ maxGap: 8, minGap: 8 }} />
+        <OutlinedText
+          font={fontChinese}
+          text={leftDirection}
+          startX={106}
+          startY={29.8}
+          width={58}
+          height={48}
+          fill={GREEN}
+          options={{ maxGap: 8, minGap: 8 }}
+        />
+        <ExpresswaySignNode
+          code={route}
+          kind={sign.leftRouteKind}
+          provinceLabel={sign.leftRouteProvinceLabel}
+          threeDigitDescend={sign.leftRouteThreeDigitDescend}
+          fontChinese={fontChinese}
+          fontLatin={fontLatin}
+          x={leftRouteX}
+          y={ROUTE_SIGN_Y}
+          width={leftRouteWidth}
+          height={ROUTE_SIGN_HEIGHT}
+        />
+        <OutlinedText
+          font={fontChinese}
+          text={rightDirection}
+          startX={38}
+          startY={225}
+          width={53}
+          height={43}
+          fill={GREEN}
+          options={{ maxGap: 8, minGap: 8 }}
+        />
       </g>
     </RawSvg>
   )

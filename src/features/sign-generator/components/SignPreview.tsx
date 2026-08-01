@@ -1,4 +1,13 @@
-import { Component, Suspense, useCallback, useEffect, useRef, useState, type ErrorInfo, type ReactNode } from 'react'
+import {
+  Component,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ErrorInfo,
+  type ReactNode,
+} from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Sign } from '@/features/sign-generator/types'
 import { Download, LoaderCircle, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
@@ -38,7 +47,11 @@ export function SignPreview({ sign }: { sign: Sign }) {
   const measuring = useRef(false)
   const lastPosition = useRef<Offset>({ x: 0, y: 0 })
 
-  const zoom = useCallback((multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))), [])
+  const zoom = useCallback(
+    (multiplier: number) =>
+      setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))),
+    [],
+  )
 
   useEffect(() => {
     const preview = previewRef.current
@@ -115,11 +128,12 @@ export function SignPreview({ sign }: { sign: Sign }) {
     if (!svgElement) return null
     const rect = svgElement.getBoundingClientRect()
     const viewBox = svgElement.viewBox.baseVal
-    if (rect.width <= 0 || rect.height <= 0 || viewBox.width <= 0 || viewBox.height <= 0) return null
+    if (rect.width <= 0 || rect.height <= 0 || viewBox.width <= 0 || viewBox.height <= 0)
+      return null
 
     return {
-      x: viewBox.x + (clientX - rect.left) / rect.width * viewBox.width,
-      y: viewBox.y + (clientY - rect.top) / rect.height * viewBox.height,
+      x: viewBox.x + ((clientX - rect.left) / rect.width) * viewBox.width,
+      y: viewBox.y + ((clientY - rect.top) / rect.height) * viewBox.height,
     }
   }
 
@@ -139,19 +153,24 @@ export function SignPreview({ sign }: { sign: Sign }) {
     return { board, point }
   }
 
-  const constrainedMeasurePoint = (start: Measurement, next: { board: BoardPosition; point: Offset }, constrained: boolean) => {
+  const constrainedMeasurePoint = (
+    start: Measurement,
+    next: { board: BoardPosition; point: Offset },
+    constrained: boolean,
+  ) => {
     if (!constrained) return next
 
-    const lockHorizontal = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
+    const lockHorizontal =
+      Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
     return lockHorizontal
       ? {
-        board: { x: next.board.x, y: start.start.y },
-        point: { x: next.point.x, y: start.startPoint.y },
-      }
+          board: { x: next.board.x, y: start.start.y },
+          point: { x: next.point.x, y: start.startPoint.y },
+        }
       : {
-        board: { x: start.start.x, y: next.board.y },
-        point: { x: start.startPoint.x, y: next.point.y },
-      }
+          board: { x: start.start.x, y: next.board.y },
+          point: { x: start.startPoint.x, y: next.point.y },
+        }
   }
 
   const updateBoardPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -164,9 +183,12 @@ export function SignPreview({ sign }: { sign: Sign }) {
     setBoardPosition(position)
   }
 
-  const reset = () => { setScale(1); setOffset({ x: 0, y: 0 }) }
+  const reset = () => {
+    setScale(1)
+    setOffset({ x: 0, y: 0 })
+  }
   const download = () => {
-    const svgElement = document.querySelector("svg[role=img]")
+    const svgElement = document.querySelector('svg[role=img]')
     if (!svgElement) return
     const svgString = svgElement.outerHTML
     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
@@ -185,7 +207,12 @@ export function SignPreview({ sign }: { sign: Sign }) {
       const point = measurePointFromEvent(event)
       if (!point) return
       measuring.current = true
-      setMeasurement({ start: point.board, end: point.board, startPoint: point.point, endPoint: point.point })
+      setMeasurement({
+        start: point.board,
+        end: point.board,
+        startPoint: point.point,
+        endPoint: point.point,
+      })
       event.currentTarget.setPointerCapture(event.pointerId)
       return
     }
@@ -199,11 +226,13 @@ export function SignPreview({ sign }: { sign: Sign }) {
     updateBoardPosition(event)
     if (measuring.current) {
       const point = measurePointFromEvent(event)
-      if (point) setMeasurement(current => {
-        if (!current) return null
-        const next = constrainedMeasurePoint(current, point, event.shiftKey)
-        return { ...current, end: next.board, endPoint: next.point }
-      })
+      if (point) {
+        setMeasurement(current => {
+          if (!current) return null
+          const next = constrainedMeasurePoint(current, point, event.shiftKey)
+          return { ...current, end: next.board, endPoint: next.point }
+        })
+      }
       return
     }
     if (!dragging.current) return
@@ -218,47 +247,101 @@ export function SignPreview({ sign }: { sign: Sign }) {
     dragging.current = false
     measuring.current = false
     setIsDragging(false)
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+    if (event.currentTarget.hasPointerCapture(event.pointerId))
+      event.currentTarget.releasePointerCapture(event.pointerId)
   }
 
   const measureDelta = measurement
     ? {
-      x: measurement.end.x - measurement.start.x,
-      y: measurement.end.y - measurement.start.y,
-      length: Math.hypot(measurement.end.x - measurement.start.x, measurement.end.y - measurement.start.y),
-    }
+        x: measurement.end.x - measurement.start.x,
+        y: measurement.end.y - measurement.start.y,
+        length: Math.hypot(
+          measurement.end.x - measurement.start.x,
+          measurement.end.y - measurement.start.y,
+        ),
+      }
     : null
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col bg-muted">
       <div className="flex h-11 shrink-0 items-center justify-between border-b bg-background px-3">
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="size-7" onClick={() => zoom(0.8)} title="缩小"><ZoomOut className="size-3.5" /></Button>
-          <output className="w-11 text-center text-xs tabular-nums text-muted-foreground">{Math.round(scale * 100)}%</output>
-          <Button variant="ghost" size="icon" className="size-7" onClick={() => zoom(1.25)} title="放大"><ZoomIn className="size-3.5" /></Button>
-          <Button variant="ghost" size="icon" className="size-7" onClick={reset} title="复位"><RotateCcw className="size-3.5" /></Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => zoom(0.8)}
+            title="缩小"
+          >
+            <ZoomOut className="size-3.5" />
+          </Button>
+          <output className="w-11 text-center text-xs tabular-nums text-muted-foreground">
+            {Math.round(scale * 100)}%
+          </output>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => zoom(1.25)}
+            title="放大"
+          >
+            <ZoomIn className="size-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="size-7" onClick={reset} title="复位">
+            <RotateCcw className="size-3.5" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" className="size-7" onClick={download} title="下载 SVG"><Download className="size-3.5" /></Button>
+        <Button variant="ghost" size="icon" className="size-7" onClick={download} title="下载 SVG">
+          <Download className="size-3.5" />
+        </Button>
       </div>
-      <div ref={previewRef} className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${showPixelMeasure ? 'cursor-crosshair' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`} style={{ backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)', backgroundSize: '16px 16px' }} onPointerDownCapture={startDrag} onPointerMove={moveDrag} onPointerLeave={() => setBoardPosition(null)} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}>
+      <div
+        ref={previewRef}
+        className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${showPixelMeasure ? 'cursor-crosshair' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        style={{
+          backgroundImage: 'radial-gradient(var(--sign-preview-grid) 0.75px, transparent 0.75px)',
+          backgroundSize: '16px 16px',
+        }}
+        onPointerDownCapture={startDrag}
+        onPointerMove={moveDrag}
+        onPointerLeave={() => setBoardPosition(null)}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={endDrag}
+      >
         {showPosition && (
           <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
-            x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y {boardPosition ? boardPosition.y.toFixed(1) : '--'}
+            x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y{' '}
+            {boardPosition ? boardPosition.y.toFixed(1) : '--'}
           </output>
         )}
         {showPixelMeasure && (
           <>
-            <output className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}>
-              dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px {measureDelta ? measureDelta.length.toFixed(1) : '--'}
+            <output
+              className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}
+            >
+              dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy{' '}
+              {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px{' '}
+              {measureDelta ? measureDelta.length.toFixed(1) : '--'}
             </output>
             {measurement && <PixelMeasureOverlay measurement={measurement} />}
           </>
         )}
-        <Suspense fallback={<LoaderCircle className="size-6 animate-spin text-muted-foreground" aria-label="正在生成预览" />}>
+        <Suspense
+          fallback={
+            <LoaderCircle
+              className="size-6 animate-spin text-muted-foreground"
+              aria-label="正在生成预览"
+            />
+          }
+        >
           <SignErrorBoundary>
-            <div className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]" style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`
-            }}>
+            <div
+              className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
+              style={{
+                transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+              }}
+            >
               <SignSvg sign={sign} />
             </div>
           </SignErrorBoundary>
@@ -277,15 +360,27 @@ function PixelMeasureOverlay({ measurement }: { measurement: Measurement }) {
   const top = Math.min(y1, y2)
   const width = Math.abs(x2 - x1)
   const height = Math.abs(y2 - y1)
-  const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI
+  const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI
   const length = Math.hypot(x2 - x1, y2 - y1)
 
   return (
     <div className="pointer-events-none absolute inset-0 z-10">
-      <div className="absolute border border-primary/70 bg-primary/10" style={{ left, top, width, height }} />
-      <div className="absolute h-px origin-left bg-primary" style={{ left: x1, top: y1, width: length, transform: `rotate(${angle}deg)` }} />
-      <span className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: x1, top: y1 }} />
-      <span className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" style={{ left: x2, top: y2 }} />
+      <div
+        className="absolute border border-primary/70 bg-primary/10"
+        style={{ left, top, width, height }}
+      />
+      <div
+        className="absolute h-px origin-left bg-primary"
+        style={{ left: x1, top: y1, width: length, transform: `rotate(${angle}deg)` }}
+      />
+      <span
+        className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+        style={{ left: x1, top: y1 }}
+      />
+      <span
+        className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+        style={{ left: x2, top: y2 }}
+      />
     </div>
   )
 }
@@ -307,7 +402,11 @@ class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoun
 
   render() {
     if (this.state.error) {
-      return <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">{this.state.error.message}</p>
+      return (
+        <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
+          {this.state.error.message}
+        </p>
+      )
     }
     return this.props.children
   }

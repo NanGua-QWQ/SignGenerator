@@ -30,7 +30,11 @@ interface NumberedExitSignNodeProps {
 }
 
 function cleanExitNumber(value: string): string {
-  return String(value || '').replace(/\D/g, '').slice(0, 4) || '360'
+  return (
+    String(value || '')
+      .replace(/\D/g, '')
+      .slice(0, 4) || '360'
+  )
 }
 
 function fittedNumberHeight(font: Font, text: string): number {
@@ -40,16 +44,41 @@ function fittedNumberHeight(font: Font, text: string): number {
   return NUMBER_MIN_HEIGHT
 }
 
-export function NumberedExitSignNode({ exitNumber, fontChinese, fontLatin, x, y, width = NUMBERED_EXIT_WIDTH }: NumberedExitSignNodeProps) {
+export function NumberedExitSignNode({
+  exitNumber,
+  fontChinese,
+  fontLatin,
+  x,
+  y,
+  width = NUMBERED_EXIT_WIDTH,
+}: NumberedExitSignNodeProps) {
   const number = cleanExitNumber(exitNumber)
   const numberHeight = fittedNumberHeight(fontLatin, number)
-  const renderedHeight = width * NUMBERED_EXIT_HEIGHT / NUMBERED_EXIT_WIDTH
+  const renderedHeight = (width * NUMBERED_EXIT_HEIGHT) / NUMBERED_EXIT_WIDTH
 
   return (
     <svg x={x} y={y} width={width} height={renderedHeight} viewBox={VIEW_BOX} aria-hidden="true">
       <g dangerouslySetInnerHTML={{ __html: baseMarkup }} />
-      <OutlinedText font={fontChinese} text="出口" startX={15} startY={30} width={70} height={30} fill={WHITE} options={{ maxGap: 12, minGap: 12 }} />
-      <OutlinedText font={fontLatin} text={number} startX={NUMBER_BOX_X} startY={28} width={NUMBER_BOX_WIDTH} height={numberHeight} fill={GREEN} options={{ maxGap: 5, minGap: 1 }} />
+      <OutlinedText
+        font={fontChinese}
+        text="出口"
+        startX={15}
+        startY={30}
+        width={70}
+        height={30}
+        fill={WHITE}
+        options={{ maxGap: 12, minGap: 12 }}
+      />
+      <OutlinedText
+        font={fontLatin}
+        text={number}
+        startX={NUMBER_BOX_X}
+        startY={28}
+        width={NUMBER_BOX_WIDTH}
+        height={numberHeight}
+        fill={GREEN}
+        options={{ maxGap: 5, minGap: 1 }}
+      />
     </svg>
   )
 }
@@ -58,5 +87,8 @@ export function expandCanvasForNumberedExit(svg: string, width: number, height: 
   return svg
     .replace(/width="[^"]+"/, `width="${width}"`)
     .replace(/height="[^"]+"/, `height="${height + NUMBERED_EXIT_TOP_SPACE}"`)
-    .replace(/viewBox="[^"]+"/, `viewBox="0,${-NUMBERED_EXIT_TOP_SPACE},${width},${height + NUMBERED_EXIT_TOP_SPACE}"`)
+    .replace(
+      /viewBox="[^"]+"/,
+      `viewBox="0,${-NUMBERED_EXIT_TOP_SPACE},${width},${height + NUMBERED_EXIT_TOP_SPACE}"`,
+    )
 }

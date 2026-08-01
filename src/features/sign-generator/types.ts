@@ -1,7 +1,14 @@
 export type ExpresswayKind = 'national' | 'provincial' | 'beijing-tianjin-hebei'
-export type OrdinaryRoadKind = 'ordinary-national' | 'ordinary-provincial' | 'ordinary-county' | 'ordinary-township'
+export type OrdinaryRoadKind =
+  'ordinary-national' | 'ordinary-provincial' | 'ordinary-county' | 'ordinary-township'
 export type SignKind = ExpresswayKind | OrdinaryRoadKind
-export type SignTemplate = 'expressway' | 'ordinary-road' | 'direction-guidance' | 'road-fork-preview' | 'two-lane-interchange-exit' | 'entrance-preview-two-directions'
+export type SignTemplate =
+  | 'expressway'
+  | 'ordinary-road'
+  | 'direction-guidance'
+  | 'road-fork-preview'
+  | 'two-lane-interchange-exit'
+  | 'entrance-preview-two-directions'
 export type PopoverColor = 'slate' | 'amber' | 'emerald' | 'sky' | 'rose' | 'violet'
 export type EntranceArrowDirection = 'front' | 'left' | 'right'
 
