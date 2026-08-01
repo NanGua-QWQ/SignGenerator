@@ -197,16 +197,7 @@ export function ExpresswaySignNode(
   const mainFont = options.fontLatin
   const bannerY = named ? 110 : 80
   const content: ReactNode[] = [
-    <OutlinedText
-      key="banner"
-      font={options.fontChinese}
-      text={bannerText}
-      startX={bannerX}
-      startY={bannerY}
-      width={bannerWidth}
-      height={100}
-      fill={bannerTextColor}
-    />,
+    <OutlinedText key="banner" font={options.fontChinese} text={bannerText} startX={bannerX} startY={bannerY} width={bannerWidth} height={100} fill={bannerTextColor} />,
   ]
   if (usesCompactSuffix) {
     const suffixText = sign.code.slice(3)
@@ -232,36 +223,14 @@ export function ExpresswaySignNode(
     const groupGap = usesCompactThreeDigitSuffix ? 55 : named ? 55 : 45
     const groupWidth = mainContentWidth + groupGap + suffixContentWidth
     const groupX = (naturalWidth - groupWidth) / 2 + (named ? 0 : 24)
-    content.push(
-      <Layout key="main" layout={mainLayout} startX={groupX} startY={mainY} gap={mainGap}>
-        {WHITE}
-      </Layout>,
-    )
-    content.push(
-      <Layout
-        key="suffix"
-        layout={suffixLayout}
-        startX={groupX + mainContentWidth + groupGap}
-        startY={named ? 490 : 520}
-        gap={suffixGap}
-      >
-        {WHITE}
-      </Layout>,
-    )
+    content.push(<Layout key="main-code" layout={mainLayout} startX={groupX} startY={mainY} gap={mainGap}>
+      {WHITE}
+    </Layout>)
+    content.push(<Layout key="suffix-code" layout={suffixLayout} startX={groupX + mainContentWidth + groupGap} startY={named ? 490 : 520} gap={suffixGap}>
+      {WHITE}
+    </Layout>)
   } else {
-    content.push(
-      <OutlinedText
-        key="main"
-        font={mainFont}
-        text={mainCode}
-        startX={mainX}
-        startY={mainY}
-        width={mainWidth}
-        height={450}
-        fill={WHITE}
-        options={{ maxGap: mainMaxGap, minGap: mainMinGap }}
-      />,
-    )
+    content.push(<OutlinedText key="main-code" font={mainFont} text={mainCode} startX={mainX} startY={mainY} width={mainWidth} height={450} fill={WHITE} options={{ maxGap: mainMaxGap, minGap: mainMinGap }} />)
   }
   if (named) {
     const nameWidth =
@@ -273,18 +242,7 @@ export function ExpresswaySignNode(
             ? 1200
             : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
-    content.push(
-      <OutlinedText
-        key="name"
-        font={options.fontChinese}
-        text={name}
-        startX={nameX}
-        startY={860}
-        width={nameWidth}
-        height={200}
-        fill={WHITE}
-      />,
-    )
+    content.push(<OutlinedText key="name" font={options.fontChinese} text={name} startX={nameX} startY={860} width={nameWidth} height={200} fill={WHITE} />)
   }
   const naturalHeight = naturalSize.height
   const renderedWidth = options.width ?? naturalWidth

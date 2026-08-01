@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react'
-import { Suspense } from 'react'
 import type { ExpresswayKind, OrdinaryRoadKind, Sign } from '../types'
 import { ExpresswaySignSvg, expresswaySignNaturalSize } from './sign/expressway'
 import { OrdinaryRoadSignSvg, ordinaryRoadFilename } from './sign/ordinary_road'
-import { DirectionGuidanceSign } from './Interchange/direction-guidance'
-import { EntrancePreviewTwoDirectionsSign } from './Interchange/entrance-preview-two-directions'
-import { RoadForkPreviewSign } from './Interchange/road-fork-preview'
-import { TwoLaneInterchangeExitSign } from './Interchange/two-lane-interchange-exit'
-
-const SIGN_FALLBACK: ReactNode = null
+import { DirectionGuidanceSign } from './interchange/direction-guidance'
+import { EntrancePreviewTwoDirectionsSign } from './interchange/entrance-preview-two-directions'
+import { RoadForkPreviewSign } from './interchange/road-fork-preview'
+import { TwoLaneInterchangeExitSign } from './interchange/two-lane-interchange-exit'
 
 function SignSvgContent(sign: Sign): ReactNode {
   if (sign.template === 'direction-guidance') return <DirectionGuidanceSign sign={sign} />
@@ -31,7 +28,7 @@ function SignSvgContent(sign: Sign): ReactNode {
 }
 
 export function SignSvg({ sign }: { sign: Sign }): ReactNode {
-  return <Suspense fallback={SIGN_FALLBACK}>{SignSvgContent(sign)}</Suspense>
+  return SignSvgContent(sign)
 }
 
 export function signFilename(sign: Sign): string {

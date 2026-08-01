@@ -11,7 +11,7 @@ import {
   routeSignWidth,
 } from '../generator'
 import { ExpresswaySignNode } from '../sign/expressway'
-import { GREEN, WHITE, YELLOW, escapeXml, loadFont, OutlinedText } from '../svg-text'
+import { GREEN, WHITE, escapeXml, loadFont, OutlinedText } from '../svg-text'
 import { RawSvg } from '../raw-svg'
 import entrancePreviewLeftTemplate from '/template/入口预告-2方向-左.svg?raw'
 import entrancePreviewTemplate from '/template/入口预告-2方向.svg?raw'
@@ -119,69 +119,16 @@ export function EntrancePreviewTwoDirectionsSign({ sign }: { sign: Sign }): Reac
             />
             {arrowDirection === 'front' ? (
               <>
-                <OutlinedText
-                  font={fontChinese}
-                  text="入"
-                  startX={20}
-                  startY={192}
-                  width={32}
-                  height={32}
-                  fill={WHITE}
-                  options={{ maxGap: 7, minGap: 4 }}
-                />
-                <OutlinedText
-                  font={fontChinese}
-                  text="口"
-                  startX={57}
-                  startY={196}
-                  width={26}
-                  height={26}
-                  fill={WHITE}
-                  options={{ maxGap: 7, minGap: 4 }}
-                />
-                <OutlinedText
-                  font={fontLatin}
-                  text={distance}
-                  startX={115.5}
-                  startY={190}
-                  width={38}
-                  height={35.5}
-                  fill={WHITE}
-                  options={{ maxGap: 6, minGap: 5 }}
-                />
-                <OutlinedText
-                  font={fontLatin}
-                  text="m"
-                  startX={179.5}
-                  startY={209}
-                  width={17.6}
-                  height={17.6}
-                  fill={WHITE}
-                />
+                <OutlinedText font={fontChinese} text="入" startX={20} startY={192} width={32} height={32} fill={WHITE} options={{ maxGap: 7 , minGap: 4 }} />
+                <OutlinedText font={fontChinese} text="口" startX={57} startY={196} width={26} height={26} fill={WHITE} options={{ maxGap: 7 , minGap: 4 }} />
+                <OutlinedText font={fontLatin} text={distance} startX={115.5} startY={190} width={38} height={35.5} fill={WHITE} options={{ maxGap: 6, minGap: 5 }} />
+                <OutlinedText font={fontLatin} text="m" startX={179.5} startY={209} width={17.6} height={17.6} fill={WHITE} />
               </>
             ) : (
               <>
                 {/* 入口文字 */}
-                <OutlinedText
-                  font={fontChinese}
-                  text="入"
-                  startX={arrowDirection === 'right' ? 176.4 : 29}
-                  startY={192.5}
-                  width={29}
-                  height={29}
-                  fill={YELLOW}
-                  options={{ maxGap: 7, minGap: 4 }}
-                />
-                <OutlinedText
-                  font={fontChinese}
-                  text="口"
-                  startX={arrowDirection === 'right' ? 214 : 67.4}
-                  startY={196.5}
-                  width={23}
-                  height={23}
-                  fill={YELLOW}
-                  options={{ maxGap: 7, minGap: 4 }}
-                />
+                <OutlinedText font={fontChinese} text="入" startX={arrowDirection === 'right' ? 179 : 29} startY={192.5} width={29} height={29} fill={WHITE} options={{ maxGap: 7, minGap: 4 }} />
+                <OutlinedText font={fontChinese} text="口" startX={arrowDirection === 'right' ? 217.5 : 67.5} startY={196.5} width={23} height={23} fill={WHITE} options={{ maxGap: 7, minGap: 4 }} />
               </>
             )}
           </>
