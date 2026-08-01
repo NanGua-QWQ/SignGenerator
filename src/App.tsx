@@ -26,7 +26,11 @@ export default function App() {
         </div>
         <SignPreview sign={workspace.selectedSign} />
         <div className="max-lg:col-span-2 max-lg:max-h-72 max-md:col-span-1 max-md:max-h-none">
-          <SignSettings sign={workspace.selectedSign} onChange={workspace.updateSign} expresswaySignList={workspace.expresswaySignList} />
+          <SignSettings
+            sign={workspace.selectedSign}
+            onChange={workspace.updateSign}
+            expresswaySignList={workspace.expresswaySignList}
+          />
         </div>
       </main>
     </div>

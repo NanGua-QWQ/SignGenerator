@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -110,7 +110,7 @@
   }
 
   .animated-title::after {
-    content: "道路标志生成器";
+    content: '道路标志生成器';
     position: absolute;
     inset: 0;
     color: yellow;

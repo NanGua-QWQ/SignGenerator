@@ -56,7 +56,9 @@ if (!isProduction) {
   })
 } else {
   productionTemplate = await fs.readFile(path.resolve(__dirname, 'dist/client/index.html'), 'utf-8')
-  productionRender = (await import(pathToFileURL(path.resolve(__dirname, 'dist/server/entry-server.js')).href)).render
+  productionRender = (
+    await import(pathToFileURL(path.resolve(__dirname, 'dist/server/entry-server.js')).href)
+  ).render
 }
 
 createServer(async (request, response) => {
@@ -70,12 +72,15 @@ createServer(async (request, response) => {
       if (handled || response.writableEnded) return
     }
 
-    if (isProduction && await serveStatic(requestUrl, response)) return
+    if (isProduction && (await serveStatic(requestUrl, response))) return
 
     const url = requestUrl.replace(base, '/')
     const template = isProduction
       ? productionTemplate
-      : await vite.transformIndexHtml(url, await fs.readFile(path.resolve(__dirname, 'index.html'), 'utf-8'))
+      : await vite.transformIndexHtml(
+          url,
+          await fs.readFile(path.resolve(__dirname, 'index.html'), 'utf-8'),
+        )
     const render = isProduction
       ? productionRender
       : (await vite.ssrLoadModule('/src/entry-server.tsx')).render
@@ -108,7 +113,8 @@ async function serveStatic(requestUrl, response) {
       const ext = path.extname(filePath)
       response.writeHead(200, {
         'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
-        'Cache-Control': root === 'dist/client' ? 'public, max-age=31536000, immutable' : 'no-cache',
+        'Cache-Control':
+          root === 'dist/client' ? 'public, max-age=31536000, immutable' : 'no-cache',
       })
       response.end(content)
       return true

@@ -10,9 +10,11 @@ const FONT_URLS = {
 export type FontKey = keyof typeof FONT_URLS
 
 const fontCache = new Map<FontKey, Promise<Font>>()
-let fontkitPromise: Promise<{
-  default: typeof import('@pdf-lib/fontkit')
-}> | undefined
+let fontkitPromise:
+  | Promise<{
+      default: typeof import('@pdf-lib/fontkit')
+    }>
+  | undefined
 
 export const GREEN = '#359b47'
 export const RED = '#ee2d2d'
@@ -70,7 +72,7 @@ export function textLayout(font: Font, text: string, height: number): TextLayout
     const glyph = font.glyphForCodePoint(codePoint)
     if (glyph.id === 0 && char !== ' ') throw new Error(`字体不包含字符“${char}”`)
     if (char === ' ') {
-      const width = (glyph.advanceWidth || 0) / unitsPerEm * height
+      const width = ((glyph.advanceWidth || 0) / unitsPerEm) * height
       return {
         glyph,
         box: { minX: 0, minY: 0, maxX: 0, maxY: 0 },
@@ -97,7 +99,12 @@ export interface LayoutOptions {
   maxGap?: number
 }
 
-export function textGap(usedWidth: number, glyphCount: number, width: number, options: LayoutOptions = {}): number {
+export function textGap(
+  usedWidth: number,
+  glyphCount: number,
+  width: number,
+  options: LayoutOptions = {},
+): number {
   const rawGap = glyphCount > 1 ? (width - usedWidth) / (glyphCount - 1) : 0
   const minGap = typeof options.minGap === 'number' ? options.minGap : 0
   const cappedGap = typeof options.maxGap === 'number' ? Math.min(rawGap, options.maxGap) : rawGap
@@ -111,13 +118,7 @@ interface LayoutProps {
   children: string
   gap: number
 }
-export function Layout({
-  layout,
-  startX,
-  startY,
-  children: fill,
-  gap
-}: LayoutProps) {
+export function Layout({ layout, startX, startY, children: fill, gap }: LayoutProps) {
   let x = startX
   return layout.glyphs.map(({ box, scale, width: glyphWidth, path, isWhitespace }, index) => {
     if (isWhitespace || !path) {
@@ -140,12 +141,23 @@ interface OutlinedTextProps {
   fill: string
   options?: LayoutOptions
 }
-export function OutlinedText({ font, text, startX, startY, width, height, fill, options = {} }: OutlinedTextProps) {
+export function OutlinedText({
+  font,
+  text,
+  startX,
+  startY,
+  width,
+  height,
+  fill,
+  options = {},
+}: OutlinedTextProps) {
   const layout = textLayout(font, text, height)
   const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
   const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
   const x = options.align === 'start' ? startX : startX + (width - contentWidth) / 2
-  return <Layout layout={layout} startX={x} startY={startY} gap={gap}>
-    {fill}
-  </Layout>
+  return (
+    <Layout layout={layout} startX={x} startY={startY} gap={gap}>
+      {fill}
+    </Layout>
+  )
 }

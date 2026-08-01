@@ -1,8 +1,72 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "oxc"],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "globals": {
+    "__SIGN_GENERATOR_SEARCH__": "readonly"
+  },
+  "settings": {
+    "jsx-a11y": {
+      "polymorphic": true
+    }
+  },
+  "plugins": ["react", "unicorn", "typescript", "oxc", "jsx-a11y"],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn",
+    "restriction": "off",
+    "pedantic": "off",
+    "style": "off"
+  },
   "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-non-null-assertion": "off",
+    "typescript/no-unused-vars": "warn",
+    "typescript/no-empty-interface": "off",
+    "typescript/no-import-type-side-effects": "warn",
+    "react/jsx-key": "warn",
+    "react/no-children-prop": "warn",
+    "react/no-unknown-property": "warn",
+    "react/jsx-no-duplicate-props": "warn",
+    "react/jsx-no-useless-fragment": "warn",
+    "react/no-array-index-key": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-object-type-as-default-prop": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "unicorn/prefer-node-protocol": "warn",
+    "unicorn/filename-case": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "eslint/no-console": "off",
+    "eslint/no-await-in-loop": "off",
+    "eslint/no-underscore-dangle": "off",
+    "eslint/no-shadow": "off",
+    "eslint/curly": "off",
+    "eslint/object-shorthand": "warn",
+    "eslint/prefer-template": "warn",
+    "eslint/no-duplicate-imports": ["warn", { "allowSeparateTypeImports": true }],
+    "eslint/default-case-last": "warn",
+    "react/self-closing-comp": "warn",
+    "react/jsx-boolean-value": ["warn", "never"],
+    "react/jsx-curly-brace-presence": "warn",
+    "react/jsx-props-no-spreading": "off",
+    "typescript/consistent-type-imports": "off",
+    "import/newline-after-import": "warn",
+    "unicorn/empty-brace-spaces": "warn",
+    "unicorn/switch-case-braces": "warn",
+    "unicorn/no-console-spaces": "warn",
+    "eslint/no-lone-blocks": "warn",
+    "eslint/no-cond-assign": ["warn", "except-parens"],
+    "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+    "jsx-a11y/click-events-have-key-events": "off"
+  },
+  "ignorePatterns": ["dist", "node_modules", "public", "*.cjs", "*.mjs"]
 }
