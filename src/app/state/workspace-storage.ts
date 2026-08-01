@@ -7,6 +7,7 @@ import {
 import type {
   Sign, SignTemplate,
 } from '@/lib/types'
+import { useSearchParams } from 'next/navigation'
 
 const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
 const WORKSPACE_STORAGE_VERSION = 1
@@ -74,8 +75,8 @@ interface SavedWorkspace extends WorkspaceState {
   version: typeof WORKSPACE_STORAGE_VERSION
 }
 
-export function createInitialWorkspace(): WorkspaceState {
-  const fallbackSigns = createInitialSigns()
+export function useCreateInitialWorkspace(): WorkspaceState {
+  const fallbackSigns = useCreateInitialSigns()
   return normalizeWorkspace(fallbackSigns, fallbackSigns[0].id)
 }
 
@@ -127,8 +128,8 @@ export function normalizeWorkspace(
   }
 }
 
-function createInitialSigns(): Sign[] {
-  const params = new URLSearchParams(currentSearch())
+function useCreateInitialSigns(): Sign[] {
+  const params = useSearchParams();
   const requestedTemplate = params.get('template')
   const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
   const code = params.get('code') ?? 'G15'
@@ -395,11 +396,6 @@ function createInitialSigns(): Sign[] {
       DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,
     ),
   ]
-}
-
-function currentSearch(): string {
-  if (typeof window !== 'undefined') {return window.location.search}
-  return (globalThis as { __SIGN_GENERATOR_SEARCH__?: string }).__SIGN_GENERATOR_SEARCH__ ?? ''
 }
 
 function createInitialSign(id: string, overrides: Partial<Sign>): Sign {

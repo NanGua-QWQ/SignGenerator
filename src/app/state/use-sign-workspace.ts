@@ -7,7 +7,7 @@ import type {
 } from '@/[tab]/Header'
 
 import {
-  createInitialWorkspace,
+  useCreateInitialWorkspace,
   loadSavedWorkspace,
   saveWorkspace,
   type WorkspaceState,
@@ -29,7 +29,7 @@ import type {
 } from '@/lib/types'
 
 export function useSignWorkspace(tab: WorkspaceTab) {
-  const [initialWorkspace] = useState<WorkspaceState>(createInitialWorkspace)
+  const [initialWorkspace] = useState<WorkspaceState>(useCreateInitialWorkspace())
   const [signs, setSigns] = useState<Sign[]>(initialWorkspace.signs)
   const [selectedId, setSelectedId] = useState<string>(initialWorkspace.selectedId)
   const [readyToSave, setReadyToSave] = useState(false)
