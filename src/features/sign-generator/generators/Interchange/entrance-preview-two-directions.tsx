@@ -79,8 +79,8 @@ export function EntrancePreviewTwoDirectionsSign({ sign }: { sign: Sign }): Reac
             <ExpresswaySignNode code={route} kind={sign.rightRouteKind} provinceLabel={sign.rightRouteProvinceLabel} threeDigitDescend={sign.rightRouteThreeDigitDescend} fontChinese={fontChinese} fontLatin={fontLatin} x={routeX} y={27.5} width={routeWidth} height={78} />
             {arrowDirection === 'front' ? (
               <>
-                <OutlinedText font={fontChinese} text="入" startX={20} startY={192} width={32} height={32} fill={WHITE} options={{ { maxGap: 7 , minGap: 4 }}} />
-                <OutlinedText font={fontChinese} text="口" startX={57} startY={196} width={26} height={26} fill={WHITE} options={{ { maxGap: 7 , minGap: 4 }}} />
+                <OutlinedText font={fontChinese} text="入" startX={20} startY={192} width={32} height={32} fill={WHITE} options={{ maxGap: 7 , minGap: 4 }} />
+                <OutlinedText font={fontChinese} text="口" startX={57} startY={196} width={26} height={26} fill={WHITE} options={{ maxGap: 7 , minGap: 4 }} />
                 <OutlinedText font={fontLatin} text={distance} startX={115.5} startY={190} width={38} height={35.5} fill={WHITE} options={{ maxGap: 6, minGap: 5 }} />
                 <OutlinedText font={fontLatin} text="m" startX={179.5} startY={209} width={17.6} height={17.6} fill={WHITE} />
               </>

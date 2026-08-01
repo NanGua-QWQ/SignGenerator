@@ -33,7 +33,7 @@ export function escapeXml(value: string): string {
   return String(value).replace(/[<>&"']/g, char => XML_ESCAPES[char])
 }
 
-export async function loadFont(kind: FontKey): Promise<Font> {
+export function loadFont(kind: FontKey): Promise<Font> {
   const cached = fontCache.get(kind)
   if (cached) return cached
   if (!fontkitPromise) fontkitPromise = import('@pdf-lib/fontkit')
@@ -110,13 +110,15 @@ interface LayoutProps {
   startY: number
   children: string
   gap: number
+  keyPrefix?: string
 }
 export function Layout({
   layout,
   startX,
   startY,
   children: fill,
-  gap
+  gap,
+  keyPrefix = 'glyph',
 }: LayoutProps) {
   let x = startX
   return layout.glyphs.map(({ box, scale, width: glyphWidth, path, isWhitespace }, index) => {
@@ -126,7 +128,7 @@ export function Layout({
     }
     const transform = `translate(${x} ${startY + box.maxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
     x += glyphWidth + gap
-    return <path key={index} d={path} transform={transform} fill={fill} fillRule="evenodd" />
+    return <path key={`${keyPrefix}-${index}`} d={path} transform={transform} fill={fill} fillRule="evenodd" />
   })
 }
 
@@ -145,7 +147,8 @@ export function OutlinedText({ font, text, startX, startY, width, height, fill, 
   const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
   const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
   const x = options.align === 'start' ? startX : startX + (width - contentWidth) / 2
-  return <Layout layout={layout} startX={x} startY={startY} gap={gap}>
+  const keyPrefix = `${text}-${startX}-${startY}`
+  return <Layout layout={layout} startX={x} startY={startY} gap={gap} keyPrefix={keyPrefix}>
     {fill}
   </Layout>
 }

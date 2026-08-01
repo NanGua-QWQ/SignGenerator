@@ -109,7 +109,9 @@ export function ExpresswaySignNode(options: ExpresswaySignNodeOptions & { inline
   const mainY = named ? 340 : 370
   const mainFont = options.fontLatin
   const bannerY = named ? 110 : 80
-  const content: ReactNode[] = [<OutlinedText font={options.fontChinese} text={bannerText} startX={bannerX} startY={bannerY} width={bannerWidth} height={100} fill={bannerTextColor} />]
+  const content: ReactNode[] = [
+    <OutlinedText key="banner" font={options.fontChinese} text={bannerText} startX={bannerX} startY={bannerY} width={bannerWidth} height={100} fill={bannerTextColor} />,
+  ]
   if (usesCompactSuffix) {
     const suffixText = sign.code.slice(3)
     const mainLayout = textLayout(mainFont, mainCode, 450)
@@ -122,19 +124,19 @@ export function ExpresswaySignNode(options: ExpresswaySignNodeOptions & { inline
     const groupGap = usesCompactThreeDigitSuffix ? 55 : named ? 55 : 45
     const groupWidth = mainContentWidth + groupGap + suffixContentWidth
     const groupX = (naturalWidth - groupWidth) / 2 + (named ? 0 : 24)
-    content.push(<Layout layout={mainLayout} startX={groupX} startY={mainY} gap={mainGap}>
+    content.push(<Layout key="main-code" layout={mainLayout} startX={groupX} startY={mainY} gap={mainGap}>
       {WHITE}
     </Layout>)
-    content.push(<Layout layout={suffixLayout} startX={groupX + mainContentWidth + groupGap} startY={named ? 490 : 520} gap={suffixGap}>
+    content.push(<Layout key="suffix-code" layout={suffixLayout} startX={groupX + mainContentWidth + groupGap} startY={named ? 490 : 520} gap={suffixGap}>
       {WHITE}
     </Layout>)
   } else {
-    content.push(<OutlinedText font={mainFont} text={mainCode} startX={mainX} startY={mainY} width={mainWidth} height={450} fill={WHITE} options={{ maxGap: mainMaxGap, minGap: mainMinGap }} />)
+    content.push(<OutlinedText key="main-code" font={mainFont} text={mainCode} startX={mainX} startY={mainY} width={mainWidth} height={450} fill={WHITE} options={{ maxGap: mainMaxGap, minGap: mainMinGap }} />)
   }
   if (named) {
     const nameWidth = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : sign.digits.length === 3 ? 1200 : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
-    content.push(<OutlinedText font={options.fontChinese} text={name} startX={nameX} startY={860} width={nameWidth} height={200} fill={WHITE} />)
+    content.push(<OutlinedText key="name" font={options.fontChinese} text={name} startX={nameX} startY={860} width={nameWidth} height={200} fill={WHITE} />)
   }
   const naturalHeight = naturalSize.height
   const renderedWidth = options.width ?? naturalWidth
