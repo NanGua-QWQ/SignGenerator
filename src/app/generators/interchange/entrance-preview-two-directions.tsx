@@ -117,9 +117,9 @@ export function EntrancePreviewTwoDirectionsSign({
   const route = cleanExitRoute(sign.rightRoute, 'G15')
   const routeWidth = routeSignWidth(route, ROUTE_SIGN_HEIGHT)
   const routeDigitsLength = route.replace(/\D/g, '').length
-  const isTwoDigitLayout = routeDigitsLength === 2
+  const isWellDigitLayout = routeDigitsLength === 2 || routeDigitsLength === 1
   const cardinalDirection = cleanDirection(sign.entranceCardinalDirection, '南')
-  const routeX = isTwoDigitLayout ? 58 : 23
+  const routeX = isWellDigitLayout ? 58 : 23
   const centeredRouteX = (templateWidth - routeWidth) / 2
   const firstDestination = cleanExitText(sign.exitName, '汕头', 4)
   const secondDestination = cleanExitText(sign.exitDestination, '深圳', 4)

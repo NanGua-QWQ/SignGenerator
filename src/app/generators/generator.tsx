@@ -1,6 +1,6 @@
 import {
   DualExitInterchangePreviewSign,
-} from './exit/dual-exit-interchange-preview'
+} from './interchange/dual-exit-interchange-preview'
 import {
   TwoLaneInterchangeExitSign,
 } from './exit/two-lane-interchange-exit'
