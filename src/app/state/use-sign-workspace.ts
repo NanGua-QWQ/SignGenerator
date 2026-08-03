@@ -39,19 +39,27 @@ export function useSignWorkspace(tab: WorkspaceTab) {
     () => signs.filter(sign => sign.template === 'expressway'),
     [signs],
   )
-  const selectedSign = useMemo<Sign>(
-    () => visibleSigns.find(sign => sign.id === selectedId) ?? visibleSigns[0],
+  const effectiveSelectedId = useMemo(
+    () => visibleSigns.some(sign => sign.id === selectedId)
+      ? selectedId
+      : visibleSigns[0]?.id ?? selectedId,
     [selectedId, visibleSigns],
   )
+  const selectedSign = useMemo<Sign>(
+    () => visibleSigns.find(sign => sign.id === effectiveSelectedId) ?? visibleSigns[0],
+    [effectiveSelectedId, visibleSigns],
+  )
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    const savedWorkspace = loadSavedWorkspace(initialWorkspace)
+    const savedWorkspace = loadSavedWorkspace()
     if (savedWorkspace) {
       setSigns(savedWorkspace.signs)
       setSelectedId(savedWorkspace.selectedId)
     }
     setReadyToSave(true)
   }, [initialWorkspace])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!readyToSave) {return}
@@ -74,9 +82,9 @@ export function useSignWorkspace(tab: WorkspaceTab) {
 
   const updateSign = useCallback(
     (updates: Partial<Sign>) => {
-      setSigns(current => updateSignAndReferences(current, selectedId, updates))
+      setSigns(current => updateSignAndReferences(current, effectiveSelectedId, updates))
     },
-    [selectedId],
+    [effectiveSelectedId],
   )
 
   const updateSignById = useCallback((id: string, updates: Partial<Sign>) => {
@@ -87,14 +95,21 @@ export function useSignWorkspace(tab: WorkspaceTab) {
     (id: string) => {
       setSigns((current) => {
         const target = current.find(sign => sign.id === id)
-        if (!target || current.filter(sign => sign.template === target.template).length === 1) {return current}
+        if (
+          !target
+          || current.filter(sign => sign.template === target.template).length === 1
+        ) {return current}
 
         const next = current.filter(sign => sign.id !== id)
-        if (id === selectedId) {setSelectedId(next.find(sign => sign.template === target.template)?.id ?? next[0].id)}
+        if (id === effectiveSelectedId) {
+          setSelectedId(
+            next.find(sign => sign.template === target.template)?.id ?? next[0].id,
+          )
+        }
         return next
       })
     },
-    [selectedId],
+    [effectiveSelectedId],
   )
 
   const reorderSign = useCallback(
@@ -134,7 +149,7 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   return {
     addChoices,
     expresswaySignList,
-    selectedId,
+    selectedId: effectiveSelectedId,
     selectedSign,
     signListTitle,
     visibleSigns,

@@ -1,7 +1,3 @@
-import type {
-  ReactNode,
-} from 'react'
-
 import dualExitInterchangePreviewTemplate from '@/generators/template/双出口枢纽式互通立体交叉的出口预告.svg'
 
 import {
@@ -26,16 +22,17 @@ import type {
 
 const TEMPLATE_WIDTH = 583.96
 const TEMPLATE_HEIGHT = 449.52
-const ROUTE_SIGN_HEIGHT = 64
-const ROUTE_SIGN_X = 211
-const DESTINATION_X = 337
+const ROUTE_SIGN_HEIGHT = 118
+const ROUTE_SIGN_X = 210
+const DESTINATION_X = 386
 const DESTINATION_WIDTH = 134
-const FIRST_ROW_Y = 86
-const SECOND_ROW_Y = 213
+const FIRST_ROW_Y = 47
+const SECOND_ROW_Y = 193
 const DESTINATION_TEXT_OPTIONS = {
   scaleMode: 'reference' as const,
   referenceText: '永州广州玉林',
   maxGap: 16,
+  minGap: 14,
 }
 
 export function DualExitInterchangePreviewSign({
@@ -78,9 +75,9 @@ export function DualExitInterchangePreviewSign({
           font={fontChinese}
           text={firstDestination}
           startX={DESTINATION_X}
-          startY={FIRST_ROW_Y + 5}
+          startY={FIRST_ROW_Y + 27.5}
           width={DESTINATION_WIDTH}
-          height={54}
+          height={71.5}
           fill={WHITE}
           options={DESTINATION_TEXT_OPTIONS}
         />
@@ -100,16 +97,16 @@ export function DualExitInterchangePreviewSign({
           font={fontChinese}
           text={secondDestination}
           startX={DESTINATION_X}
-          startY={SECOND_ROW_Y + 5}
+          startY={SECOND_ROW_Y + 27.5}
           width={DESTINATION_WIDTH}
-          height={54}
+          height={71.5}
           fill={WHITE}
           options={DESTINATION_TEXT_OPTIONS}
         />
         <OutlinedText
-          font={fontLatin}
+          font={fontChinese}
           text={distance}
-          startX={233}
+          startX={280}
           startY={343}
           width={48}
           height={57}
@@ -120,12 +117,21 @@ export function DualExitInterchangePreviewSign({
           }}
         />
         <OutlinedText
-          font={fontLatin}
-          text="km"
-          startX={303}
-          startY={363}
-          width={50}
-          height={33}
+          font={fontChinese}
+          text="k"
+          startX={331}
+          startY={364}
+          width={35}
+          height={35}
+          fill={WHITE}
+        />
+        <OutlinedText
+          font={fontChinese}
+          text="m"
+          startX={377}
+          startY={373}
+          width={27}
+          height={27}
           fill={WHITE}
         />
       </g>

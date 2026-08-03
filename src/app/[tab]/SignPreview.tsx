@@ -1,6 +1,5 @@
 import {
   Component,
-  Suspense,
   useCallback,
   useEffect,
   useRef,
@@ -11,7 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent } from 'react'
 
 import {
-  Download, LoaderCircle, RotateCcw, ZoomIn, ZoomOut,
+  Download, RotateCcw, ZoomIn, ZoomOut,
 } from 'lucide-react'
 
 import {
@@ -83,7 +82,9 @@ export function SignPreview({
   ].join('|')
 
   const zoom = useCallback(
-    (multiplier: number) => setScale(current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier))),
+    (multiplier: number) => setScale(
+      current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier)),
+    ),
     [],
   )
 
@@ -164,7 +165,12 @@ export function SignPreview({
     if (!svgElement) {return null}
     const rect = svgElement.getBoundingClientRect()
     const viewBox = svgElement.viewBox.baseVal
-    if (rect.width <= 0 || rect.height <= 0 || viewBox.width <= 0 || viewBox.height <= 0) {return null}
+    if (
+      rect.width <= 0
+      || rect.height <= 0
+      || viewBox.width <= 0
+      || viewBox.height <= 0
+    ) {return null}
 
     return {
       x: viewBox.x + (clientX - rect.left) / rect.width * viewBox.width,
@@ -310,7 +316,9 @@ export function SignPreview({
     dragging.current = false
     measuring.current = false
     setIsDragging(false)
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {event.currentTarget.releasePointerCapture(event.pointerId)}
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
   }
 
   const measureDelta = measurement ? {

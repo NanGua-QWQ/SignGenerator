@@ -1,7 +1,3 @@
-import type {
-  ReactNode,
-} from 'react'
-
 import twoLaneInterchangeTemplate from '@/generators/template/双车道立交枢纽出口.svg'
 
 import {

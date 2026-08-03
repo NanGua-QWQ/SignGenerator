@@ -80,7 +80,7 @@ export function useCreateInitialWorkspace(): WorkspaceState {
   return normalizeWorkspace(fallbackSigns, fallbackSigns[0].id)
 }
 
-export function loadSavedWorkspace(fallbackWorkspace: WorkspaceState): WorkspaceState | null {
+export function loadSavedWorkspace(): WorkspaceState | null {
   if (typeof window === 'undefined') {return null}
   try {
     const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
@@ -129,7 +129,7 @@ export function normalizeWorkspace(
 }
 
 function useCreateInitialSigns(): Sign[] {
-  const params = useSearchParams();
+  const params = useSearchParams()
   const requestedTemplate = params.get('template')
   const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
   const code = params.get('code') ?? 'G15'

@@ -110,7 +110,13 @@ export function expresswaySignNaturalSize(
   const sign = parseCode(code)
   return {
     width:
-      sign.digits.length === 1 ? 1000 : sign.digits.length === 2 ? 1250 : sign.digits.length === 3 ? 1500 : 1700,
+      sign.digits.length === 1
+        ? 1000
+        : sign.digits.length === 2
+          ? 1250
+          : sign.digits.length === 3
+            ? 1500
+            : 1700,
     height: name.trim() ? 1200 : 1000,
   }
 }
@@ -151,13 +157,29 @@ export function ExpresswaySignNode(
   const isBeijingTianjinHebei = sign.kind === 'beijing-tianjin-hebei'
   const provinceLabel
     = cleanProvinceLabel(options.provinceLabel ?? '') || sign.provinceLabel || '粤'
-  const bannerText = isProvincial ? `${provinceLabel}高速` : isBeijingTianjinHebei ? '京津冀高速' : '国家高速'
+  const bannerText = isProvincial
+    ? `${provinceLabel}高速`
+    : isBeijingTianjinHebei
+      ? '京津冀高速'
+      : '国家高速'
   const bannerColor = isProvincial ? YELLOW : isBeijingTianjinHebei ? YELLOW_GREEN : RED
   const bannerTextColor = isProvincial || isBeijingTianjinHebei ? BLACK : WHITE
   const usesThreeDigitLayout = sign.digits.length === 3
   const usesFourDigitLayout = sign.digits.length === 4
-  const bannerX = usesThreeDigitLayout ? 305 : usesFourDigitLayout ? 355 : isProvincial ? sign.digits.length === 1 ? 250 : 359.1 : sign.digits.length === 1 ? 150 : 275
-  const bannerWidth = usesThreeDigitLayout ? 890 : usesFourDigitLayout ? 990 : isProvincial ? 500 : 700
+  const bannerX = usesThreeDigitLayout
+    ? 305
+    : usesFourDigitLayout
+      ? 355
+      : isProvincial
+        ? sign.digits.length === 1 ? 250 : 359.1
+        : sign.digits.length === 1 ? 150 : 275
+  const bannerWidth = usesThreeDigitLayout
+    ? 890
+    : usesFourDigitLayout
+      ? 990
+      : isProvincial
+        ? 500
+        : 700
   const usesInlineFourDigit = sign.digits.length === 4 && inlineFourDigit
   const usesCompactFourDigitSuffix
     = sign.digits.length === 4 && !isBeijingTianjinHebei && !usesInlineFourDigit
@@ -167,10 +189,28 @@ export function ExpresswaySignNode(
   const usesWideFourDigitLayout
     = usesFourDigitLayout && (isBeijingTianjinHebei || usesInlineFourDigit)
   const mainX
-    = usesThreeDigitLayout || usesWideFourDigitLayout ? 100 : sign.digits.length === 1 ? 150 : 90
-  const mainWidth = usesThreeDigitLayout ? 1300 : usesWideFourDigitLayout ? 1500 : sign.digits.length === 1 ? 700 : 1070
-  const mainMaxGap = usesThreeDigitLayout ? 45 : usesWideFourDigitLayout ? 50 : sign.digits.length === 1 ? 85 : sign.digits.length === 2 ? 95 : 90
-  const mainMinGap = named ? 0 : usesCompactSuffix ? 25 : usesInlineFourDigit ? 0 : usesThreeDigitLayout ? 35 : 50
+    = usesThreeDigitLayout || usesWideFourDigitLayout
+      ? 100
+      : sign.digits.length === 1 ? 150 : 90
+  const mainWidth = usesThreeDigitLayout
+    ? 1300
+    : usesWideFourDigitLayout
+      ? 1500
+      : sign.digits.length === 1 ? 700 : 1070
+  const mainMaxGap = usesThreeDigitLayout
+    ? 45
+    : usesWideFourDigitLayout
+      ? 50
+      : sign.digits.length === 1
+        ? 85
+        : sign.digits.length === 2 ? 95 : 90
+  const mainMinGap = named
+    ? 0
+    : usesCompactSuffix
+      ? 25
+      : usesInlineFourDigit
+        ? 0
+        : usesThreeDigitLayout ? 35 : 50
   const mainY = named ? 340 : 370
   const mainFont = options.fontLatin
   const bannerY = named ? 110 : 80
@@ -253,7 +293,11 @@ export function ExpresswaySignNode(
   }
   if (named) {
     const nameWidth
-      = sign.digits.length === 1 ? 800 : sign.digits.length === 2 ? 950 : sign.digits.length === 3 ? 1200 : 1400
+      = sign.digits.length === 1
+        ? 800
+        : sign.digits.length === 2
+          ? 950
+          : sign.digits.length === 3 ? 1200 : 1400
     const nameX = sign.digits.length === 1 ? 100 : 150
     content.push(
       <OutlinedText

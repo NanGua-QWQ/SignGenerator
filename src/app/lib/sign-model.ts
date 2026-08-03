@@ -194,7 +194,9 @@ export function normalizeSign(overrides: Partial<Sign> = {
     ),
     leftRoute,
     leftRouteSignId: typeof overrides.leftRouteSignId === 'string' ? overrides.leftRouteSignId : '',
-    leftRouteKind: isExpresswayKind(overrides.leftRouteKind) ? overrides.leftRouteKind : routeKindFromCode(leftRoute),
+    leftRouteKind: isExpresswayKind(overrides.leftRouteKind)
+      ? overrides.leftRouteKind
+      : routeKindFromCode(leftRoute),
     leftRouteProvinceLabel: cleanRouteProvinceLabel(
       overrides.leftRouteKind,
       overrides.leftRouteProvinceLabel,
@@ -204,7 +206,9 @@ export function normalizeSign(overrides: Partial<Sign> = {
     rightRoute,
     rightRouteSignId:
       typeof overrides.rightRouteSignId === 'string' ? overrides.rightRouteSignId : '',
-    rightRouteKind: isExpresswayKind(overrides.rightRouteKind) ? overrides.rightRouteKind : routeKindFromCode(rightRoute),
+    rightRouteKind: isExpresswayKind(overrides.rightRouteKind)
+      ? overrides.rightRouteKind
+      : routeKindFromCode(rightRoute),
     rightRouteProvinceLabel: cleanRouteProvinceLabel(
       overrides.rightRouteKind,
       overrides.rightRouteProvinceLabel,
@@ -267,7 +271,7 @@ export function defaultOptionName(sign: Pick<Sign, 'template' | 'digits'>): stri
 
 function buildSignCode(kind: Sign['kind'], digits: string): string {
   if (isOrdinaryRoadKind(kind)) {return `${ORDINARY_ROAD_PREFIX[kind]}${digits}`}
-  return `${kind === 'national' ? 'G' : 'S'}${digits}`
+  return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
 
 function parseSignCode(value: string): {

@@ -153,9 +153,14 @@ export function SignList({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {addChoices.map(choice => <DropdownMenuItem key={choice.value} onSelect={() => onAdd(choice.value)}>
-                {choice.label}
-              </DropdownMenuItem>,
+              {addChoices.map(choice => (
+                <DropdownMenuItem
+                  key={choice.value}
+                  onSelect={() => onAdd(choice.value)}
+                >
+                  {choice.label}
+                </DropdownMenuItem>
+              ),
               )}
             </DropdownMenuContent>
           </DropdownMenu> : <button
@@ -174,10 +179,18 @@ export function SignList({
             const info = signInfo(sign)
             const isDropTarget = dropTarget?.id === sign.id
             const dropClass = isDropTarget ? dropTarget.position === 'before' ? 'border-t-primary' : 'border-b-primary' : 'border-y-transparent'
+            const stateClass = sign.id === selectedId
+              ? 'bg-accent text-accent-foreground'
+              : 'bg-muted/50 hover:bg-muted'
             return (
               <div
                 key={sign.id}
-                className={`group relative shrink-0 rounded-md border-y-2 transition-colors max-md:w-40 ${dropClass} ${draggingId === sign.id ? 'opacity-50' : ''} ${sign.id === selectedId ? 'bg-accent text-accent-foreground' : 'bg-muted/50 hover:bg-muted'}`}
+                className={[
+                  'group relative shrink-0 rounded-md border-y-2 transition-colors max-md:w-40',
+                  dropClass,
+                  draggingId === sign.id ? 'opacity-50' : '',
+                  stateClass,
+                ].join(' ')}
                 onContextMenu={event => openEditor(event, sign)}
                 onDragOver={event => overSign(event, sign)}
                 onDrop={event => dropSign(event, sign)}
@@ -242,6 +255,7 @@ export function SignList({
         </div>
         {popoverSign && popoverEditor && onUpdate
           && <SignListPopoverEditor
+            key={popoverSign.id}
             sign={popoverSign}
             x={popoverEditor.x}
             y={popoverEditor.y}
@@ -255,6 +269,7 @@ export function SignList({
         }
         {dialogSign && onUpdate
           && <SignListDialogEditor
+            key={dialogSign.id}
             sign={dialogSign}
             open={Boolean(dialogSign)}
             onChange={updates => onUpdate(dialogSign.id, updates)}

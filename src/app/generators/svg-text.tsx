@@ -12,11 +12,10 @@ const FONT_URLS = {
 export type FontKey = keyof typeof FONT_URLS
 
 const fontCache = new Map<FontKey, Promise<Font>>()
-let fontkitPromise:
-  | Promise<{
-    default: typeof import('@pdf-lib/fontkit')
-  }>
-  | undefined
+interface FontkitModule {
+  create(buffer: Uint8Array): Font
+}
+let fontkitPromise: Promise<{ default: FontkitModule }> | undefined
 
 export const GREEN = '#359b47'
 export const RED = '#ee2d2d'
@@ -111,7 +110,9 @@ export function textLayout(
     const glyph = font.glyphForCodePoint(codePoint)
     if (glyph.id === 0 && char !== ' ') { throw new Error(`字体不包含字符“${char}”`) }
     if (char === ' ') {
-      const width = reference ? (glyph.advanceWidth || unitsPerEm / 2) * reference.scale : (glyph.advanceWidth || 0) / unitsPerEm * height
+      const width = reference
+        ? (glyph.advanceWidth || unitsPerEm / 2) * reference.scale
+        : (glyph.advanceWidth || 0) / unitsPerEm * height
       return {
         glyph,
         box: {
@@ -186,18 +187,18 @@ export function Layout({
   gap,
   keyPrefix = 'glyph',
 }: LayoutProps) {
-  let x = startX
   return <>
     {layout.glyphs.map(
       ({
-        box, scale, originMaxY, width: glyphWidth, path, isWhitespace,
+        box, scale, originMaxY, path, isWhitespace,
       }, index) => {
+        const x = startX + layout.glyphs
+          .slice(0, index)
+          .reduce((total, item) => total + item.width + gap, 0)
         if (isWhitespace || !path) {
-          x += glyphWidth + gap
           return null
         }
         const transform = `translate(${x} ${startY + originMaxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
-        x += glyphWidth + gap
         return (
           <path
             key={`${keyPrefix}-${index}`}

@@ -197,8 +197,8 @@ const eslintConfig = defineConfig([
             "array-bracket-spacing": ["error", "never"],
             // 箭头函数参数：单参数省略括号
             "arrow-parens": ["error", "as-needed", { requireForBlockBody: true }],
-            // 换行符 lf
-            "linebreak-style": ["error", "unix"],
+            // 仓库文件在 Windows 工作区中使用 CRLF
+            "linebreak-style": ["error", "windows"],
             // 文件末尾保留单个换行
             "eol-last": ["error", "always"],
             // 圆括号内无空格

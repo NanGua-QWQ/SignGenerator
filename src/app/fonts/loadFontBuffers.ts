@@ -3,8 +3,12 @@ import {
   readFile,
 } from 'node:fs/promises'
 import {
+  dirname,
   join,
 } from 'node:path'
+import {
+  fileURLToPath,
+} from 'node:url'
 
 import type {
   FontKey,
@@ -17,12 +21,14 @@ const FONT_FILES: Record<FontKey, string> = {
   c: 'jtbz_C.ttf',
 }
 
-export type FontBuffers = Record<FontKey, string>;
+export type FontBuffers = Record<FontKey, string>
+
+const FONT_DIRECTORY = join(dirname(fileURLToPath(import.meta.url)), 'files')
 
 export async function loadFontBuffers(): Promise<FontBuffers> {
   const entries = await Promise.all(
     (Object.keys(FONT_FILES) as FontKey[]).map(async (kind) => {
-      const buffer = await readFile(join('/', join(...decodeURI(new URL(import.meta.url).pathname).split('/').slice(0, -1)), 'files', FONT_FILES[kind]))
+      const buffer = await readFile(join(FONT_DIRECTORY, FONT_FILES[kind]))
       return [kind, buffer.toString('base64')] as const
     }),
   )

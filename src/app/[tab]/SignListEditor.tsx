@@ -79,13 +79,6 @@ export function SignListPopoverEditor({
   }
 
   useEffect(() => {
-    setPosition({
-      x,
-      y,
-    })
-  }, [x, y])
-
-  useEffect(() => {
     const close = (event: globalThis.PointerEvent) => {
       const target = event.target
       if (!(target instanceof Element)) {return}
@@ -153,7 +146,7 @@ export function SignListPopoverEditor({
           </Button>
         </div>
       </div>
-      <QuickSignEditFields sign={sign} onChange={onChange} compact />
+      <QuickSignEditFields key={sign.id} sign={sign} onChange={onChange} compact />
     </div>
   )
 }
@@ -194,7 +187,7 @@ export function SignListDialogEditor({
             <X className="size-3.5" />
           </Button>
         </div>
-        <QuickSignEditFields sign={sign} onChange={onChange} />
+        <QuickSignEditFields key={sign.id} sign={sign} onChange={onChange} />
         <div className="mt-4 flex justify-end">
           <Button onClick={closeEditor}>完成</Button>
         </div>
@@ -246,22 +239,12 @@ function QuickSignEditFields({
   onChange,
   compact = false,
 }: EditorProps & { compact?: boolean }) {
-  const [draft, setDraft] = useState(sign)
   const [nameInput, setNameInput] = useState(sign.name)
   const composingName = useRef(false)
   const gapClass = compact ? 'gap-2' : 'gap-3'
   const nameLimit = sign.template === 'expressway' ? sign.digits.length === 4 ? 6 : 4 : 10
 
-  useEffect(() => {
-    setDraft(sign)
-    if (!composingName.current) {setNameInput(sign.name)}
-  }, [sign])
-
   const update = (updates: Partial<Sign>) => {
-    setDraft(current => ({
-      ...current,
-      ...updates,
-    }))
     onChange(updates)
   }
   const updatePopoverColor = (value: Sign['popoverColor']) => {
@@ -300,7 +283,7 @@ function QuickSignEditFields({
         />
       </Field>
       <Field label="颜色">
-        <ColorBadgePicker sign={draft} onValueChange={updatePopoverColor} />
+        <ColorBadgePicker sign={sign} onValueChange={updatePopoverColor} />
       </Field>
     </div>
   )

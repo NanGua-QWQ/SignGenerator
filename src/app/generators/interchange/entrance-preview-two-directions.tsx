@@ -1,10 +1,6 @@
-import type {
-  ReactNode,
-} from 'react'
-
-import entrancePreviewLeftTemplateOne from '@/generators/template/入口预告(进入后1个方向)-bc.svg';
-import entrancePreviewTemplate from '@/generators/template/入口预告(进入后2个方向)-a.svg';
-import entrancePreviewTemplateOne from '@/generators/template/入口预告(进入后2个方向)-a.svg'
+import entrancePreviewLeftTemplateOne from '@/generators/template/入口预告(进入后1个方向)-bc.svg'
+import entrancePreviewTemplate from '@/generators/template/入口预告(进入后2个方向)-a.svg'
+import entrancePreviewTemplateOne from '@/generators/template/入口预告(进入后1个方向)-a.svg'
 import entrancePreviewLeftTemplate from '@/generators/template/入口预告(进入后2个方向)-bc.svg'
 
 import {
@@ -50,10 +46,18 @@ function templateForArrowDirection(
   direction: Sign['entranceArrowDirection'],
   usesSecondDestination: boolean,
 ): { svg: string; width: number } {
-  const frontTemplate = usesSecondDestination ? entrancePreviewTemplate : entrancePreviewTemplateOne
-  const leftTemplate = usesSecondDestination ? entrancePreviewLeftTemplate : entrancePreviewLeftTemplateOne
-  const frontWidth = usesSecondDestination ? FRONT_TEMPLATE_WIDTH : ONE_DIRECTION_FRONT_TEMPLATE_WIDTH
-  const turnWidth = usesSecondDestination ? TURN_TEMPLATE_WIDTH : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
+  const frontTemplate = usesSecondDestination
+    ? entrancePreviewTemplate
+    : entrancePreviewTemplateOne
+  const leftTemplate = usesSecondDestination
+    ? entrancePreviewLeftTemplate
+    : entrancePreviewLeftTemplateOne
+  const frontWidth = usesSecondDestination
+    ? FRONT_TEMPLATE_WIDTH
+    : ONE_DIRECTION_FRONT_TEMPLATE_WIDTH
+  const turnWidth = usesSecondDestination
+    ? TURN_TEMPLATE_WIDTH
+    : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
 
   if (direction === 'left') {return {
     svg: leftTemplate,

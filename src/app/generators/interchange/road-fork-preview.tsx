@@ -1,7 +1,3 @@
-import type {
-  ReactNode,
-} from 'react'
-
 import roadForkPreviewTemplate from '@/generators/template/道路分岔预告.svg'
 
 import {

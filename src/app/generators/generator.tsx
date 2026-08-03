@@ -1,7 +1,3 @@
-import type {
-  ReactNode,
-} from 'react'
-
 import {
   DualExitInterchangePreviewSign,
 } from './exit/dual-exit-interchange-preview'

@@ -143,6 +143,8 @@ export function SignSettings({
   const [exitNameInput, setExitNameInput] = useState(sign.exitName)
   const [exitDestinationInput, setExitDestinationInput] = useState(sign.exitDestination)
 
+  // Keep local drafts synchronized with external sign changes, including IME composition.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (sign.template === 'expressway' || sign.template === 'ordinary-road') {
       setRoadDigitsInput(sign.digits)
@@ -152,6 +154,7 @@ export function SignSettings({
     if (composingExitField.current !== 'name') {setExitNameInput(sign.exitName)}
     if (composingExitField.current !== 'destination') {setExitDestinationInput(sign.exitDestination)}
   }, [sign.digits, sign.exitDestination, sign.exitName, sign.id, sign.name, sign.template])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
     const maxLength = sign.template === 'ordinary-road' ? 3 : 4
@@ -293,6 +296,15 @@ export function SignSettings({
     })
   }
 
+  const updateExpresswayKind = (kind: ExpresswayKind) => {
+    const prefix = kind === 'provincial' ? 'S' : 'G'
+    onChange({
+      kind,
+      code: `${prefix}${sign.digits}`,
+      provinceLabel: kind === 'provincial' ? sign.provinceLabel || '粤' : '',
+    })
+  }
+
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
@@ -310,30 +322,21 @@ export function SignSettings({
                 <Button
                   variant={sign.kind === 'national' ? 'default' : 'ghost'}
                   className="h-8 rounded-sm"
-                  onClick={() => onChange({
-                    kind: 'national',
-                  })}
+                  onClick={() => updateExpresswayKind('national')}
                 >
                     国家高速
                 </Button>
                 <Button
                   variant={sign.kind === 'provincial' ? 'default' : 'ghost'}
                   className="h-8 rounded-sm"
-                  onClick={() => onChange({
-                    kind: 'provincial',
-                    provinceLabel: sign.provinceLabel || '粤',
-                  })
-                  }
+                  onClick={() => updateExpresswayKind('provincial')}
                 >
                     省高速
                 </Button>
                 <Button
                   variant={sign.kind === 'beijing-tianjin-hebei' ? 'default' : 'ghost'}
                   className="col-span-2 h-8 rounded-sm px-1 text-xs whitespace-nowrap"
-                  onClick={() => onChange({
-                    kind: 'beijing-tianjin-hebei',
-                    provinceLabel: '',
-                  })}
+                  onClick={() => updateExpresswayKind('beijing-tianjin-hebei')}
                 >
                     京津冀高速
                 </Button>

@@ -1,7 +1,3 @@
-import type {
-  ReactNode,
-} from 'react'
-
 import directionGuidanceTemplate from '@/generators/template/分向指路标志.svg'
 
 import {
