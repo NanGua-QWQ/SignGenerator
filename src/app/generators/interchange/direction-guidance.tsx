@@ -1,4 +1,7 @@
 import directionGuidanceTemplate from '@/generators/template/分向指路标志.svg'
+import type {
+  Sign,
+} from '@/lib/types'
 
 import {
   useFont,
@@ -15,10 +18,6 @@ import {
 import {
   GREEN, escapeXml, OutlinedText,
 } from '../svg-text'
-
-import type {
-  Sign,
-} from '@/lib/types'
 
 const TEMPLATE_WIDTH = 200.07
 const TEMPLATE_HEIGHT = 299.75

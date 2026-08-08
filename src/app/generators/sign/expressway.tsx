@@ -2,6 +2,10 @@ import type {
   ReactNode,
 } from 'react'
 
+import type {
+  ExpresswayKind,
+} from '@/lib/types'
+
 import {
   useFont,
 } from '../../fonts/FontContext'
@@ -18,9 +22,6 @@ import {
   textLayout,
 } from '../svg-text'
 
-import type {
-  ExpresswayKind,
-} from '@/lib/types'
 import type {
   Font,
 } from '@pdf-lib/fontkit'

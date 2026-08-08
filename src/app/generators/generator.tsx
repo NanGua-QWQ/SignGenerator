@@ -1,12 +1,16 @@
-import {
-  DualExitInterchangePreviewSign,
-} from './interchange/dual-exit-interchange-preview'
+import type {
+  ExpresswayKind, OrdinaryRoadKind, Sign,
+} from '@/lib/types'
+
 import {
   TwoLaneInterchangeExitSign,
 } from './exit/two-lane-interchange-exit'
 import {
   DirectionGuidanceSign,
 } from './interchange/direction-guidance'
+import {
+  DualExitInterchangePreviewSign,
+} from './interchange/dual-exit-interchange-preview'
 import {
   EntrancePreviewTwoDirectionsSign,
 } from './interchange/entrance-preview-two-directions'
@@ -19,10 +23,6 @@ import {
 import {
   OrdinaryRoadSignSvg, ordinaryRoadFilename,
 } from './sign/ordinary_road'
-
-import type {
-  ExpresswayKind, OrdinaryRoadKind, Sign,
-} from '@/lib/types'
 
 function SignSvgContent(sign: Sign) {
   if (sign.template === 'direction-guidance') {return <DirectionGuidanceSign sign={sign} />}

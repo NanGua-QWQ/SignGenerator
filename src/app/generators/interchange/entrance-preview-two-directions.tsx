@@ -1,7 +1,10 @@
+import entrancePreviewTemplateOne from '@/generators/template/入口预告(进入后1个方向)-a.svg'
 import entrancePreviewLeftTemplateOne from '@/generators/template/入口预告(进入后1个方向)-bc.svg'
 import entrancePreviewTemplate from '@/generators/template/入口预告(进入后2个方向)-a.svg'
-import entrancePreviewTemplateOne from '@/generators/template/入口预告(进入后1个方向)-a.svg'
 import entrancePreviewLeftTemplate from '@/generators/template/入口预告(进入后2个方向)-bc.svg'
+import type {
+  Sign,
+} from '@/lib/types'
 
 import {
   useFont,
@@ -24,9 +27,6 @@ import {
   GREEN, WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
 
-import type {
-  Sign,
-} from '@/lib/types'
 import type {
   Font,
 } from '@pdf-lib/fontkit'

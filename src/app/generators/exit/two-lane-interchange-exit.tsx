@@ -1,4 +1,7 @@
 import twoLaneInterchangeTemplate from '@/generators/template/双车道立交枢纽出口.svg'
+import type {
+  Sign,
+} from '@/lib/types'
 
 import {
   useFont,
@@ -23,9 +26,6 @@ import {
   NumberedExitSignNode,
 } from './numbered-exit'
 
-import type {
-  Sign,
-} from '@/lib/types'
 import type {
   Font,
 } from '@pdf-lib/fontkit'

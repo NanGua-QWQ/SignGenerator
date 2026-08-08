@@ -1,13 +1,13 @@
+import { useSearchParams } from 'next/navigation'
+
 import {
   isTemplateParam,
   parseInitialKind,
   restoreSign,
 } from '@/lib/sign-model'
-
 import type {
   Sign, SignTemplate,
 } from '@/lib/types'
-import { useSearchParams } from 'next/navigation'
 
 const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
 const WORKSPACE_STORAGE_VERSION = 1

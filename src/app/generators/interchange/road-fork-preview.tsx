@@ -1,4 +1,7 @@
 import roadForkPreviewTemplate from '@/generators/template/道路分岔预告.svg'
+import type {
+  Sign,
+} from '@/lib/types'
 
 import {
   useFont,
@@ -27,9 +30,6 @@ import {
   GREEN, WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
 
-import type {
-  Sign,
-} from '@/lib/types'
 import type {
   Font,
 } from '@pdf-lib/fontkit'

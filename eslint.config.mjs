@@ -10,20 +10,6 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import importPlugin from "eslint-plugin-import";
 
-/**
- * 合并了 sign-generator（基于 eslint-config-next）与 SignGenerator-old 的 ESLint 配置。
- *
- * 规则冲突时以 SignGenerator-old (eslint.config.js) 为准。
- * 风格来源（SignGenerator-old）：
- *  - .prettierrc.json: semi=false, singleQuote=true, jsxSingleQuote=false,
- *    tabWidth=2, printWidth=100, trailingComma=all, bracketSpacing=true,
- *    arrowParens=avoid, endOfLine=lf
- *  - tsconfig.json: strict / noUnusedLocals / noUnusedParameters / verbatimModuleSyntax
- *  - React 19 + jsx-runtime，路径别名 @/* -> ./src/*
- *  - 类型导入统一使用 `import type`
- *  - 自定义 Hook 必须用 useCallback/useMemo 包裹稳定引用
- */
-
 const eslintConfig = defineConfig([
     // ----- Next.js 基础（提供 @next/eslint-plugin-next、jsx-a11y 等本仓库特有规则） -----
     ...nextVitals,
@@ -98,10 +84,6 @@ const eslintConfig = defineConfig([
                 { prefer: "type-imports", fixStyle: "inline-type-imports" }
             ],
             "@typescript-eslint/no-explicit-any": "warn",
-            "@typescript-eslint/explicit-function-return-type": [
-                "warn",
-                { allowExpressions: true, allowConciseArrowFunctionExpressionsStartingWithVoid: true }
-            ],
             "@typescript-eslint/ban-ts-comment": "warn",
             "@typescript-eslint/no-non-null-assertion": "warn",
             "@typescript-eslint/no-unused-expressions": [

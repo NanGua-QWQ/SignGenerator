@@ -1,14 +1,15 @@
+import {
+  FontsProvider,
+} from '@/fonts/FontsProvider'
+
+// @ts-expect-error 导入它本身而不是作为模块
+import applyDarkmode from './applyDarkmode.raw.ts'
+
 import type {
   Metadata,
 } from 'next'
 
 import './globals.css'
-// @ts-expect-error 导入它本身而不是作为模块
-import applyDarkmode from './applyDarkmode.raw.ts'
-
-import {
-  FontsProvider,
-} from '@/fonts/FontsProvider'
 
 export const metadata: Metadata = {
   title: {

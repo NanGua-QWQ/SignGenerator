@@ -1,4 +1,7 @@
 import dualExitInterchangePreviewTemplate from '@/generators/template/双出口枢纽式互通立体交叉的出口预告.svg'
+import type {
+  Sign,
+} from '@/lib/types'
 
 import {
   useFont,
@@ -15,10 +18,6 @@ import {
 import {
   WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
-
-import type {
-  Sign,
-} from '@/lib/types'
 
 const TEMPLATE_WIDTH = 583.96
 const TEMPLATE_HEIGHT = 449.52

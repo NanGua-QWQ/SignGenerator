@@ -1,3 +1,7 @@
+import type {
+  OrdinaryRoadKind,
+} from '@/lib/types'
+
 import {
   useFont,
 } from '../../fonts/FontContext'
@@ -5,9 +9,6 @@ import {
   BLACK, RED, WHITE, YELLOW, OutlinedText,
 } from '../svg-text'
 
-import type {
-  OrdinaryRoadKind,
-} from '@/lib/types'
 import type {
   Font,
 } from '@pdf-lib/fontkit'

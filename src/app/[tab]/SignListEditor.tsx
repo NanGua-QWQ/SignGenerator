@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -44,16 +45,29 @@ interface EditorProps {
   onChange: (updates: Partial<Sign>) => void
 }
 
-interface SignListPopoverEditorProps extends EditorProps {
+interface CloseableEditorProps extends EditorProps {
+  onClose: () => void
+}
+
+interface SignListPopoverEditorProps extends CloseableEditorProps {
   x: number
   y: number
-  onClose: () => void
   onOpenDialog: () => void
 }
 
-interface SignListDialogEditorProps extends EditorProps {
+interface SignListDialogEditorProps extends CloseableEditorProps {
   open: boolean
-  onClose: () => void
+}
+
+function useCloseEditor({
+  sign,
+  onChange,
+  onClose,
+}: CloseableEditorProps) {
+  return useCallback(() => {
+    restoreShortNameBeforeClose(sign, onChange)
+    onClose()
+  }, [onChange, onClose, sign])
 }
 
 export function SignListPopoverEditor({
@@ -73,21 +87,22 @@ export function SignListPopoverEditor({
     x: 0,
     y: 0,
   })
-  const closeEditor = () => {
-    restoreShortNameBeforeClose(sign, onChange)
-    onClose()
-  }
+  const closeEditor = useCloseEditor({
+    sign,
+    onChange,
+    onClose,
+  })
 
   useEffect(() => {
     const close = (event: globalThis.PointerEvent) => {
       const target = event.target
-      if (!(target instanceof Element)) {return}
-      if (panelRef.current && event.composedPath().includes(panelRef.current)) {return}
-      if (target.closest('[data-slot="select-content"], [data-radix-popper-content-wrapper]')) {return}
+      if (!(target instanceof Element)) { return }
+      if (panelRef.current && event.composedPath().includes(panelRef.current)) { return }
+      if (target.closest('[data-slot="select-content"], [data-radix-popper-content-wrapper]')) { return }
       closeEditor()
     }
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {closeEditor()}
+      if (event.key === 'Escape') { closeEditor() }
     }
     window.addEventListener('pointerdown', close)
     window.addEventListener('keydown', closeOnEscape)
@@ -105,7 +120,7 @@ export function SignListPopoverEditor({
     }
   }
   const move = (event: PointerEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.hasPointerCapture(event.pointerId)) {return}
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) { return }
     setPosition({
       x: Math.min(Math.max(8, event.clientX - dragOffset.current.x), window.innerWidth - 328),
       y: Math.min(Math.max(8, event.clientY - dragOffset.current.y), window.innerHeight - 80),
@@ -154,21 +169,22 @@ export function SignListPopoverEditor({
 export function SignListDialogEditor({
   sign, open, onChange, onClose,
 }: SignListDialogEditorProps) {
-  const closeEditor = () => {
-    restoreShortNameBeforeClose(sign, onChange)
-    onClose()
-  }
+  const closeEditor = useCloseEditor({
+    sign,
+    onChange,
+    onClose,
+  })
 
   useEffect(() => {
-    if (!open) {return}
+    if (!open) { return }
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {closeEditor()}
+      if (event.key === 'Escape') { closeEditor() }
     }
     window.addEventListener('keydown', closeOnEscape)
     return () => window.removeEventListener('keydown', closeOnEscape)
   }, [closeEditor, open])
 
-  if (!open) {return null}
+  if (!open) { return null }
 
   return (
     <div
@@ -197,9 +213,11 @@ export function SignListDialogEditor({
 }
 
 function restoreShortNameBeforeClose(sign: Sign, onChange: (updates: Partial<Sign>) => void) {
-  if (Array.from(sign.name.trim()).length <= 1) {onChange({
-    name: defaultOptionName(sign),
-  })}
+  if (Array.from(sign.name.trim()).length <= 1) {
+    onChange({
+      name: defaultOptionName(sign),
+    })
+  }
 }
 
 function ColorBadgePicker({
@@ -254,7 +272,7 @@ function QuickSignEditFields({
   }
   const updateName = (event: ChangeEvent<HTMLInputElement>) => {
     setNameInput(event.target.value)
-    if (composingName.current) {return}
+    if (composingName.current) { return }
     update({
       name: Array.from(event.target.value).slice(0, nameLimit).join(''),
     })

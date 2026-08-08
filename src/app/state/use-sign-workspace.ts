@@ -5,13 +5,6 @@ import {
 import type {
   WorkspaceTab,
 } from '@/[tab]/Header'
-
-import {
-  useCreateInitialWorkspace,
-  loadSavedWorkspace,
-  saveWorkspace,
-  type WorkspaceState,
-} from './workspace-storage'
 import {
   ENTRANCE_EXIT_ADD_CHOICES,
   INTERCHANGE_ADD_CHOICES,
@@ -23,10 +16,16 @@ import {
   templateForTab,
   visibleSignsForTab,
 } from '@/lib/sign-model'
-
 import type {
   ExpresswayKind, Sign, SignTemplate,
 } from '@/lib/types'
+
+import {
+  useCreateInitialWorkspace,
+  loadSavedWorkspace,
+  saveWorkspace,
+  type WorkspaceState,
+} from './workspace-storage'
 
 export function useSignWorkspace(tab: WorkspaceTab) {
   const [initialWorkspace] = useState<WorkspaceState>(useCreateInitialWorkspace())
