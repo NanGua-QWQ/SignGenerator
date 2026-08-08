@@ -2,12 +2,9 @@ import type {
   EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind,
 } from './types'
 
-export const DIRECTION_OPTIONS = ['东', '南', '西', '北']
+export const DIRECTION_OPTIONS = ['东', '南', '西', '北'] satisfies string[]
 
-export const ENTRANCE_ARROW_DIRECTION_OPTIONS: Array<{
-  value: EntranceArrowDirection
-  label: string
-}> = [
+export const ENTRANCE_ARROW_DIRECTION_OPTIONS = [
   {
     value: 'front',
     label: '前',
@@ -20,9 +17,12 @@ export const ENTRANCE_ARROW_DIRECTION_OPTIONS: Array<{
     value: 'right',
     label: '右',
   },
-]
+] satisfies {
+  value: EntranceArrowDirection;
+  label: string
+}[]
 
-export const EXPRESSWAY_KIND_OPTIONS: Array<{ value: ExpresswayKind; label: string }> = [
+export const EXPRESSWAY_KIND_OPTIONS = [
   {
     value: 'national',
     label: '国家高速',
@@ -35,13 +35,12 @@ export const EXPRESSWAY_KIND_OPTIONS: Array<{ value: ExpresswayKind; label: stri
     value: 'beijing-tianjin-hebei',
     label: '京津冀高速',
   },
-]
-
-export const ORDINARY_KIND_OPTIONS: Array<{
-  value: OrdinaryRoadKind
+] satisfies {
+  value: ExpresswayKind;
   label: string
-  prefix: string
-}> = [
+}[]
+
+export const ORDINARY_KIND_OPTIONS = [
   {
     value: 'ordinary-national',
     label: '国道',
@@ -62,4 +61,8 @@ export const ORDINARY_KIND_OPTIONS: Array<{
     label: '乡道',
     prefix: 'Y',
   },
-]
+] satisfies {
+  value: OrdinaryRoadKind;
+  label: string;
+  prefix: string
+}[]

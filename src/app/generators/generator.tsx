@@ -25,21 +25,30 @@ import {
 } from './sign/ordinary_road'
 
 function SignSvgContent(sign: Sign) {
-  if (sign.template === 'direction-guidance') {return <DirectionGuidanceSign sign={sign} />}
-  if (sign.template === 'two-lane-interchange-exit') {return <TwoLaneInterchangeExitSign sign={sign} />}
-  if (sign.template === 'dual-exit-interchange-preview') {return <DualExitInterchangePreviewSign sign={sign} />}
-  if (sign.template === 'entrance-preview-two-directions') {return <EntrancePreviewTwoDirectionsSign sign={sign} />}
-  if (sign.template === 'road-fork-preview') {return <RoadForkPreviewSign sign={sign} />}
-  if (sign.template === 'ordinary-road') {return <OrdinaryRoadSignSvg kind={sign.kind as OrdinaryRoadKind} digits={sign.digits} />}
-  return (
-    <ExpresswaySignSvg
-      code={sign.code}
-      name={sign.name}
-      provinceLabel={sign.provinceLabel}
-      kind={sign.kind as ExpresswayKind}
-      threeDigitDescend={sign.threeDigitDescend}
-    />
-  )
+  switch (sign.template) {
+    case 'direction-guidance':
+      return <DirectionGuidanceSign sign={sign} />
+    case 'two-lane-interchange-exit':
+      return <TwoLaneInterchangeExitSign sign={sign} />
+    case 'dual-exit-interchange-preview':
+      return <DualExitInterchangePreviewSign sign={sign} />
+    case 'entrance-preview-two-directions':
+      return <EntrancePreviewTwoDirectionsSign sign={sign} />
+    case 'road-fork-preview':
+      return <RoadForkPreviewSign sign={sign} />
+    case 'ordinary-road':
+      return <OrdinaryRoadSignSvg kind={sign.kind as OrdinaryRoadKind} digits={sign.digits} />
+    default:
+      return (
+        <ExpresswaySignSvg
+          code={sign.code}
+          name={sign.name}
+          provinceLabel={sign.provinceLabel}
+          kind={sign.kind as ExpresswayKind}
+          threeDigitDescend={sign.threeDigitDescend}
+        />
+      )
+  }
 }
 
 export function SignSvg({
@@ -135,8 +144,16 @@ export function cleanDirection(value: string, fallback: string) {
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
 
-export const cleanEntranceArrowDirection = (value: string | undefined): EntranceArrowDirection =>
-  value === 'left' || value === 'right' || value === 'front' ? value : 'front'
+export function cleanEntranceArrowDirection(value: string | undefined): EntranceArrowDirection {
+  switch (value) {
+    case 'left':
+    case 'right':
+    case 'front':
+      return value
+    default:
+      return 'front'
+  }
+}
 
 export const cleanDigits = (value: string) =>
   String(value || '')

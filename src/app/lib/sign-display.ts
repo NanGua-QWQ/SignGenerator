@@ -17,81 +17,126 @@ export type SignBadgeVariant =
   | 'rose'
   | 'violet'
 
-export const isForkSign = (sign: Sign) =>
-  (
-    sign.template === 'direction-guidance'
-    || sign.template === 'road-fork-preview'
-    || sign.template === 'two-lane-interchange-exit'
-    || sign.template === 'dual-exit-interchange-preview'
-    || sign.template === 'entrance-preview-two-directions'
-  )
+export function isForkSign(sign: Sign) {
+  switch (sign.template) {
+    case 'direction-guidance':
+    case 'road-fork-preview':
+    case 'two-lane-interchange-exit':
+    case 'dual-exit-interchange-preview':
+    case 'entrance-preview-two-directions':
+      return true
+    default:
+      return false
+  }
+}
 
 export function signBadge(sign: Sign) {
-  if (sign.template === 'direction-guidance') {return '分向'}
-  if (sign.template === 'road-fork-preview') {return '分岔'}
-  if (sign.template === 'two-lane-interchange-exit') {return '出口'}
-  if (sign.template === 'dual-exit-interchange-preview') {return '双出'}
-  if (sign.template === 'entrance-preview-two-directions') {return '入口'}
-  if (sign.template === 'ordinary-road') {
-    if (sign.kind === 'ordinary-provincial') {return '省道'}
-    if (sign.kind === 'ordinary-county') {return '县道'}
-    if (sign.kind === 'ordinary-township') {return '乡道'}
-    return '国道'
+  switch (sign.template) {
+    case 'direction-guidance':
+      return '分向'
+    case 'road-fork-preview':
+      return '分岔'
+    case 'two-lane-interchange-exit':
+      return '出口'
+    case 'dual-exit-interchange-preview':
+      return '双出'
+    case 'entrance-preview-two-directions':
+      return '入口'
+    case 'ordinary-road':
+      switch (sign.kind) {
+        case 'ordinary-provincial':
+          return '省道'
+        case 'ordinary-county':
+          return '县道'
+        case 'ordinary-township':
+          return '乡道'
+        default:
+          return '国道'
+      }
+    default:
+      return sign.code || 'G15'
   }
-  return sign.code || 'G15'
 }
 
 export function defaultSignBadgeVariant(sign: Sign) {
-  if (
-    sign.template === 'direction-guidance'
-    || sign.template === 'road-fork-preview'
-    || sign.template === 'two-lane-interchange-exit'
-    || sign.template === 'dual-exit-interchange-preview'
-    || sign.template === 'entrance-preview-two-directions'
-  ) {return 'fork'}
-  if (sign.template === 'expressway') {return 'expressway'}
-  if (sign.template === 'ordinary-road') {
-    if (sign.kind === 'ordinary-provincial') {return 'provincial'}
-    if (sign.kind === 'ordinary-county') {return 'county'}
-    if (sign.kind === 'ordinary-township') {return 'township'}
-    return 'national'
+  switch (sign.template) {
+    case 'direction-guidance':
+    case 'road-fork-preview':
+    case 'two-lane-interchange-exit':
+    case 'dual-exit-interchange-preview':
+    case 'entrance-preview-two-directions':
+      return 'fork'
+    case 'expressway':
+      return 'expressway'
+    case 'ordinary-road':
+      switch (sign.kind) {
+        case 'ordinary-provincial':
+          return 'provincial'
+        case 'ordinary-county':
+          return 'county'
+        case 'ordinary-township':
+          return 'township'
+        default:
+          return 'national'
+      }
+    default:
+      return 'default'
   }
-  return 'default'
 }
 
 export const signBadgeVariant = (sign: Sign) =>
   sign.popoverColor && sign.popoverColor !== 'slate' ? sign.popoverColor : defaultSignBadgeVariant(sign)
 
 export function signTitle(sign: Sign) {
-  if (sign.template === 'direction-guidance') {return sign.name || '分向指路标志'}
-  if (sign.template === 'road-fork-preview') {return sign.name || '道路分岔预告'}
-  if (sign.template === 'two-lane-interchange-exit') {return sign.name || '2车道立交枢纽出口'}
-  if (sign.template === 'dual-exit-interchange-preview') {return sign.name || '双出口枢纽式互通立体交叉出口预告'}
-  if (sign.template === 'entrance-preview-two-directions') {return sign.name || '入口预告-2方向'}
-  if (sign.template === 'ordinary-road') {return sign.name || '普通道路名称标识'}
-  return sign.name || '高速道路名称标识'
+  let defaultName: string
+  switch (sign.template) {
+    case 'direction-guidance':
+      defaultName = '分向指路标志'
+      break
+    case 'road-fork-preview':
+      defaultName = '道路分岔预告'
+      break
+    case 'two-lane-interchange-exit':
+      defaultName = '2车道立交枢纽出口'
+      break
+    case 'dual-exit-interchange-preview':
+      defaultName = '双出口枢纽式互通立体交叉出口预告'
+      break
+    case 'entrance-preview-two-directions':
+      defaultName = '入口预告-2方向'
+      break
+    case 'ordinary-road':
+      defaultName = '普通道路名称标识'
+      break
+    default:
+      defaultName = '高速道路名称标识'
+      break
+  }
+  return sign.name || defaultName
 }
 
 export function signInfo(sign: Sign) {
-  if (sign.template === 'entrance-preview-two-directions') {
-    return [
-      `高速：${sign.rightRoute}`,
-      `方向：${sign.exitName} / ${sign.exitDestination}`,
-      `距离：${sign.exitDistance || '500'}m`,
-    ]
+  switch (sign.template) {
+    case 'entrance-preview-two-directions':
+      return [
+        `高速：${sign.rightRoute}`,
+        `方向：${sign.exitName} / ${sign.exitDestination}`,
+        `距离：${sign.exitDistance || '500'}m`,
+      ]
+    case 'dual-exit-interchange-preview':
+      return [
+        `上方：${sign.leftRoute} ${sign.exitName}`.trim(),
+        `下方：${sign.rightRoute} ${sign.exitDestination}`.trim(),
+        `距离：${sign.exitDistance || '3'}km`,
+      ]
+    default: {
+      const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
+      const right = `右区：${sign.rightDirection} ${sign.rightRoute} ${sign.exitDestination}`.trim()
+      const distance
+        = sign.template === 'road-fork-preview' ? `距离：${sign.exitDistance || '0'}km` : ''
+      return [left, right, distance].filter(Boolean)
+    }
   }
-  if (sign.template === 'dual-exit-interchange-preview') {
-    return [
-      `上方：${sign.leftRoute} ${sign.exitName}`.trim(),
-      `下方：${sign.rightRoute} ${sign.exitDestination}`.trim(),
-      `距离：${sign.exitDistance || '3'}km`,
-    ]
-  }
-  const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
-  const right = `右区：${sign.rightDirection} ${sign.rightRoute} ${sign.exitDestination}`.trim()
-  const distance
-    = sign.template === 'road-fork-preview' ? `距离：${sign.exitDistance || '0'}km` : ''
-  return [left, right, distance].filter(Boolean)
 }
 
 export function deleteDialogTitle(sign: Sign) {

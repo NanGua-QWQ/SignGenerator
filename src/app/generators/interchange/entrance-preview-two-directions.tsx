@@ -59,20 +59,24 @@ function templateForArrowDirection(
     ? TURN_TEMPLATE_WIDTH
     : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
 
-  if (direction === 'left') {return {
-    svg: leftTemplate,
-    width: turnWidth,
-  }}
-  if (direction === 'right') {
-    const transform = usesSecondDestination ? 'transform="translate(378.63,-50.57) scale(-1,1)"' : 'transform="translate(374.29,-51.19) scale(-1,1)"'
-    return {
-      svg: leftTemplate.replace(/transform="translate\([^)]*\)"/, transform),
-      width: turnWidth,
+  switch (direction) {
+    case 'left':
+      return {
+        svg: leftTemplate,
+        width: turnWidth,
+      }
+    case 'right': {
+      const transform = usesSecondDestination ? 'transform="translate(378.63,-50.57) scale(-1,1)"' : 'transform="translate(374.29,-51.19) scale(-1,1)"'
+      return {
+        svg: leftTemplate.replace(/transform="translate\([^)]*\)"/, transform),
+        width: turnWidth,
+      }
     }
-  }
-  return {
-    svg: frontTemplate,
-    width: frontWidth,
+    default:
+      return {
+        svg: frontTemplate,
+        width: frontWidth,
+      }
   }
 }
 

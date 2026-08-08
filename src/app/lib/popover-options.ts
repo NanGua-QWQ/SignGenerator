@@ -9,7 +9,7 @@ export interface PopoverColorOption {
   swatchClass: string
 }
 
-export const POPOVER_COLOR_OPTIONS: PopoverColorOption[] = [
+export const POPOVER_COLOR_OPTIONS = [
   {
     value: 'slate',
     label: '默认',
@@ -52,7 +52,7 @@ export const POPOVER_COLOR_OPTIONS: PopoverColorOption[] = [
       'bg-violet-50 text-violet-950 border-violet-200 dark:bg-violet-950/95 dark:text-violet-50 dark:border-violet-900/60',
     swatchClass: 'bg-violet-500',
   },
-]
+] satisfies PopoverColorOption[]
 
 export const isPopoverColor = (value: unknown): value is PopoverColor =>
   POPOVER_COLOR_OPTIONS.some(option => option.value === value)

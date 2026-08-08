@@ -99,7 +99,7 @@ function RouteSelect({
       value={selectValue}
       onValueChange={(signId) => {
         const selected = signs.find(s => s.id === signId)
-        if (selected) {onValueChange(selected)}
+        if (selected) { onValueChange(selected) }
       }}
     >
       <SelectTrigger id={id}>
@@ -118,8 +118,10 @@ function RouteSelect({
 }
 
 function routeMetadata(sign: Sign | undefined) {
-  if (!sign) {return {
-  }}
+  if (!sign) {
+    return {
+    }
+  }
   return {
     kind: sign.kind as ExpresswayKind,
     provinceLabel: sign.provinceLabel,
@@ -142,13 +144,16 @@ export function SignSettings({
   // Keep local drafts synchronized with external sign changes, including IME composition.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    if (sign.template === 'expressway' || sign.template === 'ordinary-road') {
-      setRoadDigitsInput(sign.digits)
-      setRoadDigitsError('')
+    switch (sign.template) {
+      case 'expressway':
+      case 'ordinary-road':
+        setRoadDigitsInput(sign.digits)
+        setRoadDigitsError('')
+        break
     }
-    if (!composingRoadName.current) {setRoadNameInput(sign.name)}
-    if (composingExitField.current !== 'name') {setExitNameInput(sign.exitName)}
-    if (composingExitField.current !== 'destination') {setExitDestinationInput(sign.exitDestination)}
+    if (!composingRoadName.current) { setRoadNameInput(sign.name) }
+    if (composingExitField.current !== 'name') { setExitNameInput(sign.exitName) }
+    if (composingExitField.current !== 'destination') { setExitDestinationInput(sign.exitDestination) }
   }, [sign.digits, sign.exitDestination, sign.exitName, sign.id, sign.name, sign.template])
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -156,9 +161,14 @@ export function SignSettings({
     const maxLength = sign.template === 'ordinary-road' ? 3 : 4
     const digits = event.target.value.replace(/\D/g, '').slice(0, maxLength)
     setRoadDigitsInput(digits)
-    if ((sign.template === 'expressway' || sign.template === 'ordinary-road') && !digits) {
-      setRoadDigitsError('不能为空')
-      return
+    switch (sign.template) {
+      case 'expressway':
+      case 'ordinary-road':
+        if (!digits) {
+          setRoadDigitsError('不能为空')
+          return
+        }
+        break
     }
     setRoadDigitsError('')
     onChange({
@@ -168,7 +178,7 @@ export function SignSettings({
 
   function updateName(event: ChangeEvent<HTMLInputElement>) {
     setRoadNameInput(event.target.value)
-    if (composingRoadName.current) {return}
+    if (composingRoadName.current) { return }
     onChange({
       name: Array.from(event.target.value).slice(0, nameLimit).join(''),
     })
@@ -212,7 +222,7 @@ export function SignSettings({
 
   function updateExitName(event: ChangeEvent<HTMLInputElement>) {
     setExitNameInput(event.target.value)
-    if (composingExitField.current === 'name') {return}
+    if (composingExitField.current === 'name') { return }
     onChange({
       exitName: Array.from(event.target.value).slice(0, 6).join(''),
     })
@@ -220,7 +230,7 @@ export function SignSettings({
 
   function updateExitDestination(event: ChangeEvent<HTMLInputElement>) {
     setExitDestinationInput(event.target.value)
-    if (composingExitField.current === 'destination') {return}
+    if (composingExitField.current === 'destination') { return }
     onChange({
       exitDestination: Array.from(event.target.value).slice(0, 8).join(''),
     })
@@ -301,14 +311,26 @@ export function SignSettings({
     })
   }
 
+  let settingName: string
+  switch (sign.template) {
+    case 'entrance-preview-two-directions':
+      settingName = '出入口指引设置'
+      break
+    case 'direction-guidance':
+    case 'road-fork-preview':
+    case 'two-lane-interchange-exit':
+    case 'dual-exit-interchange-preview':
+      settingName = '立交枢纽指引设置'
+      break
+    default:
+      settingName = '道路名称标识设置'
+      break
+  }
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <div className="p-4">
         <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          {sign.template === 'entrance-preview-two-directions' ? '出入口指引设置' : sign.template === 'direction-guidance'
-                || sign.template === 'road-fork-preview'
-                || sign.template === 'two-lane-interchange-exit'
-                || sign.template === 'dual-exit-interchange-preview' ? '立交枢纽指引设置' : '道路名称标识设置'}
+          {settingName}
         </h2>
         <div className="flex flex-col gap-4">
           {sign.template === 'expressway' ? <>
@@ -320,21 +342,21 @@ export function SignSettings({
                   className="h-8 rounded-sm"
                   onClick={() => updateExpresswayKind('national')}
                 >
-                    国家高速
+                  国家高速
                 </Button>
                 <Button
                   variant={sign.kind === 'provincial' ? 'default' : 'ghost'}
                   className="h-8 rounded-sm"
                   onClick={() => updateExpresswayKind('provincial')}
                 >
-                    省高速
+                  省高速
                 </Button>
                 <Button
                   variant={sign.kind === 'beijing-tianjin-hebei' ? 'default' : 'ghost'}
                   className="col-span-2 h-8 rounded-sm px-1 text-xs whitespace-nowrap"
                   onClick={() => updateExpresswayKind('beijing-tianjin-hebei')}
                 >
-                    京津冀高速
+                  京津冀高速
                 </Button>
               </div>
             </div>
@@ -342,33 +364,33 @@ export function SignSettings({
               className={`grid gap-3 ${sign.kind === 'provincial' ? 'grid-cols-[minmax(0,1fr)_minmax(0,1fr)]' : 'grid-cols-1'}`}
             >
               {sign.kind === 'provincial'
-                  && <div className="space-y-1.5">
-                    <Label htmlFor="province-label">省高速简称</Label>
-                    <Input
-                      id="province-label"
-                      value={sign.provinceLabel}
-                      onChange={updateProvinceLabel}
-                      placeholder="粤"
-                      maxLength={1}
-                      className="h-9"
-                    />
-                  </div>
+                && <div className="space-y-1.5">
+                  <Label htmlFor="province-label">省高速简称</Label>
+                  <Input
+                    id="province-label"
+                    value={sign.provinceLabel}
+                    onChange={updateProvinceLabel}
+                    placeholder="粤"
+                    maxLength={1}
+                    className="h-9"
+                  />
+                </div>
               }
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <Label htmlFor="road-digits">道路编号</Label>
                   {sign.digits.length === 3
-                      && <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <input
-                          type="checkbox"
-                          checked={sign.threeDigitDescend}
-                          onChange={event => onChange({
-                            threeDigitDescend: event.target.checked,
-                          })}
-                          className="size-3.5 accent-primary"
-                        />
-                        下沉
-                      </label>
+                    && <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={sign.threeDigitDescend}
+                        onChange={event => onChange({
+                          threeDigitDescend: event.target.checked,
+                        })}
+                        className="size-3.5 accent-primary"
+                      />
+                      下沉
+                    </label>
                   }
                 </div>
                 <Input
@@ -406,7 +428,7 @@ export function SignSettings({
                 className="h-9"
               />
               <p className="text-xs text-muted-foreground">
-                  当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。
+                当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。
               </p>
             </div>
           </> : sign.template === 'ordinary-road' ? <>
@@ -442,9 +464,9 @@ export function SignSettings({
               />
               <p id="ordinary-road-digits-message" className="text-xs text-muted-foreground">
                 {roadDigitsError ? <span className="text-destructive">{roadDigitsError}</span> : <>
-                      自动加前缀：
+                  自动加前缀：
                   {ORDINARY_KIND_OPTIONS.find(option => option.value === sign.kind)?.prefix
-                        ?? 'G'}
+                    ?? 'G'}
                   {sign.digits || '105'}
                 </>
                 }
@@ -537,11 +559,11 @@ export function SignSettings({
                     })
                     }
                   />
-                    单方向
+                  单方向
                   <CircleQuestionMark style={{
                     width: 12,
                     height: 12,
-                  }}/>
+                  }} />
                 </Label>
               </div>
               {sign.entranceSecondDirectionEnabled ? <Input
@@ -683,18 +705,18 @@ export function SignSettings({
                 />
               </div>
               {sign.template === 'road-fork-preview'
-                  && <div className="space-y-1.5">
-                    <Label htmlFor="exit-distance">距离 km</Label>
-                    <Input
-                      id="exit-distance"
-                      value={sign.exitDistance}
-                      onChange={updateExitDistance}
-                      placeholder="2"
-                      inputMode="decimal"
-                      maxLength={5}
-                      className="h-9"
-                    />
-                  </div>
+                && <div className="space-y-1.5">
+                  <Label htmlFor="exit-distance">距离 km</Label>
+                  <Input
+                    id="exit-distance"
+                    value={sign.exitDistance}
+                    onChange={updateExitDistance}
+                    placeholder="2"
+                    inputMode="decimal"
+                    maxLength={5}
+                    className="h-9"
+                  />
+                </div>
               }
             </div>
             <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] gap-3">
