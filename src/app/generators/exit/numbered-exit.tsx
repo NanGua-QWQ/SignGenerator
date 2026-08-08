@@ -35,13 +35,12 @@ interface NumberedExitSignNodeProps {
   width?: number
 }
 
-function cleanExitNumber(value: string) {
-  return (
+const cleanExitNumber = (value: string) =>
+  (
     String(value || '')
       .replace(/\D/g, '')
       .slice(0, 4) || '360'
   )
-}
 
 function fittedNumberHeight(font: Font, text: string) {
   for (let height = NUMBER_MAX_HEIGHT; height >= NUMBER_MIN_HEIGHT; height -= 1) {
@@ -97,12 +96,11 @@ export function NumberedExitSignNode({
   )
 }
 
-export function expandCanvasForNumberedExit(svg: string, width: number, height: number) {
-  return svg
+export const expandCanvasForNumberedExit = (svg: string, width: number, height: number) =>
+  svg
     .replace(/width="[^"]+"/, `width="${width}"`)
     .replace(/height="[^"]+"/, `height="${height + NUMBERED_EXIT_TOP_SPACE}"`)
     .replace(
       /viewBox="[^"]+"/,
       `viewBox="0,${-NUMBERED_EXIT_TOP_SPACE},${width},${height + NUMBERED_EXIT_TOP_SPACE}"`,
     )
-}

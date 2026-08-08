@@ -62,11 +62,10 @@ function ExpresswayBackground({
   )
 }
 
-function cleanProvinceLabel(value: string) {
-  return Array.from(String(value || '').trim())
+const cleanProvinceLabel = (value: string) =>
+  Array.from(String(value || '').trim())
     .slice(0, 1)
     .join('')
-}
 
 function parseCode(value: string) {
   const code = String(value || '')

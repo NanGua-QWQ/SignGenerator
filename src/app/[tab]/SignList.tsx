@@ -93,17 +93,17 @@ export function SignList({
     <Trash2 className="size-3" />
   </button>
 
-  const dropPosition = (event: DragEvent<HTMLDivElement>): 'before' | 'after' => {
+  function dropPosition(event: DragEvent<HTMLDivElement>): 'before' | 'after' {
     const rect = event.currentTarget.getBoundingClientRect()
     return event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
   }
-  const startDrag = (event: DragEvent<HTMLButtonElement>, sign: Sign) => {
+  function startDrag(event: DragEvent<HTMLButtonElement>, sign: Sign) {
     if (!onReorder) {return}
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData(SIGN_DRAG_TYPE, sign.id)
     setDraggingId(sign.id)
   }
-  const overSign = (event: DragEvent<HTMLDivElement>, sign: Sign) => {
+  function overSign(event: DragEvent<HTMLDivElement>, sign: Sign) {
     if (!draggingId || draggingId === sign.id) {return}
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
@@ -112,7 +112,7 @@ export function SignList({
       position: dropPosition(event),
     })
   }
-  const dropSign = (event: DragEvent<HTMLDivElement>, sign: Sign) => {
+  function dropSign(event: DragEvent<HTMLDivElement>, sign: Sign) {
     const draggedId = event.dataTransfer.getData(SIGN_DRAG_TYPE) || draggingId
     if (!draggedId || draggedId === sign.id || !dropTarget) {return}
     event.preventDefault()
@@ -120,11 +120,11 @@ export function SignList({
     setDraggingId(null)
     setDropTarget(null)
   }
-  const endDrag = () => {
+  function endDrag() {
     setDraggingId(null)
     setDropTarget(null)
   }
-  const openEditor = (event: MouseEvent<HTMLDivElement>, sign: Sign) => {
+  function openEditor(event: MouseEvent<HTMLDivElement>, sign: Sign) {
     if (!onUpdate) {return}
     event.preventDefault()
     onSelect(sign.id)

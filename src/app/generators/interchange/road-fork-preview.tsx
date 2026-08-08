@@ -48,13 +48,12 @@ const DESTINATION_TEXT_OPTIONS = {
   maxGap: 18,
 }
 
-function cleanExitNumber(value: string) {
-  return (
+const cleanExitNumber = (value: string) =>
+  (
     String(value || '')
       .replace(/\D/g, '')
       .slice(0, 4) || '360'
   )
-}
 
 interface DirectionPlateProps {
   fontChinese: Font

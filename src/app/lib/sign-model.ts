@@ -88,35 +88,31 @@ export const SIGN_ADD_CHOICES: Array<{ value: SignTemplate; label: string }> = [
   },
 ]
 
-export function isExpresswayKind(value: SignKind | undefined): value is ExpresswayKind {
-  return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei'
-}
+export const isExpresswayKind = (value: SignKind | undefined): value is ExpresswayKind =>
+  value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei'
 
-export function isOrdinaryRoadKind(value: SignKind | undefined): value is OrdinaryRoadKind {
-  return (
+export const isOrdinaryRoadKind = (value: SignKind | undefined): value is OrdinaryRoadKind =>
+  (
     value === 'ordinary-national'
     || value === 'ordinary-provincial'
     || value === 'ordinary-county'
     || value === 'ordinary-township'
   )
-}
 
-export function isRoadSignTemplate(template: SignTemplate) {
-  return template === 'expressway' || template === 'ordinary-road'
-}
+export const isRoadSignTemplate = (template: SignTemplate) =>
+  template === 'expressway' || template === 'ordinary-road'
 
-export function isForkTemplate(template: SignTemplate) {
-  return (
+export const isForkTemplate = (template: SignTemplate) =>
+  (
     template === 'direction-guidance'
     || template === 'road-fork-preview'
     || template === 'two-lane-interchange-exit'
     || template === 'dual-exit-interchange-preview'
     || template === 'entrance-preview-two-directions'
   )
-}
 
-export function isTemplateParam(value: string | null): value is SignTemplate {
-  return (
+export const isTemplateParam = (value: string | null): value is SignTemplate =>
+  (
     value === 'expressway'
     || value === 'ordinary-road'
     || value === 'direction-guidance'
@@ -125,7 +121,6 @@ export function isTemplateParam(value: string | null): value is SignTemplate {
     || value === 'dual-exit-interchange-preview'
     || value === 'entrance-preview-two-directions'
   )
-}
 
 export function templateForTab(tab: SignWorkspaceTab) {
   if (tab === 'interchange-guidance') {return 'direction-guidance'}
@@ -144,9 +139,8 @@ export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab) {
   return signs.filter(sign => isRoadSignTemplate(sign.template))
 }
 
-export function parseInitialKind(value: string | null) {
-  return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei' ? value : undefined
-}
+export const parseInitialKind = (value: string | null) =>
+  value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei' ? value : undefined
 
 export function normalizeSign(overrides: Partial<Sign> = {
 }) {
@@ -308,9 +302,8 @@ function parseSignCode(value: string): {
   }
 }
 
-function routeKindFromCode(code: string) {
-  return code.startsWith('S') ? 'provincial' : 'national'
-}
+const routeKindFromCode = (code: string) =>
+  code.startsWith('S') ? 'provincial' : 'national'
 
 function cleanRouteProvinceLabel(
   kind: Sign['leftRouteKind'] | undefined,
@@ -334,6 +327,5 @@ function cleanEditableSignName(sign: Omit<Sign, 'id' | 'name'>, name: string | u
     .join('')
 }
 
-function createSignId() {
-  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
-}
+const createSignId = () =>
+  `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`

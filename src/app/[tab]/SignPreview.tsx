@@ -160,7 +160,7 @@ export function SignPreview({
     }
   }, [])
 
-  const boardPositionFromClient = (clientX: number, clientY: number) => {
+  function boardPositionFromClient(clientX: number, clientY: number) {
     const svgElement = previewRef.current?.querySelector('svg')
     if (!svgElement) {return null}
     const rect = svgElement.getBoundingClientRect()
@@ -178,7 +178,7 @@ export function SignPreview({
     }
   }
 
-  const previewPointFromClient = (clientX: number, clientY: number) => {
+  function previewPointFromClient(clientX: number, clientY: number) {
     const previewRect = previewRef.current?.getBoundingClientRect()
     if (!previewRect) {return null}
     return {
@@ -187,7 +187,7 @@ export function SignPreview({
     }
   }
 
-  const measurePointFromEvent = (event: ReactPointerEvent<HTMLDivElement>) => {
+  function measurePointFromEvent(event: ReactPointerEvent<HTMLDivElement>) {
     const board = boardPositionFromClient(event.clientX, event.clientY)
     const point = previewPointFromClient(event.clientX, event.clientY)
     if (!board || !point) {return null}
@@ -197,11 +197,11 @@ export function SignPreview({
     }
   }
 
-  const constrainedMeasurePoint = (
+  function constrainedMeasurePoint(
     start: Measurement,
     next: { board: BoardPosition; point: Offset },
     constrained: boolean,
-  ) => {
+  ) {
     if (!constrained) {return next}
 
     const lockHorizontal
@@ -227,7 +227,7 @@ export function SignPreview({
     }
   }
 
-  const updateBoardPosition = (event: ReactPointerEvent<HTMLDivElement>) => {
+  function updateBoardPosition(event: ReactPointerEvent<HTMLDivElement>) {
     if (!showPosition && !showPixelMeasure) {return}
     const position = boardPositionFromClient(event.clientX, event.clientY)
     if (!position) {
@@ -237,14 +237,14 @@ export function SignPreview({
     setBoardPosition(position)
   }
 
-  const reset = () => {
+  function reset() {
     setScale(1)
     setOffset({
       x: 0,
       y: 0,
     })
   }
-  const download = () => {
+  function download() {
     const svgElement = document.querySelector('svg[role=img]')
     if (!svgElement) {return}
     const svgString = svgElement.outerHTML
@@ -259,7 +259,7 @@ export function SignPreview({
     setTimeout(() => URL.revokeObjectURL(url), 0)
   }
 
-  const startDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+  function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.button !== 0) {return}
     event.preventDefault()
     if (showPixelMeasure) {
@@ -284,7 +284,7 @@ export function SignPreview({
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
-  const moveDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+  function moveDrag(event: ReactPointerEvent<HTMLDivElement>) {
     updateBoardPosition(event)
     if (measuring.current) {
       const point = measurePointFromEvent(event)
@@ -312,7 +312,7 @@ export function SignPreview({
     }
   }
 
-  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+  function endDrag(event: ReactPointerEvent<HTMLDivElement>) {
     dragging.current = false
     measuring.current = false
     setIsDragging(false)

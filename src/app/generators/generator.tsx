@@ -104,32 +104,29 @@ export function cleanExitText(value: string, fallback: string, limit: number) {
   return text || fallback
 }
 
-export function cleanExitDistance(value: string) {
-  return (
+export const cleanExitDistance = (value: string) =>
+  (
     String(value || '')
       .replace(/[^\d.]/g, '')
       .replace(/(\..*)\./g, '$1')
       .slice(0, 1) || ' '
   )
-}
 
-export function cleanEntranceDistance(value: string) {
-  return (
+export const cleanEntranceDistance = (value: string) =>
+  (
     String(value || '')
       .replace(/\D/g, '')
       .slice(0, 4) || '500'
   )
-}
 
-export function cleanExitRoute(value: string, fallback: string) {
-  return (
+export const cleanExitRoute = (value: string, fallback: string) =>
+  (
     String(value || '')
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, '')
       .slice(0, 5) || fallback
   )
-}
 
 export function cleanDirection(value: string, fallback: string) {
   const direction = Array.from(String(value || '').trim())
@@ -138,44 +135,37 @@ export function cleanDirection(value: string, fallback: string) {
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
 
-export function cleanEntranceArrowDirection(value: string | undefined): EntranceArrowDirection {
-  return value === 'left' || value === 'right' || value === 'front' ? value : 'front'
-}
+export const cleanEntranceArrowDirection = (value: string | undefined): EntranceArrowDirection =>
+  value === 'left' || value === 'right' || value === 'front' ? value : 'front'
 
-export function cleanDigits(value: string) {
-  return String(value || '')
+export const cleanDigits = (value: string) =>
+  String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4)
-}
 
-export function cleanProvinceLabel(value: string) {
-  return Array.from(String(value || '').trim())
+export const cleanProvinceLabel = (value: string) =>
+  Array.from(String(value || '').trim())
     .slice(0, 1)
     .join('')
-}
 
-export function nameLimitForDigits(digits: string) {
-  return digits.length === 4 ? 6 : 4
-}
+export const nameLimitForDigits = (digits: string) =>
+  digits.length === 4 ? 6 : 4
 
-export function cleanName(value: string, digits: string) {
-  return Array.from(String(value || ''))
+export const cleanName = (value: string, digits: string) =>
+  Array.from(String(value || ''))
     .slice(0, nameLimitForDigits(digits))
     .join('')
-}
 
-export function cleanExitNumber(value: string) {
-  return String(value || '')
+export const cleanExitNumber = (value: string) =>
+  String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4)
-}
 
-export function cleanRoute(value: string, fallback: string) {
-  return (
+export const cleanRoute = (value: string, fallback: string) =>
+  (
     String(value || '')
       .trim()
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, '')
       .slice(0, 5) || fallback
   )
-}

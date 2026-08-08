@@ -112,14 +112,14 @@ export function SignListPopoverEditor({
     }
   }, [closeEditor])
 
-  const startMove = (event: PointerEvent<HTMLDivElement>) => {
+  function startMove(event: PointerEvent<HTMLDivElement>) {
     event.currentTarget.setPointerCapture(event.pointerId)
     dragOffset.current = {
       x: event.clientX - position.x,
       y: event.clientY - position.y,
     }
   }
-  const move = (event: PointerEvent<HTMLDivElement>) => {
+  function move(event: PointerEvent<HTMLDivElement>) {
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) { return }
     setPosition({
       x: Math.min(Math.max(8, event.clientX - dragOffset.current.x), window.innerWidth - 328),
@@ -262,22 +262,22 @@ function QuickSignEditFields({
   const gapClass = compact ? 'gap-2' : 'gap-3'
   const nameLimit = sign.template === 'expressway' ? sign.digits.length === 4 ? 6 : 4 : 10
 
-  const update = (updates: Partial<Sign>) => {
+  function update(updates: Partial<Sign>) {
     onChange(updates)
   }
-  const updatePopoverColor = (value: Sign['popoverColor']) => {
+  function updatePopoverColor(value: Sign['popoverColor']) {
     update({
       popoverColor: value,
     })
   }
-  const updateName = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateName(event: ChangeEvent<HTMLInputElement>) {
     setNameInput(event.target.value)
     if (composingName.current) { return }
     update({
       name: Array.from(event.target.value).slice(0, nameLimit).join(''),
     })
   }
-  const finishNameComposition = (event: CompositionEvent<HTMLInputElement>) => {
+  function finishNameComposition(event: CompositionEvent<HTMLInputElement>) {
     composingName.current = false
     const value = Array.from(event.currentTarget.value).slice(0, nameLimit).join('')
     setNameInput(value)

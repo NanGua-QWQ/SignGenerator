@@ -54,10 +54,8 @@ export const POPOVER_COLOR_OPTIONS: PopoverColorOption[] = [
   },
 ]
 
-export function isPopoverColor(value: unknown): value is PopoverColor {
-  return POPOVER_COLOR_OPTIONS.some(option => option.value === value)
-}
+export const isPopoverColor = (value: unknown): value is PopoverColor =>
+  POPOVER_COLOR_OPTIONS.some(option => option.value === value)
 
-export function getPopoverColorOption(value: PopoverColor) {
-  return POPOVER_COLOR_OPTIONS.find(option => option.value === value) ?? POPOVER_COLOR_OPTIONS[0]
-}
+export const getPopoverColorOption = (value: PopoverColor) =>
+  POPOVER_COLOR_OPTIONS.find(option => option.value === value) ?? POPOVER_COLOR_OPTIONS[0]

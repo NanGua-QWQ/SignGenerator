@@ -17,15 +17,14 @@ export type SignBadgeVariant =
   | 'rose'
   | 'violet'
 
-export function isForkSign(sign: Sign) {
-  return (
+export const isForkSign = (sign: Sign) =>
+  (
     sign.template === 'direction-guidance'
     || sign.template === 'road-fork-preview'
     || sign.template === 'two-lane-interchange-exit'
     || sign.template === 'dual-exit-interchange-preview'
     || sign.template === 'entrance-preview-two-directions'
   )
-}
 
 export function signBadge(sign: Sign) {
   if (sign.template === 'direction-guidance') {return '分向'}
@@ -60,9 +59,8 @@ export function defaultSignBadgeVariant(sign: Sign) {
   return 'default'
 }
 
-export function signBadgeVariant(sign: Sign) {
-  return sign.popoverColor && sign.popoverColor !== 'slate' ? sign.popoverColor : defaultSignBadgeVariant(sign)
-}
+export const signBadgeVariant = (sign: Sign) =>
+  sign.popoverColor && sign.popoverColor !== 'slate' ? sign.popoverColor : defaultSignBadgeVariant(sign)
 
 export function signTitle(sign: Sign) {
   if (sign.template === 'direction-guidance') {return sign.name || '分向指路标志'}

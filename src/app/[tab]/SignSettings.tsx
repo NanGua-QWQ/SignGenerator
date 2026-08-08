@@ -152,7 +152,7 @@ export function SignSettings({
   }, [sign.digits, sign.exitDestination, sign.exitName, sign.id, sign.name, sign.template])
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const updateDigits = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateDigits(event: ChangeEvent<HTMLInputElement>) {
     const maxLength = sign.template === 'ordinary-road' ? 3 : 4
     const digits = event.target.value.replace(/\D/g, '').slice(0, maxLength)
     setRoadDigitsInput(digits)
@@ -166,7 +166,7 @@ export function SignSettings({
     })
   }
 
-  const updateName = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateName(event: ChangeEvent<HTMLInputElement>) {
     setRoadNameInput(event.target.value)
     if (composingRoadName.current) {return}
     onChange({
@@ -174,7 +174,7 @@ export function SignSettings({
     })
   }
 
-  const finishRoadNameComposition = (event: CompositionEvent<HTMLInputElement>) => {
+  function finishRoadNameComposition(event: CompositionEvent<HTMLInputElement>) {
     composingRoadName.current = false
     const value = Array.from(event.currentTarget.value).slice(0, nameLimit).join('')
     setRoadNameInput(value)
@@ -183,19 +183,19 @@ export function SignSettings({
     })
   }
 
-  const updateProvinceLabel = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateProvinceLabel(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       provinceLabel: Array.from(event.target.value.trim()).slice(0, 1).join(''),
     })
   }
 
-  const updateExitNumber = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateExitNumber(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       exitNumber: event.target.value.replace(/\D/g, '').slice(0, 4),
     })
   }
 
-  const updateExitDistance = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateExitDistance(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       exitDistance: event.target.value
         .replace(/[^\d.]/g, '')
@@ -204,13 +204,13 @@ export function SignSettings({
     })
   }
 
-  const updateEntranceDistance = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateEntranceDistance(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       exitDistance: event.target.value.replace(/\D/g, '').slice(0, 4),
     })
   }
 
-  const updateExitName = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateExitName(event: ChangeEvent<HTMLInputElement>) {
     setExitNameInput(event.target.value)
     if (composingExitField.current === 'name') {return}
     onChange({
@@ -218,7 +218,7 @@ export function SignSettings({
     })
   }
 
-  const updateExitDestination = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateExitDestination(event: ChangeEvent<HTMLInputElement>) {
     setExitDestinationInput(event.target.value)
     if (composingExitField.current === 'destination') {return}
     onChange({
@@ -226,7 +226,7 @@ export function SignSettings({
     })
   }
 
-  const finishExitNameComposition = (event: CompositionEvent<HTMLInputElement>) => {
+  function finishExitNameComposition(event: CompositionEvent<HTMLInputElement>) {
     composingExitField.current = null
     const value = Array.from(event.currentTarget.value).slice(0, 6).join('')
     setExitNameInput(value)
@@ -235,7 +235,7 @@ export function SignSettings({
     })
   }
 
-  const finishExitDestinationComposition = (event: CompositionEvent<HTMLInputElement>) => {
+  function finishExitDestinationComposition(event: CompositionEvent<HTMLInputElement>) {
     composingExitField.current = null
     const value = Array.from(event.currentTarget.value).slice(0, 8).join('')
     setExitDestinationInput(value)
@@ -244,7 +244,7 @@ export function SignSettings({
     })
   }
 
-  const updateLeftRoute = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateLeftRoute(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       leftRoute: event.target.value
         .toUpperCase()
@@ -257,7 +257,7 @@ export function SignSettings({
     })
   }
 
-  const updateRightRoute = (event: ChangeEvent<HTMLInputElement>) => {
+  function updateRightRoute(event: ChangeEvent<HTMLInputElement>) {
     onChange({
       rightRoute: event.target.value
         .toUpperCase()
@@ -270,7 +270,7 @@ export function SignSettings({
     })
   }
 
-  const selectLeftRoute = (selected: Sign) => {
+  function selectLeftRoute(selected: Sign) {
     const metadata = routeMetadata(selected)
     onChange({
       leftRoute: selected.code,
@@ -281,7 +281,7 @@ export function SignSettings({
     })
   }
 
-  const selectRightRoute = (selected: Sign) => {
+  function selectRightRoute(selected: Sign) {
     const metadata = routeMetadata(selected)
     onChange({
       rightRoute: selected.code,
@@ -292,7 +292,7 @@ export function SignSettings({
     })
   }
 
-  const updateExpresswayKind = (kind: ExpresswayKind) => {
+  function updateExpresswayKind(kind: ExpresswayKind) {
     const prefix = kind === 'provincial' ? 'S' : 'G'
     onChange({
       kind,

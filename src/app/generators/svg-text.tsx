@@ -32,9 +32,8 @@ const XML_ESCAPES: Record<string, string> = {
   "'": '&apos;',
 }
 
-export function escapeXml(value: string) {
-  return String(value).replace(/[<>&"']/g, char => XML_ESCAPES[char])
-}
+export const escapeXml = (value: string) =>
+  String(value).replace(/[<>&"']/g, char => XML_ESCAPES[char])
 
 export function loadFont(kind: FontKey) {
   const cached = fontCache.get(kind)
