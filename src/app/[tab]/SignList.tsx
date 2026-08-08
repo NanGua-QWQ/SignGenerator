@@ -153,14 +153,14 @@ export function SignList({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {addChoices.map(choice => (
+              {addChoices.map(choice =>
                 <DropdownMenuItem
                   key={choice.value}
                   onSelect={() => onAdd(choice.value)}
                 >
                   {choice.label}
                 </DropdownMenuItem>
-              ),
+                ,
               )}
             </DropdownMenuContent>
           </DropdownMenu> : <button

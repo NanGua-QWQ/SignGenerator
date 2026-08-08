@@ -7,7 +7,8 @@ import {
   type ErrorInfo,
   type ReactNode,
 
-  type PointerEvent as ReactPointerEvent } from 'react'
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 
 import {
   Download, RotateCcw, ZoomIn, ZoomOut,

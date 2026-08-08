@@ -114,28 +114,25 @@ export function cleanExitText(value: string, fallback: string, limit: number) {
 }
 
 export const cleanExitDistance = (value: string) =>
-  (
-    String(value || '')
-      .replace(/[^\d.]/g, '')
-      .replace(/(\..*)\./g, '$1')
-      .slice(0, 1) || ' '
-  )
+
+  String(value || '')
+    .replace(/[^\d.]/g, '')
+    .replace(/(\..*)\./g, '$1')
+    .slice(0, 1) || ' '
 
 export const cleanEntranceDistance = (value: string) =>
-  (
-    String(value || '')
-      .replace(/\D/g, '')
-      .slice(0, 4) || '500'
-  )
+
+  String(value || '')
+    .replace(/\D/g, '')
+    .slice(0, 4) || '500'
 
 export const cleanExitRoute = (value: string, fallback: string) =>
-  (
-    String(value || '')
-      .trim()
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, '')
-      .slice(0, 5) || fallback
-  )
+
+  String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 5) || fallback
 
 export function cleanDirection(value: string, fallback: string) {
   const direction = Array.from(String(value || '').trim())
@@ -179,10 +176,9 @@ export const cleanExitNumber = (value: string) =>
     .slice(0, 4)
 
 export const cleanRoute = (value: string, fallback: string) =>
-  (
-    String(value || '')
-      .trim()
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, '')
-      .slice(0, 5) || fallback
-  )
+
+  String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 5) || fallback

@@ -42,24 +42,6 @@ const eslintConfig = defineConfig([
             sourceType: "module",
             parserOptions: {
                 ecmaFeatures: { jsx: true }
-            },
-            globals: {
-                window: "readonly",
-                document: "readonly",
-                localStorage: "readonly",
-                globalThis: "readonly",
-                console: "readonly",
-                Date: "readonly",
-                Math: "readonly",
-                JSON: "readonly",
-                URL: "readonly",
-                URLSearchParams: "readonly",
-                Object: "readonly",
-                Array: "readonly",
-                Boolean: "readonly",
-                String: "readonly",
-                Number: "readonly",
-                Error: "readonly"
             }
         },
         settings: {
@@ -146,7 +128,9 @@ const eslintConfig = defineConfig([
             // 分号：不使用
             semi: ["error", "never"],
             // 单引号
-            quotes: ["error", "single", { avoidEscape: true }],
+            quotes: ["error", "single", {
+                avoidEscape: true
+            }],
             // JSX 属性使用双引号
             "jsx-quotes": ["error", "prefer-double"],
             // 缩进 2 空格
@@ -192,12 +176,15 @@ const eslintConfig = defineConfig([
                 "error",
                 { anonymous: "always", named: "never", asyncArrow: "always" }
             ],
+            "object-curly-newline": ["warn", "always"],
             // 逗号前无空格、后有空格
             "comma-spacing": ["error", { before: false, after: true }],
             // 运算符周围空格
             "space-infix-ops": "error",
             // 语句块首尾不换行
-            "padded-blocks": ["error", "never"]
+            "padded-blocks": ["error", "never"],
+            // 禁用多余的括号（含 JSX 旁多余括号）
+            "no-extra-parens": "warn"
         }
     },
 

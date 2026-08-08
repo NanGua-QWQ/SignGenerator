@@ -71,11 +71,10 @@ const ROAD_CONFIG: Record<OrdinaryRoadKind, OrdinaryRoadConfig> = {
 }
 
 const cleanDigits = (value: string) =>
-  (
-    String(value || '')
-      .replace(/\D/g, '')
-      .slice(0, 3) || '105'
-  )
+
+  String(value || '')
+    .replace(/\D/g, '')
+    .slice(0, 3) || '105'
 
 const ordinaryRoadCode = (kind: OrdinaryRoadKind, digits: string) =>
   `${ROAD_CONFIG[kind].codePrefix}${cleanDigits(digits)}`
