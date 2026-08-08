@@ -21,7 +21,7 @@ const FontContext = createContext<FontBuffers | null>(null)
 
 const fontInstances = new Map<FontKey, Font>()
 
-function decodeBase64(b64: string): Uint8Array {
+function decodeBase64(b64: string) {
   const binary = atob(b64)
   const bytes = new Uint8Array(binary.length)
   for (let i = 0; i < binary.length; i++) {bytes[i] = binary.charCodeAt(i)}
@@ -39,7 +39,7 @@ export function FontProvider({
   )
 }
 
-export function useFont(kind: FontKey): Font {
+export function useFont(kind: FontKey) {
   const buffers = use(FontContext)
   if (!buffers) {throw new Error('useFont 必须在 FontProvider 内使用')}
   const cached = fontInstances.get(kind)

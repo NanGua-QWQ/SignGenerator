@@ -32,11 +32,11 @@ const XML_ESCAPES: Record<string, string> = {
   "'": '&apos;',
 }
 
-export function escapeXml(value: string): string {
+export function escapeXml(value: string) {
   return String(value).replace(/[<>&"']/g, char => XML_ESCAPES[char])
 }
 
-export function loadFont(kind: FontKey): Promise<Font> {
+export function loadFont(kind: FontKey) {
   const cached = fontCache.get(kind)
   if (cached) { return cached }
   if (!fontkitPromise) { fontkitPromise = import('@pdf-lib/fontkit') }
@@ -66,12 +66,7 @@ export interface TextLayout {
   usedWidth: number
 }
 
-interface ReferenceScale {
-  scale: number
-  maxY: number
-}
-
-function referenceScale(font: Font, text: string, height: number): ReferenceScale | null {
+function referenceScale(font: Font, text: string, height: number) {
   const boxes = Array.from(text)
     .filter(char => char !== ' ')
     .map(char => font.glyphForCodePoint(char.codePointAt(0) ?? 0).bbox)
@@ -100,7 +95,7 @@ export function textLayout(
   height: number,
   options: TextLayoutOptions = {
   },
-): TextLayout {
+) {
   const unitsPerEm = font.unitsPerEm || 1000
   const reference
     = options.scaleMode === 'reference' ? referenceScale(font, options.referenceText || text, height) : null
@@ -164,7 +159,7 @@ export function textGap(
   width: number,
   options: LayoutOptions = {
   },
-): number {
+) {
   const rawGap = glyphCount > 1 ? (width - usedWidth) / (glyphCount - 1) : 0
   const minGap = typeof options.minGap === 'number' ? options.minGap : 0
   const cappedGap = typeof options.maxGap === 'number' ? Math.min(rawGap, options.maxGap) : rawGap

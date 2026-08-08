@@ -10,14 +10,14 @@ interface RawSvgProps {
   children?: ReactNode
 }
 
-function extractInner(template: string): string {
+function extractInner(template: string) {
   return template
     .replace(/<!--rotationCenter:[\s\S]*?-->/, '')
     .replace(/^[\s\S]*?<svg[^>]*>/i, '')
     .replace(/<\/svg>[\s\S]*$/i, '')
 }
 
-function extractViewBox(template: string): string | undefined {
+function extractViewBox(template: string) {
   const match = /<svg[^>]*\sviewBox=["']([^"']+)["']/i.exec(template)
   return match?.[1]
 }

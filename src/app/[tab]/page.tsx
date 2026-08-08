@@ -11,13 +11,13 @@ interface TabPageProps {
 
 export async function generateMetadata({
   params,
-}: TabPageProps): Promise<Metadata> {
+}: TabPageProps) {
   const {
     tab,
   } = await params
   return {
     title: TAB_TITLES[tab as keyof typeof TAB_TITLES],
-  }
+  } satisfies Metadata
 }
 
 export default function Page() {

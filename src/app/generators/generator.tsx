@@ -1,5 +1,5 @@
 import type {
-  ExpresswayKind, OrdinaryRoadKind, Sign,
+  EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign,
 } from '@/lib/types'
 
 import {
@@ -48,7 +48,7 @@ export function SignSvg({
   return SignSvgContent(sign)
 }
 
-export function signFilename(sign: Sign): string {
+export function signFilename(sign: Sign) {
   let code: string
   switch (sign.template) {
     case 'road-fork-preview': {
@@ -92,19 +92,19 @@ export function signFilename(sign: Sign): string {
   return `${base || 'road-sign'}.svg`
 }
 
-export function routeSignWidth(code: string, ROUTE_SIGN_HEIGHT: number): number {
+export function routeSignWidth(code: string, ROUTE_SIGN_HEIGHT: number) {
   const naturalSize = expresswaySignNaturalSize(code)
   return ROUTE_SIGN_HEIGHT * naturalSize.width / naturalSize.height
 }
 
-export function cleanExitText(value: string, fallback: string, limit: number): string {
+export function cleanExitText(value: string, fallback: string, limit: number) {
   const text = Array.from(String(value || '').trim())
     .slice(0, limit)
     .join('')
   return text || fallback
 }
 
-export function cleanExitDistance(value: string): string {
+export function cleanExitDistance(value: string) {
   return (
     String(value || '')
       .replace(/[^\d.]/g, '')
@@ -113,7 +113,7 @@ export function cleanExitDistance(value: string): string {
   )
 }
 
-export function cleanEntranceDistance(value: string): string {
+export function cleanEntranceDistance(value: string) {
   return (
     String(value || '')
       .replace(/\D/g, '')
@@ -121,7 +121,7 @@ export function cleanEntranceDistance(value: string): string {
   )
 }
 
-export function cleanExitRoute(value: string, fallback: string): string {
+export function cleanExitRoute(value: string, fallback: string) {
   return (
     String(value || '')
       .trim()
@@ -131,46 +131,46 @@ export function cleanExitRoute(value: string, fallback: string): string {
   )
 }
 
-export function cleanDirection(value: string, fallback: string): string {
+export function cleanDirection(value: string, fallback: string) {
   const direction = Array.from(String(value || '').trim())
     .slice(0, 1)
     .join('')
   return ['东', '南', '西', '北'].includes(direction) ? direction : fallback
 }
 
-export function cleanEntranceArrowDirection(value: string | undefined): 'front' | 'left' | 'right' {
+export function cleanEntranceArrowDirection(value: string | undefined): EntranceArrowDirection {
   return value === 'left' || value === 'right' || value === 'front' ? value : 'front'
 }
 
-export function cleanDigits(value: string): string {
+export function cleanDigits(value: string) {
   return String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4)
 }
 
-export function cleanProvinceLabel(value: string): string {
+export function cleanProvinceLabel(value: string) {
   return Array.from(String(value || '').trim())
     .slice(0, 1)
     .join('')
 }
 
-export function nameLimitForDigits(digits: string): number {
+export function nameLimitForDigits(digits: string) {
   return digits.length === 4 ? 6 : 4
 }
 
-export function cleanName(value: string, digits: string): string {
+export function cleanName(value: string, digits: string) {
   return Array.from(String(value || ''))
     .slice(0, nameLimitForDigits(digits))
     .join('')
 }
 
-export function cleanExitNumber(value: string): string {
+export function cleanExitNumber(value: string) {
   return String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4)
 }
 
-export function cleanRoute(value: string, fallback: string): string {
+export function cleanRoute(value: string, fallback: string) {
   return (
     String(value || '')
       .trim()

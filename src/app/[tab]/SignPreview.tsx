@@ -160,7 +160,7 @@ export function SignPreview({
     }
   }, [])
 
-  const boardPositionFromClient = (clientX: number, clientY: number): BoardPosition | null => {
+  const boardPositionFromClient = (clientX: number, clientY: number) => {
     const svgElement = previewRef.current?.querySelector('svg')
     if (!svgElement) {return null}
     const rect = svgElement.getBoundingClientRect()
@@ -178,7 +178,7 @@ export function SignPreview({
     }
   }
 
-  const previewPointFromClient = (clientX: number, clientY: number): Offset | null => {
+  const previewPointFromClient = (clientX: number, clientY: number) => {
     const previewRect = previewRef.current?.getBoundingClientRect()
     if (!previewRect) {return null}
     return {
@@ -471,7 +471,7 @@ class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoun
     error: null,
   }
 
-  static getDerivedStateFromError(error: Error): SignErrorBoundaryState {
+  static getDerivedStateFromError(error: Error) {
     return {
       error,
     }

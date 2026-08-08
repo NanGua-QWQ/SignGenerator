@@ -45,7 +45,7 @@ const DESTINATION_TEXT_OPTIONS = {
 function templateForArrowDirection(
   direction: Sign['entranceArrowDirection'],
   usesSecondDestination: boolean,
-): { svg: string; width: number } {
+) {
   const frontTemplate = usesSecondDestination
     ? entrancePreviewTemplate
     : entrancePreviewTemplateOne

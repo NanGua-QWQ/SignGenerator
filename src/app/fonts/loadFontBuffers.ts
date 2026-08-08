@@ -25,7 +25,7 @@ export type FontBuffers = Record<FontKey, string>
 
 const FONT_DIRECTORY = join(dirname(fileURLToPath(import.meta.url)), 'files')
 
-export async function loadFontBuffers(): Promise<FontBuffers> {
+export async function loadFontBuffers() {
   const entries = await Promise.all(
     (Object.keys(FONT_FILES) as FontKey[]).map(async (kind) => {
       const buffer = await readFile(join(FONT_DIRECTORY, FONT_FILES[kind]))

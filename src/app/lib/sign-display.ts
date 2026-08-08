@@ -17,7 +17,7 @@ export type SignBadgeVariant =
   | 'rose'
   | 'violet'
 
-export function isForkSign(sign: Sign): boolean {
+export function isForkSign(sign: Sign) {
   return (
     sign.template === 'direction-guidance'
     || sign.template === 'road-fork-preview'
@@ -27,7 +27,7 @@ export function isForkSign(sign: Sign): boolean {
   )
 }
 
-export function signBadge(sign: Sign): string {
+export function signBadge(sign: Sign) {
   if (sign.template === 'direction-guidance') {return '分向'}
   if (sign.template === 'road-fork-preview') {return '分岔'}
   if (sign.template === 'two-lane-interchange-exit') {return '出口'}
@@ -42,7 +42,7 @@ export function signBadge(sign: Sign): string {
   return sign.code || 'G15'
 }
 
-export function defaultSignBadgeVariant(sign: Sign): SignBadgeVariant {
+export function defaultSignBadgeVariant(sign: Sign) {
   if (
     sign.template === 'direction-guidance'
     || sign.template === 'road-fork-preview'
@@ -60,11 +60,11 @@ export function defaultSignBadgeVariant(sign: Sign): SignBadgeVariant {
   return 'default'
 }
 
-export function signBadgeVariant(sign: Sign): SignBadgeVariant {
+export function signBadgeVariant(sign: Sign) {
   return sign.popoverColor && sign.popoverColor !== 'slate' ? sign.popoverColor : defaultSignBadgeVariant(sign)
 }
 
-export function signTitle(sign: Sign): string {
+export function signTitle(sign: Sign) {
   if (sign.template === 'direction-guidance') {return sign.name || '分向指路标志'}
   if (sign.template === 'road-fork-preview') {return sign.name || '道路分岔预告'}
   if (sign.template === 'two-lane-interchange-exit') {return sign.name || '2车道立交枢纽出口'}
@@ -74,7 +74,7 @@ export function signTitle(sign: Sign): string {
   return sign.name || '高速道路名称标识'
 }
 
-export function signInfo(sign: Sign): string[] {
+export function signInfo(sign: Sign) {
   if (sign.template === 'entrance-preview-two-directions') {
     return [
       `高速：${sign.rightRoute}`,
@@ -96,7 +96,7 @@ export function signInfo(sign: Sign): string[] {
   return [left, right, distance].filter(Boolean)
 }
 
-export function deleteDialogTitle(sign: Sign): string {
+export function deleteDialogTitle(sign: Sign) {
   if (sign.template === 'entrance-preview-two-directions') {return '删除出入口指引？'}
   return isForkSign(sign) ? '删除立交枢纽指引？' : '删除道路名称标识？'
 }

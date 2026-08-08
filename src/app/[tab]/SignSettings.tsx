@@ -117,11 +117,7 @@ function RouteSelect({
   )
 }
 
-function routeMetadata(sign: Sign | undefined): {
-  kind?: ExpresswayKind
-  provinceLabel?: string
-  threeDigitDescend?: boolean
-} {
+function routeMetadata(sign: Sign | undefined) {
   if (!sign) {return {
   }}
   return {

@@ -75,12 +75,12 @@ interface SavedWorkspace extends WorkspaceState {
   version: typeof WORKSPACE_STORAGE_VERSION
 }
 
-export function useCreateInitialWorkspace(): WorkspaceState {
+export function useCreateInitialWorkspace() {
   const fallbackSigns = useCreateInitialSigns()
   return normalizeWorkspace(fallbackSigns, fallbackSigns[0].id)
 }
 
-export function loadSavedWorkspace(): WorkspaceState | null {
+export function loadSavedWorkspace() {
   if (typeof window === 'undefined') {return null}
   try {
     const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
@@ -103,7 +103,7 @@ export function loadSavedWorkspace(): WorkspaceState | null {
   }
 }
 
-export function saveWorkspace(workspace: WorkspaceState): void {
+export function saveWorkspace(workspace: WorkspaceState) {
   if (typeof window === 'undefined') {return}
 
   try {
@@ -120,7 +120,7 @@ export function saveWorkspace(workspace: WorkspaceState): void {
 export function normalizeWorkspace(
   signs: Sign[],
   selectedId: string,
-): WorkspaceState {
+) {
   const selectedSign = signs.find(sign => sign.id === selectedId) ?? signs[0]
   return {
     signs,
@@ -128,7 +128,7 @@ export function normalizeWorkspace(
   }
 }
 
-function useCreateInitialSigns(): Sign[] {
+function useCreateInitialSigns() {
   const params = useSearchParams()
   const requestedTemplate = params.get('template')
   const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
@@ -398,7 +398,7 @@ function useCreateInitialSigns(): Sign[] {
   ]
 }
 
-function createInitialSign(id: string, overrides: Partial<Sign>): Sign {
+function createInitialSign(id: string, overrides: Partial<Sign>) {
   const sign = restoreSign({
     id,
     ...overrides,

@@ -35,7 +35,7 @@ interface NumberedExitSignNodeProps {
   width?: number
 }
 
-function cleanExitNumber(value: string): string {
+function cleanExitNumber(value: string) {
   return (
     String(value || '')
       .replace(/\D/g, '')
@@ -43,7 +43,7 @@ function cleanExitNumber(value: string): string {
   )
 }
 
-function fittedNumberHeight(font: Font, text: string): number {
+function fittedNumberHeight(font: Font, text: string) {
   for (let height = NUMBER_MAX_HEIGHT; height >= NUMBER_MIN_HEIGHT; height -= 1) {
     if (textLayout(font, text, height).usedWidth <= NUMBER_MAX_WIDTH) {return height}
   }
@@ -97,7 +97,7 @@ export function NumberedExitSignNode({
   )
 }
 
-export function expandCanvasForNumberedExit(svg: string, width: number, height: number): string {
+export function expandCanvasForNumberedExit(svg: string, width: number, height: number) {
   return svg
     .replace(/width="[^"]+"/, `width="${width}"`)
     .replace(/height="[^"]+"/, `height="${height + NUMBERED_EXIT_TOP_SPACE}"`)

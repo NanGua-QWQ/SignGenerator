@@ -62,18 +62,13 @@ function ExpresswayBackground({
   )
 }
 
-function cleanProvinceLabel(value: string): string {
+function cleanProvinceLabel(value: string) {
   return Array.from(String(value || '').trim())
     .slice(0, 1)
     .join('')
 }
 
-function parseCode(value: string): {
-  code: string
-  digits: string
-  kind: ExpresswayKind
-  provinceLabel: string
-} {
+function parseCode(value: string) {
   const code = String(value || '')
     .trim()
     .toUpperCase()
@@ -107,7 +102,7 @@ function parseCode(value: string): {
 export function expresswaySignNaturalSize(
   code: string,
   name = '',
-): { width: number; height: number } {
+) {
   const sign = parseCode(code)
   return {
     width:

@@ -161,7 +161,7 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   }
 }
 
-function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sign>): Sign[] {
+function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sign>) {
   const previous = signs.find(sign => sign.id === id)
   if (!previous) {return signs}
 
@@ -176,7 +176,7 @@ function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sig
   return nextSigns.map(sign => syncForkRouteReference(sign, previous, updated))
 }
 
-function syncForkRouteReference(sign: Sign, previous: Sign, updated: Sign): Sign {
+function syncForkRouteReference(sign: Sign, previous: Sign, updated: Sign) {
   if (!isForkTemplate(sign.template)) {return sign}
 
   const updates: Partial<Sign> = {
@@ -197,7 +197,7 @@ function syncForkRouteReference(sign: Sign, previous: Sign, updated: Sign): Sign
   return Object.keys(updates).length > 0 ? normalizeUpdatedSign(sign, updates) : sign
 }
 
-function routeReferenceUpdates(side: 'left' | 'right', sign: Sign): Partial<Sign> {
+function routeReferenceUpdates(side: 'left' | 'right', sign: Sign) {
   const kind = sign.kind as ExpresswayKind
   return side === 'left' ? {
     leftRoute: sign.code,

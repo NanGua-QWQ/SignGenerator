@@ -70,7 +70,7 @@ const ROAD_CONFIG: Record<OrdinaryRoadKind, OrdinaryRoadConfig> = {
   },
 }
 
-function cleanDigits(value: string): string {
+function cleanDigits(value: string) {
   return (
     String(value || '')
       .replace(/\D/g, '')
@@ -78,7 +78,7 @@ function cleanDigits(value: string): string {
   )
 }
 
-function ordinaryRoadCode(kind: OrdinaryRoadKind, digits: string): string {
+function ordinaryRoadCode(kind: OrdinaryRoadKind, digits: string) {
   return `${ROAD_CONFIG[kind].codePrefix}${cleanDigits(digits)}`
 }
 
@@ -169,6 +169,6 @@ export function OrdinaryRoadSignSvg({
   return <OrdinaryRoadNode kind={kind} digits={digits} fontLatin={fontLatin} />
 }
 
-export function ordinaryRoadFilename(kind: OrdinaryRoadKind, digits: string): string {
+export function ordinaryRoadFilename(kind: OrdinaryRoadKind, digits: string) {
   return `${ordinaryRoadCode(kind, digits)}.svg`
 }

@@ -101,11 +101,11 @@ export function isOrdinaryRoadKind(value: SignKind | undefined): value is Ordina
   )
 }
 
-export function isRoadSignTemplate(template: SignTemplate): boolean {
+export function isRoadSignTemplate(template: SignTemplate) {
   return template === 'expressway' || template === 'ordinary-road'
 }
 
-export function isForkTemplate(template: SignTemplate): boolean {
+export function isForkTemplate(template: SignTemplate) {
   return (
     template === 'direction-guidance'
     || template === 'road-fork-preview'
@@ -127,13 +127,13 @@ export function isTemplateParam(value: string | null): value is SignTemplate {
   )
 }
 
-export function templateForTab(tab: SignWorkspaceTab): SignTemplate {
+export function templateForTab(tab: SignWorkspaceTab) {
   if (tab === 'interchange-guidance') {return 'direction-guidance'}
   if (tab === 'entrance-exit-guidance') {return 'entrance-preview-two-directions'}
   return 'expressway'
 }
 
-export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab): Sign[] {
+export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab) {
   if (tab === 'interchange-guidance') {return signs.filter(
     sign => sign.template === 'direction-guidance'
         || sign.template === 'road-fork-preview'
@@ -144,12 +144,12 @@ export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab): Sign[]
   return signs.filter(sign => isRoadSignTemplate(sign.template))
 }
 
-export function parseInitialKind(value: string | null): ExpresswayKind | undefined {
+export function parseInitialKind(value: string | null) {
   return value === 'national' || value === 'provincial' || value === 'beijing-tianjin-hebei' ? value : undefined
 }
 
 export function normalizeSign(overrides: Partial<Sign> = {
-}): Omit<Sign, 'id' | 'name'> {
+}) {
   const template = overrides.template ?? 'expressway'
   const isEntrancePreview = template === 'entrance-preview-two-directions'
   const isDualExitPreview = template === 'dual-exit-interchange-preview'
@@ -226,7 +226,7 @@ export function normalizeSign(overrides: Partial<Sign> = {
 }
 
 export function createSign(overrides: Partial<Sign> = {
-}): Sign {
+}) {
   const sign = normalizeSign(overrides)
   return {
     id: createSignId(),
@@ -235,7 +235,7 @@ export function createSign(overrides: Partial<Sign> = {
   }
 }
 
-export function restoreSign(value: unknown): Sign | null {
+export function restoreSign(value: unknown) {
   if (!value || typeof value !== 'object') {return null}
 
   const raw = value as Partial<Sign>
@@ -248,7 +248,7 @@ export function restoreSign(value: unknown): Sign | null {
   }
 }
 
-export function normalizeUpdatedSign(sign: Sign, updates: Partial<Sign>): Sign {
+export function normalizeUpdatedSign(sign: Sign, updates: Partial<Sign>) {
   const next = {
     ...sign,
     ...updates,
@@ -263,13 +263,13 @@ export function normalizeUpdatedSign(sign: Sign, updates: Partial<Sign>): Sign {
   }
 }
 
-export function defaultOptionName(sign: Pick<Sign, 'template' | 'digits'>): string {
+export function defaultOptionName(sign: Pick<Sign, 'template' | 'digits'>) {
   if (sign.template === 'expressway') {return cleanName('沈海高速', sign.digits)}
   if (sign.template === 'ordinary-road') {return '普通道路名称标识'}
   return FORK_SIGN_NAME[sign.template]
 }
 
-function buildSignCode(kind: Sign['kind'], digits: string): string {
+function buildSignCode(kind: Sign['kind'], digits: string) {
   if (isOrdinaryRoadKind(kind)) {return `${ORDINARY_ROAD_PREFIX[kind]}${digits}`}
   return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
@@ -308,7 +308,7 @@ function parseSignCode(value: string): {
   }
 }
 
-function routeKindFromCode(code: string): ExpresswayKind {
+function routeKindFromCode(code: string) {
   return code.startsWith('S') ? 'provincial' : 'national'
 }
 
@@ -316,24 +316,24 @@ function cleanRouteProvinceLabel(
   kind: Sign['leftRouteKind'] | undefined,
   value: string | undefined,
   code: string,
-): string {
+) {
   const routeKind = isExpresswayKind(kind) ? kind : routeKindFromCode(code)
   return routeKind === 'provincial' ? cleanProvinceLabel(value === undefined ? '粤' : value) : ''
 }
 
-function signName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined): string {
+function signName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined) {
   if (sign.template === 'expressway') {return cleanName(name ?? defaultOptionName(sign), sign.digits)}
   if (sign.template === 'ordinary-road') {return cleanExitText(name ?? defaultOptionName(sign), defaultOptionName(sign), 10)}
   return cleanExitText(name ?? defaultOptionName(sign), defaultOptionName(sign), 10)
 }
 
-function cleanEditableSignName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined): string {
+function cleanEditableSignName(sign: Omit<Sign, 'id' | 'name'>, name: string | undefined) {
   if (sign.template === 'expressway') {return cleanName(name ?? '', sign.digits)}
   return Array.from(String(name ?? ''))
     .slice(0, 10)
     .join('')
 }
 
-function createSignId(): string {
+function createSignId() {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
 }

@@ -48,7 +48,7 @@ const DESTINATION_TEXT_OPTIONS = {
   maxGap: 18,
 }
 
-function cleanExitNumber(value: string): string {
+function cleanExitNumber(value: string) {
   return (
     String(value || '')
       .replace(/\D/g, '')

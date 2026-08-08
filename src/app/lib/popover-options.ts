@@ -58,6 +58,6 @@ export function isPopoverColor(value: unknown): value is PopoverColor {
   return POPOVER_COLOR_OPTIONS.some(option => option.value === value)
 }
 
-export function getPopoverColorOption(value: PopoverColor): PopoverColorOption {
+export function getPopoverColorOption(value: PopoverColor) {
   return POPOVER_COLOR_OPTIONS.find(option => option.value === value) ?? POPOVER_COLOR_OPTIONS[0]
 }
