@@ -1,3 +1,11 @@
 .tab {
     line-height: calc(var(--radius) + 1rem);
 }
+
+header {
+  left: env(titlebar-area-x, 0);
+  top: env(titlebar-area-y, 0);
+  height: env(titlebar-area-height, 56px);
+  width: env(titlebar-area-width, 100%);
+  app-region: drag;
+}

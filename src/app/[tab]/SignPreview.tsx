@@ -27,15 +27,12 @@ import type {
 const MIN_SCALE = 0.4
 const MAX_SCALE = 3
 
-interface Offset {
+interface Position {
     x: number
     y: number
 }
-
-interface BoardPosition {
-    x: number
-    y: number
-}
+type Offset = Position
+type BoardPosition = Position
 
 interface Measurement {
     start: BoardPosition
