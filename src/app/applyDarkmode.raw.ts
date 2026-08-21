@@ -9,6 +9,6 @@ window.darkmode = {
 window.darkmode.real = {
   'true': true,
   'false': false,
-}?.[window.darkmode.fromStorage as string]
+}?.[window.darkmode.fromStorage ?? '']
   || window.matchMedia('(prefers-color-scheme: dark)').matches
 window.darkmode.apply()

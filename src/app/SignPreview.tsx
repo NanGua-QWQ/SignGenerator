@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Component,
   useEffect,
@@ -18,14 +20,16 @@ import {
 import {
   SignSvg,
 } from '@/generators/generator'
-import type {
-  Sign,
-} from '@/lib/types'
 import {
   offsetAtom,
   scaleAtom,
   zoomScaleAtom,
 } from '@/state/preview-store'
+
+import {
+  selectedSignAtom,
+  useWorkspacePersistence,
+} from './state/sign-workspace-store'
 
 interface Position {
     x: number
@@ -41,9 +45,9 @@ interface Measurement {
     endPoint: Offset
 }
 
-export function SignPreview({
-  sign,
-}: { sign: Sign }) {
+export function SignPreview() {
+  useWorkspacePersistence()
+  const sign = useAtomValue(selectedSignAtom)
   const scale = useAtomValue(scaleAtom)
   const zoomScale = useSetAtom(zoomScaleAtom)
   const [offset, setOffset] = useAtom(offsetAtom)

@@ -1,7 +1,13 @@
 import type {
   ButtonHTMLAttributes,
 } from 'react'
+import {
+  forwardRef,
+} from 'react'
 
+import {
+  WithTooltip,
+} from '@/components/tooltip'
 import {
   cn,
 } from '@/lib/utils'
@@ -24,15 +30,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize
 }
 
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   className,
   variant = 'default',
   size = 'default',
   type = 'button',
+  title,
   ...props
-}: ButtonProps) {
-  return (
+}, ref) {
+  const button =
     <button
+      ref={ref}
       type={type}
       className={cn(
         'inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors outline-none disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:shrink-0',
@@ -42,5 +50,14 @@ export function Button({
       )}
       {...props}
     />
-  )
-}
+
+  if (title) {
+    return (
+      <WithTooltip content={title}>
+        {button}
+      </WithTooltip>
+    )
+  }
+
+  return button
+})

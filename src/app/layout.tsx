@@ -1,4 +1,7 @@
 import {
+  TooltipProvider,
+} from '@/components/tooltip'
+import {
   FontsProvider,
 } from '@/fonts/FontsProvider'
 
@@ -10,9 +13,7 @@ import type {
   Metadata,
   Viewport,
 } from 'next'
-
 import './globals.css'
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://sign-generator.example.com'),
   title: {
@@ -45,14 +46,12 @@ export const metadata: Metadata = {
     description: '生成道路标牌',
   },
 }
-
 export const viewport: Viewport = {
   themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
 }
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -69,9 +68,11 @@ export default function RootLayout({
       </head>
       <body className="flex h-dvh flex-col bg-background">
         <FontsProvider>
-          <WorkspacePage>
-            {children}
-          </WorkspacePage>
+          <TooltipProvider delayDuration={300}>
+            <WorkspacePage>
+              {children}
+            </WorkspacePage>
+          </TooltipProvider>
         </FontsProvider>
       </body>
     </html>

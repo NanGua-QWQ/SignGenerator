@@ -2,6 +2,7 @@
 
 import {
   useAtom,
+  useAtomValue,
   useSetAtom,
 } from 'jotai'
 import {
@@ -26,18 +27,20 @@ import {
 import {
   signFilename,
 } from '@/generators/generator'
-import type {
-  Sign,
-} from '@/lib/types'
 import {
   offsetAtom,
   scaleAtom,
   zoomScaleAtom,
 } from '@/state/preview-store'
 
-export function PreviewToolbar({
-  sign,
-}: { sign: Sign }) {
+import {
+  selectedSignAtom,
+  useWorkspacePersistence,
+} from './state/sign-workspace-store'
+
+export function PreviewToolbar() {
+  useWorkspacePersistence()
+  const sign = useAtomValue(selectedSignAtom)
   const [scale, setScale] = useAtom(scaleAtom)
   const zoomScale = useSetAtom(zoomScaleAtom)
   const setOffset = useSetAtom(offsetAtom)
@@ -118,7 +121,7 @@ export function PreviewToolbar({
         <Button variant="ghost" size="icon" onClick={() => {
           window.darkmode.real = !window.darkmode.real
           window.darkmode.apply()
-        }} aria-label="切换主题" className="size-7">
+        }} title="切换主题" aria-label="切换主题" className="size-7">
           <Sun className="size-3.5 scale-100 transition-all dark:scale-0" />
           <Moon className="size-3.5 scale-0 transition-all dark:scale-100" />
           <span className="sr-only">切换颜色主题</span>

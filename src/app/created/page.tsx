@@ -1,19 +1,19 @@
 'use client'
-
 import {
   useState, type DragEvent,
 } from 'react'
-
 import {
   useAtomValue, useSetAtom,
 } from 'jotai'
 import {
   GripVertical,
 } from 'lucide-react'
-
 import {
   Badge,
 } from '@/components/badge'
+import {
+  WithTooltip,
+} from '@/components/tooltip'
 import {
   isForkSign,
   signBadge,
@@ -30,9 +30,7 @@ import {
   selectSignAtom,
   visibleSignsAtom,
 } from '@/state/sign-workspace-store'
-
 const SIGN_DRAG_TYPE = 'application/x-sign-id'
-
 export default function SignList() {
   const signs = useAtomValue(visibleSignsAtom)
   const selectedId = useAtomValue(effectiveSelectedIdAtom)
@@ -47,7 +45,6 @@ export default function SignList() {
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(
     null,
   )
-
   function dropPosition(event: DragEvent<HTMLDivElement>): 'before' | 'after' {
     const rect = event.currentTarget.getBoundingClientRect()
     return event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
@@ -81,7 +78,6 @@ export default function SignList() {
   function selectOnly(sign: Sign) {
     onSelect(sign.id)
   }
-
   return (
     <div className="p-3 max-md:py-2 flex flex-col gap-1.5 max-md:flex-row max-md:overflow-x-auto">
       {signs.map(sign => {
@@ -107,17 +103,18 @@ export default function SignList() {
             onDragOver={event => overSign(event, sign)}
             onDrop={event => dropSign(event, sign)}
           >
-            <button
-              type="button"
-              draggable={Boolean(onReorder)}
-              onDragStart={event => startDrag(event, sign)}
-              onDragEnd={endDrag}
-              className="absolute left-1 top-1/2 flex size-6 -translate-y-1/2 cursor-grab items-center justify-center rounded text-muted-foreground opacity-60 hover:bg-accent-foreground/10 hover:text-foreground active:cursor-grabbing group-hover:opacity-100"
-              aria-label={`拖动排序 ${signTitle(sign)}`}
-              title="拖动排序"
-            >
-              <GripVertical className="size-3.5" />
-            </button>
+            <WithTooltip content="拖动排序">
+              <button
+                type="button"
+                draggable={Boolean(onReorder)}
+                onDragStart={event => startDrag(event, sign)}
+                onDragEnd={endDrag}
+                className="absolute left-1 top-1/2 flex size-6 -translate-y-1/2 cursor-grab items-center justify-center rounded text-muted-foreground opacity-60 hover:bg-accent-foreground/10 hover:text-foreground active:cursor-grabbing group-hover:opacity-100"
+                aria-label={`拖动排序 ${signTitle(sign)}`}
+              >
+                <GripVertical className="size-3.5" />
+              </button>
+            </WithTooltip>
             <button
               type="button"
               onClick={() => onSelect(sign.id)}
