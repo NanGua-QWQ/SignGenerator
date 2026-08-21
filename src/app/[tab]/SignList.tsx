@@ -18,12 +18,6 @@ import {
 import {
   Badge,
 } from '@/components/badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/dropdown-menu'
 import type {
   Sign
   ,
@@ -50,7 +44,7 @@ interface SignListProps {
   selectedId: string
   onSelect: (id: string) => void
   onAdd: (template?: SignTemplate) => void
-  addChoices?: AddChoice[]
+  addChoice?: AddChoice
   onDelete: (id: string) => void
   onReorder?: (id: string, targetId: string, position: 'before' | 'after') => void
 }
@@ -63,7 +57,7 @@ export function SignList({
   selectedId,
   onSelect,
   onAdd,
-  addChoices = [],
+  addChoice,
   onDelete,
   onReorder,
 }: SignListProps) {
@@ -124,43 +118,14 @@ export function SignList({
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             {title}
           </h2>
-          {addChoices.length === 1 ? <button
+          {addChoice && <button
             type="button"
-            onClick={() => onAdd(addChoices[0].value)}
+            onClick={() => onAdd(addChoice.value)}
             className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            title={`新增${addChoices[0].label}`}
+            title={`新增${addChoice.label}`}
           >
             <Plus className="size-3.5" />
-          </button> : addChoices.length > 1 ? <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-                title="新增标志"
-              >
-                <Plus className="size-3.5" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {addChoices.map(choice =>
-                <DropdownMenuItem
-                  key={choice.value}
-                  onSelect={() => onAdd(choice.value)}
-                >
-                  {choice.label}
-                </DropdownMenuItem>
-                ,
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu> : <button
-            type="button"
-            onClick={() => onAdd()}
-            className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            title="新增标志"
-          >
-            <Plus className="size-3.5" />
-          </button>
-          }
+          </button>}
         </div>
         <div className="mb-3 h-px bg-border max-md:hidden" />
         <div className="flex flex-col gap-1.5 max-md:flex-row max-md:overflow-x-auto">

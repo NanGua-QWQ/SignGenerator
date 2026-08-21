@@ -139,14 +139,14 @@ export function useSignWorkspace(tab: WorkspaceTab) {
     [tab],
   )
 
-  const addChoices = [{
+  const addChoice = {
     value: tab,
     label: TAB_TITLES_MAP[tab],
-  }]
+  }
   const signListTitle = TAB_TITLES_MAP[tab]
 
   return {
-    addChoices,
+    addChoice,
     expresswaySignList,
     selectedId: effectiveSelectedId,
     selectedSign,

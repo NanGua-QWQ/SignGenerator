@@ -1,7 +1,6 @@
 'use client'
 import {
-  useParams
-  ,
+  useParams,
   redirect,
 } from 'next/navigation'
 
@@ -47,7 +46,7 @@ export default function TabPage() {
             selectedId={workspace.selectedId}
             onSelect={workspace.selectSign}
             onAdd={workspace.addSign}
-            addChoices={workspace.addChoices}
+            addChoice={workspace.addChoice}
             onDelete={workspace.deleteSign}
             onReorder={workspace.reorderSign}
           />
