@@ -2,18 +2,11 @@ import {
   useCallback, useEffect, useMemo, useState,
 } from 'react'
 
-import type {
-  WorkspaceTab,
-} from '@/[tab]/Header'
-import TAB_TITLES from '@/[tab]/tab-meta.json'
-const TAB_TITLES_MAP = TAB_TITLES as Record<WorkspaceTab, string>
 import {
   createSign,
   isExpresswayKind,
   isForkTemplate,
   normalizeUpdatedSign,
-  templateForTab,
-  visibleSignsForTab,
 } from '@/lib/sign-model'
 import type {
   ExpresswayKind, Sign, SignTemplate,
@@ -26,26 +19,25 @@ import {
   type WorkspaceState,
 } from './workspace-storage'
 
-export function useSignWorkspace(tab: WorkspaceTab) {
+export function useSignWorkspace() {
   const [initialWorkspace] = useState<WorkspaceState>(useCreateInitialWorkspace())
   const [signs, setSigns] = useState<Sign[]>(initialWorkspace.signs)
   const [selectedId, setSelectedId] = useState<string>(initialWorkspace.selectedId)
   const [readyToSave, setReadyToSave] = useState(false)
-  const activeTemplate = templateForTab(tab)
-  const visibleSigns = useMemo(() => visibleSignsForTab(signs, tab), [tab, signs])
+  const visibleSigns = useMemo(() => signs, [signs])
   const expresswaySignList = useMemo(
     () => signs.filter(sign => sign.template === 'expressway'),
     [signs],
   )
   const effectiveSelectedId = useMemo(
-    () => visibleSigns.some(sign => sign.id === selectedId)
+    () => signs.some(sign => sign.id === selectedId)
       ? selectedId
-      : visibleSigns[0]?.id ?? selectedId,
-    [selectedId, visibleSigns],
+      : signs[0]?.id ?? selectedId,
+    [selectedId, signs],
   )
   const selectedSign = useMemo<Sign>(
-    () => visibleSigns.find(sign => sign.id === effectiveSelectedId) ?? visibleSigns[0],
-    [effectiveSelectedId, visibleSigns],
+    () => signs.find(sign => sign.id === effectiveSelectedId) ?? signs[0],
+    [effectiveSelectedId, signs],
   )
 
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -70,12 +62,12 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   const addSign = useCallback(
     (template?: SignTemplate) => {
       const sign = createSign({
-        template: template ?? activeTemplate,
+        template: template ?? 'expressway',
       })
       setSigns(current => [...current, sign])
       setSelectedId(sign.id)
     },
-    [activeTemplate],
+    [],
   )
 
   const updateSign = useCallback(
@@ -92,17 +84,11 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   const deleteSign = useCallback(
     (id: string) => {
       setSigns((current) => {
-        const target = current.find(sign => sign.id === id)
-        if (
-          !target
-          || current.filter(sign => sign.template === target.template).length === 1
-        ) { return current }
+        if (current.length <= 1) { return current }
 
         const next = current.filter(sign => sign.id !== id)
         if (id === effectiveSelectedId) {
-          setSelectedId(
-            next.find(sign => sign.template === target.template)?.id ?? next[0].id,
-          )
+          setSelectedId(next[0]?.id ?? '')
         }
         return next
       })
@@ -113,11 +99,10 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   const reorderSign = useCallback(
     (id: string, targetId: string, position: 'before' | 'after') => {
       setSigns((current) => {
-        const signsForTab = visibleSignsForTab(current, tab)
         if (
           id === targetId
-          || !signsForTab.some(sign => sign.id === id)
-          || !signsForTab.some(sign => sign.id === targetId)
+          || !current.some(sign => sign.id === id)
+          || !current.some(sign => sign.id === targetId)
         ) { return current }
 
         const sourceIndex = current.findIndex(sign => sign.id === id)
@@ -136,17 +121,12 @@ export function useSignWorkspace(tab: WorkspaceTab) {
       })
       setSelectedId(id)
     },
-    [tab],
+    [],
   )
 
-  const addChoice = {
-    value: tab,
-    label: TAB_TITLES_MAP[tab],
-  }
-  const signListTitle = TAB_TITLES_MAP[tab]
+  const signListTitle = '全部标志'
 
   return {
-    addChoice,
     expresswaySignList,
     selectedId: effectiveSelectedId,
     selectedSign,

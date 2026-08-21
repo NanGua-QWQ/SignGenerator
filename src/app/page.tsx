@@ -1,7 +1,13 @@
-import {
-  redirect,
-} from 'next/navigation'
+import type {
+  Metadata,
+} from 'next'
 
-export default function Home() {
-  redirect('/expressway')
+import WorkspacePage from './WorkspacePage'
+
+export const metadata: Metadata = {
+  title: '标志生成器',
+}
+
+export default function Page() {
+  return <WorkspacePage />
 }

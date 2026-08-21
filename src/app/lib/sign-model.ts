@@ -18,7 +18,32 @@ import type {
   ExpresswayKind, OrdinaryRoadKind, Sign, SignKind, SignTemplate,
 } from './types'
 
-type SignWorkspaceTab = SignTemplate
+export const TEMPLATE_TITLES: Record<SignTemplate, string> = {
+  expressway: '高速道路名称标识',
+  'ordinary-road': '普通道路名称标识',
+  'direction-guidance': '分向指路标志',
+  'road-fork-preview': '道路分岔预告',
+  'two-lane-interchange-exit': '2车道立交枢纽出口',
+  'dual-exit-interchange-preview': '双出口枢纽式互通立体交叉出口预告',
+  'entrance-preview-two-directions': '入口预告-2方向',
+}
+
+const TEMPLATE_ORDER: SignTemplate[] = [
+  'expressway',
+  'ordinary-road',
+  'direction-guidance',
+  'road-fork-preview',
+  'two-lane-interchange-exit',
+  'dual-exit-interchange-preview',
+  'entrance-preview-two-directions',
+]
+
+export function templateTitle(template: SignTemplate) {
+  return TEMPLATE_TITLES[template]
+}
+
+export const ALL_TEMPLATES = TEMPLATE_ORDER
+
 type ForkTemplate = Extract<
   SignTemplate,
   | 'direction-guidance'
@@ -103,11 +128,7 @@ export function isTemplateParam(value: string | null): value is SignTemplate {
   }
 }
 
-export function templateForTab(tab: SignWorkspaceTab) {
-  return tab
-}
-
-export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab) {
+export function visibleSignsForTab(signs: Sign[], tab: SignTemplate) {
   return signs.filter(sign => sign.template === tab)
 }
 

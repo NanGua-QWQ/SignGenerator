@@ -40,20 +40,20 @@ import {
 } from './PreviewToolbar'
 import {
   badgeVariants,
-} from '../components/badge'
+} from '@/components/badge'
 import {
   POPOVER_COLOR_OPTIONS,
-} from '../lib/popover-options'
+} from '@/lib/popover-options'
 import {
   deleteDialogTitle,
   signBadgeVariant,
   signTitle,
-} from '../lib/sign-display'
+} from '@/lib/sign-display'
 import {
   DIRECTION_OPTIONS,
   ENTRANCE_ARROW_DIRECTION_OPTIONS,
   ORDINARY_KIND_OPTIONS,
-} from '../lib/sign-options'
+} from '@/lib/sign-options'
 
 interface SignSettingsProps {
   sign: Sign

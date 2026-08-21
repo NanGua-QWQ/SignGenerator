@@ -16,25 +16,22 @@ import type {
 } from '@/lib/types'
 
 import {
+  ALL_TEMPLATES, TEMPLATE_TITLES,
+} from '@/lib/sign-model'
+import {
   isForkSign,
   signBadge,
   signBadgeVariant,
   signInfo,
   signTitle,
-} from '../lib/sign-display'
-
-interface AddChoice {
-  value: SignTemplate
-  label: string
-}
+} from '@/lib/sign-display'
 
 interface SignListProps {
   title: string
   signs: Sign[]
   selectedId: string
   onSelect: (id: string) => void
-  onAdd: (template?: SignTemplate) => void
-  addChoice?: AddChoice
+  onAdd: (template: SignTemplate) => void
   onReorder?: (id: string, targetId: string, position: 'before' | 'after') => void
 }
 
@@ -46,13 +43,13 @@ export function SignList({
   selectedId,
   onSelect,
   onAdd,
-  addChoice,
   onReorder,
 }: SignListProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(
     null,
   )
+  const [addMenuOpen, setAddMenuOpen] = useState(false)
 
   function dropPosition(event: DragEvent<HTMLDivElement>): 'before' | 'after' {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -96,14 +93,31 @@ export function SignList({
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             {title}
           </h2>
-          {addChoice && <button
-            type="button"
-            onClick={() => onAdd(addChoice.value)}
-            className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            title={`新增${addChoice.label}`}
-          >
-            <Plus className="size-3.5" />
-          </button>}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setAddMenuOpen(open => !open)}
+              className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
+              title="新增标志"
+            >
+              <Plus className="size-3.5" />
+            </button>
+            {addMenuOpen && <div className="absolute right-0 top-7 z-40 w-52 rounded-md border bg-background p-1 shadow-lg">
+              {ALL_TEMPLATES.map(template => (
+                <button
+                  key={template}
+                  type="button"
+                  onClick={() => {
+                    onAdd(template)
+                    setAddMenuOpen(false)
+                  }}
+                  className="block w-full rounded px-2 py-1.5 text-left text-xs hover:bg-accent"
+                >
+                  {TEMPLATE_TITLES[template]}
+                </button>
+              ))}
+            </div>}
+          </div>
         </div>
         <div className="mb-3 h-px bg-border max-md:hidden" />
         <div className="flex flex-col gap-1.5 max-md:flex-row max-md:overflow-x-auto">

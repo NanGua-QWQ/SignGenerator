@@ -23,7 +23,7 @@ import {
   zoomScaleAtom,
 } from '@/state/preview-store'
 
-import ThemeToggle from './Header/ThemeToggle'
+import ThemeToggle from './theme-toggle'
 
 export function PreviewToolbar({
   sign,
