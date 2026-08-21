@@ -27,6 +27,9 @@ import type {
 } from '@/lib/types'
 
 import {
+  PreviewToolbar,
+} from './PreviewToolbar'
+import {
   DIRECTION_OPTIONS,
   ENTRANCE_ARROW_DIRECTION_OPTIONS,
   ORDINARY_KIND_OPTIONS,
@@ -328,6 +331,7 @@ export function SignSettings({
   }
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
+      <PreviewToolbar sign={sign} />
       <div className="p-4">
         <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           {settingName}

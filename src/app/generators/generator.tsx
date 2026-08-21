@@ -98,7 +98,7 @@ export function signFilename(sign: Sign) {
     .trim()
     .replace(/[<>:"/\\|?*]/g, '_')
   const base = `${safeCode}${safeName ? `_${safeName}` : ''}`
-  return `${base || 'road-sign'}.svg`
+  return base || 'road-sign'
 }
 
 export function routeSignWidth(code: string, ROUTE_SIGN_HEIGHT: number) {

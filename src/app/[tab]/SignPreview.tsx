@@ -1,6 +1,5 @@
 import {
   Component,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -11,21 +10,22 @@ import {
 } from 'react'
 
 import {
-  Download, RotateCcw, ZoomIn, ZoomOut,
-} from 'lucide-react'
+  useAtom,
+  useAtomValue,
+  useSetAtom,
+} from 'jotai'
 
 import {
-  Button,
-} from '@/components/button'
-import {
-  SignSvg, signFilename,
+  SignSvg,
 } from '@/generators/generator'
 import type {
   Sign,
 } from '@/lib/types'
-
-const MIN_SCALE = 0.4
-const MAX_SCALE = 3
+import {
+  offsetAtom,
+  scaleAtom,
+  zoomScaleAtom,
+} from '@/state/preview-store'
 
 interface Position {
     x: number
@@ -44,11 +44,9 @@ interface Measurement {
 export function SignPreview({
   sign,
 }: { sign: Sign }) {
-  const [scale, setScale] = useState(1)
-  const [offset, setOffset] = useState<Offset>({
-    x: 0,
-    y: 0,
-  })
+  const scale = useAtomValue(scaleAtom)
+  const zoomScale = useSetAtom(zoomScaleAtom)
+  const [offset, setOffset] = useAtom(offsetAtom)
   const [isDragging, setIsDragging] = useState(false)
   const [showPosition, setShowPosition] = useState(false)
   const [showPixelMeasure, setShowPixelMeasure] = useState(false)
@@ -79,26 +77,19 @@ export function SignPreview({
     sign.rightRouteThreeDigitDescend,
   ].join('|')
 
-  const zoom = useCallback(
-    (multiplier: number) => setScale(
-      current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier)),
-    ),
-    [],
-  )
-
   useEffect(() => {
     const preview = previewRef.current
     if (!preview) {return}
     const handleWheel = (event: WheelEvent) => {
       if (!event.ctrlKey) {return}
       event.preventDefault()
-      zoom(event.deltaY < 0 ? 1.1 : 0.9)
+      zoomScale(event.deltaY < 0 ? 1.1 : 0.9)
     }
     preview.addEventListener('wheel', handleWheel, {
       passive: false,
     })
     return () => preview.removeEventListener('wheel', handleWheel)
-  }, [zoom])
+  }, [])
 
   useEffect(() => {
     const eventName = 'sign-preview-position-toggle'
@@ -235,28 +226,6 @@ export function SignPreview({
     setBoardPosition(position)
   }
 
-  function reset() {
-    setScale(1)
-    setOffset({
-      x: 0,
-      y: 0,
-    })
-  }
-  function download() {
-    const svgElement = document.querySelector('svg[role=img]')
-    if (!svgElement) {return}
-    const svgString = svgElement.outerHTML
-    const blob = new Blob([svgString], {
-      type: 'image/svg+xml;charset=utf-8',
-    })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = signFilename(sign)
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(url), 0)
-  }
-
   function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.button !== 0) {return}
     event.preventDefault()
@@ -330,37 +299,6 @@ export function SignPreview({
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col bg-muted">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b bg-background px-3">
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() => zoom(0.8)}
-            title="缩小"
-          >
-            <ZoomOut className="size-3.5" />
-          </Button>
-          <output className="w-11 text-center text-xs tabular-nums text-muted-foreground">
-            {Math.round(scale * 100)}%
-          </output>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() => zoom(1.25)}
-            title="放大"
-          >
-            <ZoomIn className="size-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="size-7" onClick={reset} title="复位">
-            <RotateCcw className="size-3.5" />
-          </Button>
-        </div>
-        <Button variant="ghost" size="icon" className="size-7" onClick={download} title="下载 SVG">
-          <Download className="size-3.5" />
-        </Button>
-      </div>
       <div
         ref={previewRef}
         className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${showPixelMeasure ? 'cursor-crosshair' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
