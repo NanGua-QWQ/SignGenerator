@@ -29,9 +29,9 @@ const SIGN_DRAG_TYPE = 'application/x-sign-id'
 
 export default function SignList() {
   const {
-    visibleSigns: signs,
+    signs,
     selectedId,
-    selectSign: onSelect,
+    selectId: onSelect,
     reorderSign: onReorder,
   } = useSignWorkspace()
   const [draggingId, setDraggingId] = useState<string | null>(null)
