@@ -21,18 +21,17 @@ import {
 import {
   Header, type WorkspaceTab,
 } from './Header'
+import TAB_TITLES from './tab-meta.json'
 
-const VALID_TABS: ReadonlySet<string> = new Set<WorkspaceTab>([
-  'signs',
-  'interchange-guidance',
-  'entrance-exit-guidance',
-])
+const VALID_TABS: ReadonlySet<string> = new Set<WorkspaceTab>(
+  Object.keys(TAB_TITLES) as WorkspaceTab[],
+)
 
 export default function TabPage() {
   const params = useParams<{ tab: string }>()
   const tabParam = params.tab
   if (typeof tabParam !== 'string' || !VALID_TABS.has(tabParam)) {
-    redirect('/signs')
+    redirect('/expressway')
   }
 
   const workspace = useSignWorkspace(tabParam as WorkspaceTab)

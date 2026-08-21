@@ -3,5 +3,5 @@ import {
 } from 'next/navigation'
 
 export default function Home() {
-  redirect('/signs')
+  redirect('/expressway')
 }

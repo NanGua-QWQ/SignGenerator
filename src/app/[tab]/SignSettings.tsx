@@ -30,6 +30,9 @@ import {
   PreviewToolbar,
 } from './PreviewToolbar'
 import {
+  signTitle,
+} from '../lib/sign-display'
+import {
   DIRECTION_OPTIONS,
   ENTRANCE_ARROW_DIRECTION_OPTIONS,
   ORDINARY_KIND_OPTIONS,
@@ -314,21 +317,7 @@ export function SignSettings({
     })
   }
 
-  let settingName: string
-  switch (sign.template) {
-    case 'entrance-preview-two-directions':
-      settingName = '出入口指引设置'
-      break
-    case 'direction-guidance':
-    case 'road-fork-preview':
-    case 'two-lane-interchange-exit':
-    case 'dual-exit-interchange-preview':
-      settingName = '立交枢纽指引设置'
-      break
-    default:
-      settingName = '道路名称标识设置'
-      break
-  }
+  const settingName = `${signTitle(sign)}设置`
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <PreviewToolbar sign={sign} />

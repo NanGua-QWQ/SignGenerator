@@ -8,7 +8,7 @@ import type {
 
 export default function manifest() {
   const
-    label = '道路名称标识页',
+    label = '道路标牌生成器',
     type = 'image/jpeg'
   return {
     'name': 'sign-generator',

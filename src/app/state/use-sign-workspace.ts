@@ -5,10 +5,9 @@ import {
 import type {
   WorkspaceTab,
 } from '@/[tab]/Header'
+import TAB_TITLES from '@/[tab]/tab-meta.json'
+const TAB_TITLES_MAP = TAB_TITLES as Record<WorkspaceTab, string>
 import {
-  ENTRANCE_EXIT_ADD_CHOICES,
-  INTERCHANGE_ADD_CHOICES,
-  SIGN_ADD_CHOICES,
   createSign,
   isExpresswayKind,
   isForkTemplate,
@@ -140,10 +139,8 @@ export function useSignWorkspace(tab: WorkspaceTab) {
     [tab],
   )
 
-  const addChoices
-    = tab === 'interchange-guidance' ? INTERCHANGE_ADD_CHOICES : tab === 'entrance-exit-guidance' ? ENTRANCE_EXIT_ADD_CHOICES : SIGN_ADD_CHOICES
-  const signListTitle
-    = tab === 'interchange-guidance' ? '立交枢纽指引' : tab === 'entrance-exit-guidance' ? '出入口指引' : '道路名称标识'
+  const addChoices = [{ value: tab, label: TAB_TITLES_MAP[tab] }]
+  const signListTitle = TAB_TITLES_MAP[tab]
 
   return {
     addChoices,

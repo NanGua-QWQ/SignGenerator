@@ -140,6 +140,5 @@ export function signInfo(sign: Sign) {
 }
 
 export function deleteDialogTitle(sign: Sign) {
-  if (sign.template === 'entrance-preview-two-directions') {return '删除出入口指引？'}
-  return isForkSign(sign) ? '删除立交枢纽指引？' : '删除道路名称标识？'
+  return `删除${signTitle(sign)}？`
 }

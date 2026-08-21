@@ -18,7 +18,7 @@ import type {
   ExpresswayKind, OrdinaryRoadKind, Sign, SignKind, SignTemplate,
 } from './types'
 
-type SignWorkspaceTab = 'signs' | 'interchange-guidance' | 'entrance-exit-guidance'
+type SignWorkspaceTab = SignTemplate
 type ForkTemplate = Extract<
   SignTemplate,
   | 'direction-guidance'
@@ -27,15 +27,6 @@ type ForkTemplate = Extract<
   | 'dual-exit-interchange-preview'
   | 'entrance-preview-two-directions'
 >
-type InterchangeTemplate = Extract<
-  SignTemplate,
-  | 'direction-guidance'
-  | 'road-fork-preview'
-  | 'two-lane-interchange-exit'
-  | 'dual-exit-interchange-preview'
->
-type EntranceExitTemplate = Extract<SignTemplate, 'entrance-preview-two-directions'>
-
 const ORDINARY_ROAD_PREFIX: Record<OrdinaryRoadKind, string> = {
   'ordinary-national': 'G',
   'ordinary-provincial': 'S',
@@ -50,43 +41,6 @@ const FORK_SIGN_NAME: Record<ForkTemplate, string> = {
   'dual-exit-interchange-preview': '双出口枢纽式互通立体交叉出口预告',
   'entrance-preview-two-directions': '入口预告-2方向',
 }
-
-export const INTERCHANGE_ADD_CHOICES = [
-  {
-    value: 'direction-guidance',
-    label: '分向指路标志',
-  },
-  {
-    value: 'road-fork-preview',
-    label: '道路分岔预告',
-  },
-  {
-    value: 'two-lane-interchange-exit',
-    label: '2车道立交枢纽出口',
-  },
-  {
-    value: 'dual-exit-interchange-preview',
-    label: '双出口枢纽式互通立体交叉出口预告',
-  },
-] satisfies { value: InterchangeTemplate; label: string }[]
-
-export const ENTRANCE_EXIT_ADD_CHOICES = [
-  {
-    value: 'entrance-preview-two-directions',
-    label: '入口预告-2方向',
-  },
-] satisfies { value: EntranceExitTemplate; label: string }[]
-
-export const SIGN_ADD_CHOICES = [
-  {
-    value: 'expressway',
-    label: '高速道路名称标识',
-  },
-  {
-    value: 'ordinary-road',
-    label: '普通道路名称标识',
-  },
-] satisfies { value: SignTemplate; label: string }[]
 
 export function isExpresswayKind(value: SignKind | undefined): value is ExpresswayKind {
   switch (value) {
@@ -150,30 +104,11 @@ export function isTemplateParam(value: string | null): value is SignTemplate {
 }
 
 export function templateForTab(tab: SignWorkspaceTab) {
-  switch (tab) {
-    case 'interchange-guidance':
-      return 'direction-guidance'
-    case 'entrance-exit-guidance':
-      return 'entrance-preview-two-directions'
-    default:
-      return 'expressway'
-  }
+  return tab
 }
 
 export function visibleSignsForTab(signs: Sign[], tab: SignWorkspaceTab) {
-  switch (tab) {
-    case 'interchange-guidance':
-      return signs.filter(
-        sign => sign.template === 'direction-guidance'
-          || sign.template === 'road-fork-preview'
-          || sign.template === 'two-lane-interchange-exit'
-          || sign.template === 'dual-exit-interchange-preview',
-      )
-    case 'entrance-exit-guidance':
-      return signs.filter(sign => sign.template === 'entrance-preview-two-directions')
-    default:
-      return signs.filter(sign => isRoadSignTemplate(sign.template))
-  }
+  return signs.filter(sign => sign.template === tab)
 }
 
 export function parseInitialKind(value: string | null) {

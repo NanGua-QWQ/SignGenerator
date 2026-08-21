@@ -4,13 +4,19 @@ import {
 
 import Link from 'next/link'
 
+import type {
+  SignTemplate,
+} from '@/lib/types'
+
 import './Header.css'
 import TAB_TITLES from '../tab-meta.json'
 
-export type WorkspaceTab = 'signs' | 'interchange-guidance' | 'entrance-exit-guidance'
+export type WorkspaceTab = SignTemplate
+
+const TAB_TITLES_MAP = TAB_TITLES as Record<WorkspaceTab, string>
 
 interface HeaderProps {
-    activeTab: WorkspaceTab
+  activeTab: WorkspaceTab
 }
 
 export function Header({
@@ -38,7 +44,7 @@ export function Header({
           }}
           className={`animated-title truncate text-lg font-bold text-foreground ${filled ? 'is-filled' : ''}`}
         >
-                    道路标牌生成器
+          道路标牌生成器
         </h1>
         <span className="hidden text-xs text-muted-foreground sm:inline">Road Sign Generator</span>
       </div>
@@ -51,7 +57,7 @@ export function Header({
             aria-selected={activeTab === tab}
             className={tabClass(tab)}
           >
-            {TAB_TITLES[tab]}
+            {TAB_TITLES_MAP[tab]}
           </Link>)}
         </div>
       </div>

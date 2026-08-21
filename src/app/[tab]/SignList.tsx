@@ -142,7 +142,14 @@ export function SignList({
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             {title}
           </h2>
-          {addChoices.length > 0 ? <DropdownMenu>
+          {addChoices.length === 1 ? <button
+            type="button"
+            onClick={() => onAdd(addChoices[0].value)}
+            className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
+            title={`新增${addChoices[0].label}`}
+          >
+            <Plus className="size-3.5" />
+          </button> : addChoices.length > 1 ? <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
