@@ -67,80 +67,61 @@ const FORK_SIGN_NAME: Record<ForkTemplate, string> = {
   'entrance-preview-two-directions': '入口预告-2方向',
 }
 
+const EXPRESSWAY_KINDS = ['national', 'provincial', 'beijing-tianjin-hebei'] as const
 export function isExpresswayKind(value: SignKind | undefined): value is ExpresswayKind {
-  switch (value) {
-    case 'national':
-    case 'provincial':
-    case 'beijing-tianjin-hebei':
-      return true
-    default:
-      return false
-  }
+  return (EXPRESSWAY_KINDS as readonly SignKind[]).includes(value as SignKind)
 }
 
+const ORDINARY_ROAD_KINDS = [
+  'ordinary-national',
+  'ordinary-provincial',
+  'ordinary-county',
+  'ordinary-township',
+] as const
 export function isOrdinaryRoadKind(value: SignKind | undefined): value is OrdinaryRoadKind {
-  switch (value) {
-    case 'ordinary-national':
-    case 'ordinary-provincial':
-    case 'ordinary-county':
-    case 'ordinary-township':
-      return true
-    default:
-      return false
-  }
+  return (ORDINARY_ROAD_KINDS as readonly SignKind[]).includes(value as SignKind)
 }
 
+const ROAD_SIGN_TEMPLATES = ['expressway', 'ordinary-road'] as const
 export function isRoadSignTemplate(template: SignTemplate) {
-  switch (template) {
-    case 'expressway':
-    case 'ordinary-road':
-      return true
-    default:
-      return false
-  }
+  return (ROAD_SIGN_TEMPLATES as readonly SignTemplate[]).includes(template)
 }
 
+const FORK_TEMPLATES = [
+  'direction-guidance',
+  'road-fork-preview',
+  'two-lane-interchange-exit',
+  'dual-exit-interchange-preview',
+  'entrance-preview-two-directions',
+] as const
 export function isForkTemplate(template: SignTemplate) {
-  switch (template) {
-    case 'direction-guidance':
-    case 'road-fork-preview':
-    case 'two-lane-interchange-exit':
-    case 'dual-exit-interchange-preview':
-    case 'entrance-preview-two-directions':
-      return true
-    default:
-      return false
-  }
+  return (FORK_TEMPLATES as readonly SignTemplate[]).includes(template)
 }
 
+const TEMPLATE_PARAMS = [
+  'expressway',
+  'ordinary-road',
+  'direction-guidance',
+  'road-fork-preview',
+  'two-lane-interchange-exit',
+  'dual-exit-interchange-preview',
+  'entrance-preview-two-directions',
+] as const
 export function isTemplateParam(value: string | null): value is SignTemplate {
-  switch (value) {
-    case 'expressway':
-    case 'ordinary-road':
-    case 'direction-guidance':
-    case 'road-fork-preview':
-    case 'two-lane-interchange-exit':
-    case 'dual-exit-interchange-preview':
-    case 'entrance-preview-two-directions':
-      return true
-    default:
-      return false
-  }
+  return (TEMPLATE_PARAMS as readonly string[]).includes(value ?? '')
 }
 
 export function visibleSignsForTab(signs: Sign[], tab: SignTemplate) {
   return signs.filter(sign => sign.template === tab)
 }
 
+const KINDS = [
+  'national',
+  'provincial',
+  'beijing-tianjin-hebei',
+] as const
 export function parseInitialKind(value: string | null) {
-  switch (value) {
-    case 'national':
-    case 'provincial':
-    case 'beijing-tianjin-hebei':
-      return value
-    default:
-      return undefined
-  }
+  return KINDS.find(kind => kind === value) ?? undefined
 }
 
 export function normalizeSign(overrides: Partial<Sign> = {

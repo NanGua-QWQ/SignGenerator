@@ -6,15 +6,9 @@ window.darkmode = {
     document.documentElement.classList[window.darkmode.real ? 'add' : 'remove']('dark')
   },
 }
-switch (window.darkmode.fromStorage) {
-  case 'true':
-    window.darkmode.real = true
-    break
-  case 'false':
-    window.darkmode.real = false
-    break
-  default:
-    window.darkmode.real = window.matchMedia('(prefers-color-scheme: dark)').matches
-    break
-}
+window.darkmode.real = {
+  'true': true,
+  'false': false,
+}?.[window.darkmode.fromStorage as string]
+  || window.matchMedia('(prefers-color-scheme: dark)').matches
 window.darkmode.apply()

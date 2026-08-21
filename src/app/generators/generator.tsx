@@ -1,5 +1,5 @@
 import type {
-  EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign,
+  EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign, SignTemplate,
 } from '@/lib/types'
 
 import {
@@ -57,38 +57,16 @@ export function SignSvg({
   return SignSvgContent(sign)
 }
 
+const SIGN_FILENAME_CODE: Partial<Record<SignTemplate, (sign: Sign) => string>> = {
+  'road-fork-preview': sign => `道路分岔预告_${sign.exitNumber}`,
+  'direction-guidance': sign => `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`,
+  'two-lane-interchange-exit': sign => `2车道立交枢纽出口_${sign.rightRoute}`,
+  'dual-exit-interchange-preview': sign => `双出口枢纽式互通立体交叉出口预告_${sign.leftRoute}_${sign.rightRoute}`,
+  'entrance-preview-two-directions': sign => `入口预告-2方向_${sign.rightRoute}`,
+  'ordinary-road': sign => ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, ''),
+}
 export function signFilename(sign: Sign) {
-  let code: string
-  switch (sign.template) {
-    case 'road-fork-preview': {
-      code = `道路分岔预告_${sign.exitNumber}`
-      break
-    }
-    case 'direction-guidance': {
-      code = `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
-      break
-    }
-    case 'two-lane-interchange-exit': {
-      code = `2车道立交枢纽出口_${sign.rightRoute}`
-      break
-    }
-    case 'dual-exit-interchange-preview': {
-      code = `双出口枢纽式互通立体交叉出口预告_${sign.leftRoute}_${sign.rightRoute}`
-      break
-    }
-    case 'entrance-preview-two-directions': {
-      code = `入口预告-2方向_${sign.rightRoute}`
-      break
-    }
-    case 'ordinary-road': {
-      code = ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
-      break
-    }
-    default: {
-      code = sign.code
-      break
-    }
-  }
+  const code = SIGN_FILENAME_CODE[sign.template]?.(sign) ?? sign.code
   const name
     = sign.template === 'expressway' || sign.template === 'ordinary-road' ? sign.name : sign.exitName || sign.name
   const safeCode = String(code || 'road-sign')

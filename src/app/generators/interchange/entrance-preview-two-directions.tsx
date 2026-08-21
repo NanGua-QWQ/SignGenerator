@@ -59,25 +59,26 @@ function templateForArrowDirection(
     ? TURN_TEMPLATE_WIDTH
     : ONE_DIRECTION_TURN_TEMPLATE_WIDTH
 
-  switch (direction) {
-    case 'left':
-      return {
-        svg: leftTemplate,
-        width: turnWidth,
-      }
-    case 'right': {
-      const transform = usesSecondDestination ? 'transform="translate(378.63,-50.57) scale(-1,1)"' : 'transform="translate(374.29,-51.19) scale(-1,1)"'
+  const TEMPLATE_BY_DIRECTION = {
+    left: () => ({
+      svg: leftTemplate,
+      width: turnWidth,
+    }),
+    right: () => {
+      const transform = usesSecondDestination
+        ? 'transform="translate(378.63,-50.57) scale(-1,1)"'
+        : 'transform="translate(374.29,-51.19) scale(-1,1)"'
       return {
         svg: leftTemplate.replace(/transform="translate\([^)]*\)"/, transform),
         width: turnWidth,
       }
-    }
-    default:
-      return {
-        svg: frontTemplate,
-        width: frontWidth,
-      }
+    },
+    front: () => ({
+      svg: frontTemplate,
+      width: frontWidth,
+    }),
   }
+  return TEMPLATE_BY_DIRECTION[direction]()
 }
 
 interface DirectionPlateProps {

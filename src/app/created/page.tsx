@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  useCallback, useState, type DragEvent,
+  useState, type DragEvent,
 } from 'react'
 
 import {
@@ -38,16 +38,11 @@ export default function SignList() {
   const selectedId = useAtomValue(effectiveSelectedIdAtom)
   const onSelect = useSetAtom(selectSignAtom)
   const setReorderSign = useSetAtom(reorderSignAtom)
-  const onReorder = useCallback(
-    (id: string, targetId: string, position: 'before' | 'after') => {
-      setReorderSign({
-        id,
-        targetId,
-        position,
-      })
-    },
-    [setReorderSign],
-  )
+  const onReorder = (id: string, targetId: string, position: 'before' | 'after') => setReorderSign({
+    id,
+    targetId,
+    position,
+  })
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(
     null,
@@ -75,7 +70,7 @@ export default function SignList() {
     const draggedId = event.dataTransfer.getData(SIGN_DRAG_TYPE) || draggingId
     if (!draggedId || draggedId === sign.id || !dropTarget) { return }
     event.preventDefault()
-    onReorder?.(draggedId, sign.id, dropTarget.position)
+    onReorder(draggedId, sign.id, dropTarget.position)
     setDraggingId(null)
     setDropTarget(null)
   }
