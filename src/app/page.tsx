@@ -116,7 +116,7 @@ function RouteSelect({
   return (
     <Select
       value={selectValue}
-      onValueChange={(signId) => {
+      onValueChange={signId => {
         const selected = signs.find(s => s.id === signId)
         if (selected) { onValueChange(selected) }
       }}
@@ -159,7 +159,7 @@ function ColorBadgePicker({
 }) {
   return (
     <div className="grid grid-cols-3 gap-1.5">
-      {POPOVER_COLOR_OPTIONS.map((option) => {
+      {POPOVER_COLOR_OPTIONS.map(option => {
         const active = value === option.value
         const variant = option.value === 'slate' ? signBadgeVariant(sign) : option.value
         return (
@@ -429,7 +429,7 @@ export default function SignSettings() {
           <ColorBadgePicker
             sign={sign}
             value={sign.popoverColor}
-            onChange={(popoverColor) => {
+            onChange={popoverColor => {
               onChange({
                 popoverColor,
               })

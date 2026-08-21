@@ -120,7 +120,7 @@ export function SignPreview({
   useEffect(() => {
     const eventName = 'sign-preview-pixel-measure-toggle'
     const togglePixelMeasure = () => {
-      setShowPixelMeasure((current) => {
+      setShowPixelMeasure(current => {
         const next = !current
         if (!next) {setMeasurement(null)}
         return next
@@ -256,7 +256,7 @@ export function SignPreview({
     if (measuring.current) {
       const point = measurePointFromEvent(event)
       if (point) {
-        setMeasurement((current) => {
+        setMeasurement(current => {
           if (!current) {return null}
           const next = constrainedMeasurePoint(current, point, event.shiftKey)
           return {

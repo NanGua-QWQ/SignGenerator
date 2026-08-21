@@ -21,10 +21,10 @@ export function FontsProvider({
   useEffect(() => {
     let cancelled = false
     loadFontBuffers()
-      .then((next) => {
+      .then(next => {
         if (!cancelled) { setBuffers(next) }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error)
       })
     return () => {

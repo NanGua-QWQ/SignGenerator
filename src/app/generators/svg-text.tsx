@@ -40,7 +40,7 @@ export function loadFont(kind: FontKey) {
   if (cached) { return cached }
   if (!fontkitPromise) { fontkitPromise = import('@pdf-lib/fontkit') }
   const fontPromise = Promise.all([
-    fetch(FONT_URLS[kind]).then((response) => {
+    fetch(FONT_URLS[kind]).then(response => {
       if (!response.ok) { throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`) }
       return response.arrayBuffer()
     }),
@@ -98,7 +98,7 @@ export function textLayout(
   const unitsPerEm = font.unitsPerEm || 1000
   const reference
     = options.scaleMode === 'reference' ? referenceScale(font, options.referenceText || text, height) : null
-  const glyphs = Array.from(text).map((char) => {
+  const glyphs = Array.from(text).map(char => {
     const codePoint = char.codePointAt(0)
     if (codePoint === undefined) { throw new Error('无效字符') }
     const glyph = font.glyphForCodePoint(codePoint)

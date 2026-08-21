@@ -23,14 +23,14 @@ export const readyToSaveAtom = atom(false)
 
 export const expresswaySignListAtom = atom(get =>
   get(signsAtom).filter(sign => sign.template === 'expressway'))
-export const effectiveSelectedIdAtom = atom((get) => {
+export const effectiveSelectedIdAtom = atom(get => {
   const signs = get(signsAtom)
   const selectedId = get(selectedIdAtom)
   return signs.some(sign => sign.id === selectedId)
     ? selectedId
     : signs[0]?.id ?? selectedId
 })
-export const selectedSignAtom = atom((get) => {
+export const selectedSignAtom = atom(get => {
   const signs = get(signsAtom)
   const id = get(effectiveSelectedIdAtom)
   return signs.find(sign => sign.id === id) ?? signs[0]
@@ -57,7 +57,7 @@ export const updateSignByIdAtom = atom(
 export const deleteSignAtom = atom(
   null,
   (get, set, id: string) => {
-    set(signsAtom, (current) => {
+    set(signsAtom, current => {
       if (current.length <= 1) { return current }
 
       const next = current.filter(sign => sign.id !== id)

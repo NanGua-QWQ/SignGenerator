@@ -76,7 +76,7 @@ export default function SignList() {
 
   return (
     <div className="p-3 max-md:py-2 flex flex-col gap-1.5 max-md:flex-row max-md:overflow-x-auto">
-      {signs.map((sign) => {
+      {signs.map(sign => {
         const info = signInfo(sign)
         const isDropTarget = dropTarget?.id === sign.id
         const dropClass = isDropTarget ? dropTarget.position === 'before' ? 'border-t-primary' : 'border-b-primary' : 'border-y-transparent'
@@ -92,7 +92,7 @@ export default function SignList() {
               draggingId === sign.id ? 'opacity-50' : '',
               stateClass,
             ].join(' ')}
-            onContextMenu={(event) => {
+            onContextMenu={event => {
               event.preventDefault()
               selectOnly(sign)
             }}
