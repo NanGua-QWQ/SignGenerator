@@ -22,7 +22,7 @@ export function FontsProvider({
     let cancelled = false
     loadFontBuffers()
       .then(next => {
-        if (!cancelled) { setBuffers(next) }
+        if (!cancelled)  setBuffers(next)
       })
       .catch(error => {
         console.error(error)
@@ -32,9 +32,8 @@ export function FontsProvider({
     }
   }, [])
 
-  if (!buffers) {
+  if (!buffers)
     return null
-  }
 
   return (
     <FontProvider buffers={buffers}>

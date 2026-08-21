@@ -28,13 +28,12 @@ export async function GET(
   const {
     font,
   } = await params
-  if (!isFontKey(font)) {
+  if (!isFontKey(font))
     return NextResponse.json({
       error: 'Not found',
     }, {
       status: 404,
     })
-  }
 
   const filename = FONT_FILES[font]
   const filePath = join(FONT_DIRECTORY, filename)

@@ -124,7 +124,7 @@ function RouteSelect({
       value={selectValue}
       onValueChange={signId => {
         const selected = signs.find(s => s.id === signId)
-        if (selected) { onValueChange(selected) }
+        if (selected)  onValueChange(selected)
       }}
     >
       <SelectTrigger id={id}>
@@ -143,10 +143,10 @@ function RouteSelect({
 }
 
 function routeMetadata(sign: Sign | undefined) {
-  if (!sign) {
+  if (!sign)
     return {
     }
-  }
+
   return {
     kind: sign.kind as ExpresswayKind,
     provinceLabel: sign.provinceLabel,
@@ -218,9 +218,9 @@ export default function SignSettings() {
         setRoadDigitsError('')
         break
     }
-    if (!composingRoadName.current) { setRoadNameInput(sign.name) }
-    if (composingExitField.current !== 'name') { setExitNameInput(sign.exitName) }
-    if (composingExitField.current !== 'destination') { setExitDestinationInput(sign.exitDestination) }
+    if (!composingRoadName.current)  setRoadNameInput(sign.name)
+    if (composingExitField.current !== 'name')  setExitNameInput(sign.exitName)
+    if (composingExitField.current !== 'destination')  setExitDestinationInput(sign.exitDestination)
   }, [sign.digits, sign.exitDestination, sign.exitName, sign.id, sign.name, sign.template])
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -245,7 +245,7 @@ export default function SignSettings() {
 
   function updateName(event: ChangeEvent<HTMLInputElement>) {
     setRoadNameInput(event.target.value)
-    if (composingRoadName.current) { return }
+    if (composingRoadName.current)  return
     onChange({
       name: Array.from(event.target.value).slice(0, nameLimit).join(''),
     })
@@ -289,7 +289,7 @@ export default function SignSettings() {
 
   function updateExitName(event: ChangeEvent<HTMLInputElement>) {
     setExitNameInput(event.target.value)
-    if (composingExitField.current === 'name') { return }
+    if (composingExitField.current === 'name')  return
     onChange({
       exitName: Array.from(event.target.value).slice(0, 6).join(''),
     })
@@ -297,7 +297,7 @@ export default function SignSettings() {
 
   function updateExitDestination(event: ChangeEvent<HTMLInputElement>) {
     setExitDestinationInput(event.target.value)
-    if (composingExitField.current === 'destination') { return }
+    if (composingExitField.current === 'destination')  return
     onChange({
       exitDestination: Array.from(event.target.value).slice(0, 8).join(''),
     })

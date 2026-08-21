@@ -34,11 +34,11 @@ export function FontProvider({
 
 export function useFont(kind: FontKey) {
   const buffers = use(FontContext)
-  if (!buffers) {throw new Error('useFont 必须在 FontProvider 内使用')}
+  if (!buffers) throw new Error('useFont 必须在 FontProvider 内使用')
   const cached = fontInstances.get(kind)
-  if (cached) {return cached}
+  if (cached) return cached
   const buffer = buffers[kind]
-  if (!buffer) {throw new Error(`未提供 ${kind} 字体数据`)}
+  if (!buffer) throw new Error(`未提供 ${kind} 字体数据`)
   const font = fontkit.create(buffer)
   fontInstances.set(kind, font)
   return font

@@ -2,12 +2,14 @@
 import {
   useState, type DragEvent,
 } from 'react'
+
 import {
   useAtomValue, useSetAtom,
 } from 'jotai'
 import {
   GripVertical,
 } from 'lucide-react'
+
 import {
   Badge,
 } from '@/components/badge'
@@ -55,7 +57,7 @@ export default function SignList() {
     setDraggingId(sign.id)
   }
   function overSign(event: DragEvent<HTMLDivElement>, sign: Sign) {
-    if (!draggingId || draggingId === sign.id) { return }
+    if (!draggingId || draggingId === sign.id)  return
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
     setDropTarget({
@@ -65,7 +67,7 @@ export default function SignList() {
   }
   function dropSign(event: DragEvent<HTMLDivElement>, sign: Sign) {
     const draggedId = event.dataTransfer.getData(SIGN_DRAG_TYPE) || draggingId
-    if (!draggedId || draggedId === sign.id || !dropTarget) { return }
+    if (!draggedId || draggedId === sign.id || !dropTarget)  return
     event.preventDefault()
     onReorder(draggedId, sign.id, dropTarget.position)
     setDraggingId(null)

@@ -99,12 +99,12 @@ export const deleteSignAtom = atom(
   null,
   (get, set, id: string) => {
     const current = get(signsAtom)
-    if (current.length <= 1) { return }
+    if (current.length <= 1)  return
 
     const next = current.filter(sign => sign.id !== id)
-    if (id === get(effectiveSelectedIdAtom)) {
+    if (id === get(effectiveSelectedIdAtom))
       set(selectedIdAtom, next[0]?.id ?? '')
-    }
+
     set(signsAtom, next)
   },
 )
@@ -120,11 +120,11 @@ export const reorderSignAtom = atom(
       id === targetId
       || !current.some(sign => sign.id === id)
       || !current.some(sign => sign.id === targetId)
-    ) { return }
+    )  return
 
     const sourceIndex = current.findIndex(sign => sign.id === id)
     const targetIndex = current.findIndex(sign => sign.id === targetId)
-    if (sourceIndex < 0 || targetIndex < 0) { return }
+    if (sourceIndex < 0 || targetIndex < 0)  return
 
     const next = [...current]
     const [movedSign] = next.splice(sourceIndex, 1)
@@ -141,7 +141,7 @@ export const reorderSignAtom = atom(
 
 export function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sign>) {
   const previous = signs.find(sign => sign.id === id)
-  if (!previous) { return signs }
+  if (!previous)  return signs
 
   const updated = normalizeUpdatedSign(previous, updates)
   const nextSigns = signs.map(sign => sign.id === id ? updated : sign)
@@ -149,28 +149,27 @@ export function updateSignAndReferences(signs: Sign[], id: string, updates: Part
     previous.template !== 'expressway'
     || updated.template !== 'expressway'
     || !isExpresswayKind(updated.kind)
-  ) { return nextSigns }
+  )  return nextSigns
 
   return nextSigns.map(sign => syncForkRouteReference(sign, previous, updated))
 }
 
 function syncForkRouteReference(sign: Sign, previous: Sign, updated: Sign) {
-  if (!isForkTemplate(sign.template)) { return sign }
+  if (!isForkTemplate(sign.template))  return sign
 
   const updates: Partial<Sign> = {
   }
   if (
     sign.leftRouteSignId === previous.id
     || !sign.leftRouteSignId && sign.leftRoute === previous.code
-  ) {
+  )
     Object.assign(updates, routeReferenceUpdates('left', updated))
-  }
+
   if (
     sign.rightRouteSignId === previous.id
     || !sign.rightRouteSignId && sign.rightRoute === previous.code
-  ) {
+  )
     Object.assign(updates, routeReferenceUpdates('right', updated))
-  }
 
   return Object.keys(updates).length > 0 ? normalizeUpdatedSign(sign, updates) : sign
 }

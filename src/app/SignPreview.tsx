@@ -81,9 +81,9 @@ export function SignPreview() {
 
   useEffect(() => {
     const preview = previewRef.current
-    if (!preview) {return}
+    if (!preview) return
     const handleWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey) {return}
+      if (!event.ctrlKey) return
       event.preventDefault()
       zoomScale(event.deltaY < 0 ? 1.1 : 0.9)
     }
@@ -99,7 +99,7 @@ export function SignPreview() {
     const previousPositionDescriptor = Object.getOwnPropertyDescriptor(window, 'position')
 
     window.addEventListener(eventName, togglePosition)
-    if (!previousPositionDescriptor || previousPositionDescriptor.configurable) {
+    if (!previousPositionDescriptor || previousPositionDescriptor.configurable)
       Object.defineProperty(window, 'position', {
         configurable: true,
         get() {
@@ -107,15 +107,13 @@ export function SignPreview() {
           return 'position overlay toggled'
         },
       })
-    }
 
     return () => {
       window.removeEventListener(eventName, togglePosition)
-      if (previousPositionDescriptor) {
+      if (previousPositionDescriptor)
         Object.defineProperty(window, 'position', previousPositionDescriptor)
-      } else {
+      else
         delete (window as Window & { position?: unknown }).position
-      }
     }
   }, [])
 
@@ -124,14 +122,14 @@ export function SignPreview() {
     const togglePixelMeasure = () => {
       setShowPixelMeasure(current => {
         const next = !current
-        if (!next) {setMeasurement(null)}
+        if (!next) setMeasurement(null)
         return next
       })
     }
     const previousPxDescriptor = Object.getOwnPropertyDescriptor(window, 'px')
 
     window.addEventListener(eventName, togglePixelMeasure)
-    if (!previousPxDescriptor || previousPxDescriptor.configurable) {
+    if (!previousPxDescriptor || previousPxDescriptor.configurable)
       Object.defineProperty(window, 'px', {
         configurable: true,
         get() {
@@ -139,21 +137,19 @@ export function SignPreview() {
           return 'pixel measurer toggled'
         },
       })
-    }
 
     return () => {
       window.removeEventListener(eventName, togglePixelMeasure)
-      if (previousPxDescriptor) {
+      if (previousPxDescriptor)
         Object.defineProperty(window, 'px', previousPxDescriptor)
-      } else {
+      else
         delete (window as Window & { px?: unknown }).px
-      }
     }
   }, [])
 
   function boardPositionFromClient(clientX: number, clientY: number) {
     const svgElement = previewRef.current?.querySelector('svg')
-    if (!svgElement) {return null}
+    if (!svgElement) return null
     const rect = svgElement.getBoundingClientRect()
     const viewBox = svgElement.viewBox.baseVal
     if (
@@ -161,7 +157,7 @@ export function SignPreview() {
       || rect.height <= 0
       || viewBox.width <= 0
       || viewBox.height <= 0
-    ) {return null}
+    ) return null
 
     return {
       x: viewBox.x + (clientX - rect.left) / rect.width * viewBox.width,
@@ -171,7 +167,7 @@ export function SignPreview() {
 
   function previewPointFromClient(clientX: number, clientY: number) {
     const previewRect = previewRef.current?.getBoundingClientRect()
-    if (!previewRect) {return null}
+    if (!previewRect) return null
     return {
       x: clientX - previewRect.left,
       y: clientY - previewRect.top,
@@ -181,7 +177,7 @@ export function SignPreview() {
   function measurePointFromEvent(event: ReactPointerEvent<HTMLDivElement>) {
     const board = boardPositionFromClient(event.clientX, event.clientY)
     const point = previewPointFromClient(event.clientX, event.clientY)
-    if (!board || !point) {return null}
+    if (!board || !point) return null
     return {
       board,
       point,
@@ -193,7 +189,7 @@ export function SignPreview() {
     next: { board: BoardPosition; point: Offset },
     constrained: boolean,
   ) {
-    if (!constrained) {return next}
+    if (!constrained) return next
 
     const lockHorizontal
             = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
@@ -219,7 +215,7 @@ export function SignPreview() {
   }
 
   function updateBoardPosition(event: ReactPointerEvent<HTMLDivElement>) {
-    if (!showPosition && !showPixelMeasure) {return}
+    if (!showPosition && !showPixelMeasure) return
     const position = boardPositionFromClient(event.clientX, event.clientY)
     if (!position) {
       setBoardPosition(null)
@@ -229,11 +225,11 @@ export function SignPreview() {
   }
 
   function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    if (event.button !== 0) {return}
+    if (event.button !== 0) return
     event.preventDefault()
     if (showPixelMeasure) {
       const point = measurePointFromEvent(event)
-      if (!point) {return}
+      if (!point) return
       measuring.current = true
       setMeasurement({
         start: point.board,
@@ -257,9 +253,9 @@ export function SignPreview() {
     updateBoardPosition(event)
     if (measuring.current) {
       const point = measurePointFromEvent(event)
-      if (point) {
+      if (point)
         setMeasurement(current => {
-          if (!current) {return null}
+          if (!current) return null
           const next = constrainedMeasurePoint(current, point, event.shiftKey)
           return {
             ...current,
@@ -267,10 +263,10 @@ export function SignPreview() {
             endPoint: next.point,
           }
         })
-      }
+
       return
     }
-    if (!dragging.current) {return}
+    if (!dragging.current) return
     setOffset(current => ({
       x: current.x + event.clientX - lastPosition.current.x,
       y: current.y + event.clientY - lastPosition.current.y,
@@ -285,9 +281,8 @@ export function SignPreview() {
     dragging.current = false
     measuring.current = false
     setIsDragging(false)
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+    if (event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId)
-    }
   }
 
   const measureDelta = measurement ? {
@@ -420,13 +415,13 @@ class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoun
   }
 
   render() {
-    if (this.state.error) {
+    if (this.state.error)
       return (
         <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
           {this.state.error.message}
         </p>
       )
-    }
+
     return this.props.children
   }
 }

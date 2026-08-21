@@ -42,9 +42,9 @@ const SIGN_BADGE_BY_TEMPLATE: Partial<Record<SignTemplate, string>> = {
   'entrance-preview-two-directions': '入口',
 }
 export function signBadge(sign: Sign) {
-  if (sign.template === 'ordinary-road') {
+  if (sign.template === 'ordinary-road')
     return ORDINARY_ROAD_BADGE[sign.kind] ?? '国道'
-  }
+
   return SIGN_BADGE_BY_TEMPLATE[sign.template] ?? sign.code ?? 'G15'
 }
 
@@ -62,9 +62,9 @@ const SIGN_BADGE_VARIANT_BY_TEMPLATE: Partial<Record<SignTemplate, SignBadgeVari
   'expressway': 'expressway',
 }
 export function defaultSignBadgeVariant(sign: Sign) {
-  if (sign.template === 'ordinary-road') {
+  if (sign.template === 'ordinary-road')
     return ORDINARY_ROAD_VARIANT[sign.kind] ?? 'national'
-  }
+
   return SIGN_BADGE_VARIANT_BY_TEMPLATE[sign.template] ?? 'default'
 }
 
@@ -113,9 +113,9 @@ const SIGN_INFO_BY_TEMPLATE: Partial<Record<SignTemplate, (sign: Sign) => string
 }
 export function signInfo(sign: Sign) {
   const build = SIGN_INFO_BY_TEMPLATE[sign.template]
-  if (build) {
+  if (build)
     return build(sign)
-  }
+
   const left = `左区：${sign.leftDirection} ${sign.leftRoute} ${sign.exitName}`.trim()
   const right = `右区：${sign.rightDirection} ${sign.rightRoute} ${sign.exitDestination}`.trim()
   return [left, right].filter(Boolean)

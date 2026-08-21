@@ -116,7 +116,7 @@ const eslintConfig = defineConfig([
             // ===== 通用代码风格 =====
             "no-console": "off",
             eqeqeq: ["error", "always", { null: "ignore" }],
-            curly: ["error", "all"],
+            curly: ["error", "multi"],
             "prefer-const": "error",
             "no-var": "error",
             "object-shorthand": "error",

@@ -52,9 +52,9 @@ export function WithTooltip({
   side?: ComponentProps<typeof TooltipPrimitive.Content>['side']
   align?: ComponentProps<typeof TooltipPrimitive.Content>['align']
 }) {
-  if (!content) {
+  if (!content)
     return children
-  }
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>

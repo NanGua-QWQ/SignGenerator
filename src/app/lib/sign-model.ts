@@ -212,7 +212,7 @@ export function createSign(overrides: Partial<Sign> = {
 }
 
 export function restoreSign(value: unknown) {
-  if (!value || typeof value !== 'object') {return null}
+  if (!value || typeof value !== 'object') return null
 
   const raw = value as Partial<Sign>
   const normalized = normalizeSign(raw)
@@ -251,7 +251,7 @@ export function defaultOptionName(sign: Pick<Sign, 'template' | 'digits'>) {
 }
 
 function buildSignCode(kind: Sign['kind'], digits: string) {
-  if (isOrdinaryRoadKind(kind)) {return `${ORDINARY_ROAD_PREFIX[kind]}${digits}`}
+  if (isOrdinaryRoadKind(kind)) return `${ORDINARY_ROAD_PREFIX[kind]}${digits}`
   return `${kind === 'provincial' ? 'S' : 'G'}${digits}`
 }
 
@@ -264,24 +264,24 @@ function parseSignCode(value: string): {
     .trim()
     .toUpperCase()
   const national = /^G(\d{1,4})$/.exec(code)
-  if (national) {return {
+  if (national) return {
     kind: 'national',
     digits: national[1],
-  }}
+  }
 
   const provincial = /^S(\d{1,4})$/.exec(code)
-  if (provincial) {return {
+  if (provincial) return {
     kind: 'provincial',
     digits: provincial[1],
     provinceLabel: '粤',
-  }}
+  }
 
   const legacyProvincial = /^(.)(S(\d{1,4}))$/u.exec(code)
-  if (legacyProvincial) {return {
+  if (legacyProvincial) return {
     kind: 'provincial',
     digits: legacyProvincial[3],
     provinceLabel: legacyProvincial[1],
-  }}
+  }
 
   return {
     kind: 'national',

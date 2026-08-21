@@ -76,16 +76,15 @@ export interface SignsStorage {
 export function createSignsStorage(): SignsStorage {
   return {
     getItem(key, initialValue) {
-      if (typeof window === 'undefined') {return initialValue}
+      if (typeof window === 'undefined') return initialValue
 
       try {
         const raw = window.localStorage.getItem(key)
-        if (!raw) {return initialValue}
+        if (!raw) return initialValue
 
         const signs = JSON.parse(raw) as unknown
-        if (!Array.isArray(signs)) {
+        if (!Array.isArray(signs))
           return initialValue
-        }
 
         const restoredSigns = (signs as unknown[])
           .map(restoreSign)
@@ -96,7 +95,7 @@ export function createSignsStorage(): SignsStorage {
       }
     },
     setItem(key, value) {
-      if (typeof window === 'undefined') {return}
+      if (typeof window === 'undefined') return
 
       try {
         window.localStorage.setItem(
@@ -108,7 +107,7 @@ export function createSignsStorage(): SignsStorage {
       }
     },
     removeItem(key) {
-      if (typeof window === 'undefined') {return}
+      if (typeof window === 'undefined') return
 
       try {
         window.localStorage.removeItem(key)
@@ -405,6 +404,6 @@ function createInitialSign(id: string, overrides: Partial<Sign>) {
     id,
     ...overrides,
   })
-  if (!sign) {throw new Error(`无法创建默认标志：${id}`)}
+  if (!sign) throw new Error(`无法创建默认标志：${id}`)
   return sign
 }

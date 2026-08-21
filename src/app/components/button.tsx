@@ -51,13 +51,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     />
 
-  if (title) {
+  if (title)
     return (
       <WithTooltip content={title}>
         {button}
       </WithTooltip>
     )
-  }
 
   return button
 })

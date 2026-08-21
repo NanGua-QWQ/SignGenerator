@@ -130,7 +130,7 @@ export function PreviewToolbar() {
           className="size-7"
           onClick={() => {
             const svg = document.querySelector('svg[role="img"]')
-            if (!svg) { return }
+            if (!svg)  return
             const source = new XMLSerializer().serializeToString(svg)
             const blob = new Blob([source], {
               type: 'image/svg+xml;charset=utf-8',
