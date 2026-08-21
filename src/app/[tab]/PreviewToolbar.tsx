@@ -23,6 +23,8 @@ import {
   zoomScaleAtom,
 } from '@/state/preview-store'
 
+import ThemeToggle from './Header/ThemeToggle'
+
 export function PreviewToolbar({
   sign,
 }: { sign: Sign }) {
@@ -69,28 +71,31 @@ export function PreviewToolbar({
           <RotateCcw className="size-3.5" />
         </Button>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7"
-        onClick={() => {
-          const svg = document.querySelector('svg[role="img"]')
-          if (!svg) { return }
-          const source = new XMLSerializer().serializeToString(svg)
-          const blob = new Blob([source], {
-            type: 'image/svg+xml;charset=utf-8',
-          })
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `${signFilename(sign)}.svg`
-          a.click()
-          URL.revokeObjectURL(url)
-        }}
-        title="下载 SVG"
-      >
-        <Download className="size-3.5" />
-      </Button>
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7"
+          onClick={() => {
+            const svg = document.querySelector('svg[role="img"]')
+            if (!svg) { return }
+            const source = new XMLSerializer().serializeToString(svg)
+            const blob = new Blob([source], {
+              type: 'image/svg+xml;charset=utf-8',
+            })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${signFilename(sign)}.svg`
+            a.click()
+            URL.revokeObjectURL(url)
+          }}
+          title="下载 SVG"
+        >
+          <Download className="size-3.5" />
+        </Button>
+      </div>
     </div>
   )
 }

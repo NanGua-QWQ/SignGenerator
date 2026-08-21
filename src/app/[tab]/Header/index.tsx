@@ -4,7 +4,6 @@ import {
 
 import Link from 'next/link'
 
-import ThemeToggle from './ThemeToggle'
 import './Header.css'
 import TAB_TITLES from '../tab-meta.json'
 
@@ -55,7 +54,6 @@ export function Header({
             {TAB_TITLES[tab]}
           </Link>)}
         </div>
-        <ThemeToggle />
       </div>
     </header>
   )
