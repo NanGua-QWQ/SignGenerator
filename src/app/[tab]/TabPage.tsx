@@ -18,7 +18,8 @@ import {
 } from '@/state/use-sign-workspace'
 
 import {
-  Header, type WorkspaceTab,
+  Header,
+  type WorkspaceTab,
 } from './Header'
 import TAB_TITLES from './tab-meta.json'
 
@@ -47,7 +48,6 @@ export default function TabPage() {
             onSelect={workspace.selectSign}
             onAdd={workspace.addSign}
             addChoice={workspace.addChoice}
-            onDelete={workspace.deleteSign}
             onReorder={workspace.reorderSign}
           />
         </div>
@@ -56,6 +56,7 @@ export default function TabPage() {
           <SignSettings
             sign={workspace.selectedSign}
             onChange={workspace.updateSign}
+            onDelete={workspace.deleteSign}
             expresswaySignList={workspace.expresswaySignList}
           />
         </div>

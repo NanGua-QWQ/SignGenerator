@@ -3,9 +3,18 @@ import {
 } from 'react'
 
 import {
-  CircleQuestionMark,
+  CircleQuestionMark, Trash2,
 } from 'lucide-react'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/alert-dialog'
 import {
   Button,
 } from '@/components/button'
@@ -36,7 +45,9 @@ import {
   POPOVER_COLOR_OPTIONS,
 } from '../lib/popover-options'
 import {
+  deleteDialogTitle,
   signBadgeVariant,
+  signTitle,
 } from '../lib/sign-display'
 import {
   DIRECTION_OPTIONS,
@@ -47,6 +58,7 @@ import {
 interface SignSettingsProps {
   sign: Sign
   onChange: (updates: Partial<Sign>) => void
+  onDelete: (id: string) => void
   expresswaySignList?: Sign[]
 }
 
@@ -174,7 +186,7 @@ function ColorBadgePicker({
 }
 
 export function SignSettings({
-  sign, onChange, expresswaySignList = [],
+  sign, onChange, onDelete, expresswaySignList = [],
 }: SignSettingsProps) {
   const nameLimit = sign.template === 'expressway'
     ? sign.digits.length === 4 ? 6 : 4
@@ -364,17 +376,48 @@ export function SignSettings({
         <div className="flex flex-col gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="option-name">选项名称</Label>
-            <Input
-              id="option-name"
-              value={roadNameInput}
-              onChange={updateName}
-              onCompositionStart={() => {
-                composingRoadName.current = true
-              }}
-              onCompositionEnd={finishRoadNameComposition}
-              placeholder="例如：沈海高速"
-              className="h-9"
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                id="option-name"
+                value={roadNameInput}
+                onChange={updateName}
+                onCompositionStart={() => {
+                  composingRoadName.current = true
+                }}
+                onCompositionEnd={finishRoadNameComposition}
+                placeholder="例如：沈海高速"
+                className="h-9"
+              />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9 shrink-0 hover:text-destructive"
+                    title="删除此标志"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogTitle>{deleteDialogTitle(sign)}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    此操作不可撤销，删除后将无法恢复「{signTitle(sign)}」。
+                  </AlertDialogDescription>
+                  <div className="flex justify-end gap-2">
+                    <AlertDialogCancel className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm font-medium hover:bg-accent">
+                      取消
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-3 text-sm font-medium text-white hover:bg-destructive/90"
+                      onClick={() => onDelete(sign.id)}
+                    >
+                      删除
+                    </AlertDialogAction>
+                  </div>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
             <p className="text-xs text-muted-foreground">
               当前最多 {nameLimit} 个字。
             </p>
