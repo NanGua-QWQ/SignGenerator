@@ -5,8 +5,8 @@ import type {
   Sign, SignTemplate,
 } from '@/lib/types'
 
-const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
-const WORKSPACE_STORAGE_VERSION = 1
+export const SIGNS_STORAGE_KEY = 'signs'
+export const SELECTED_ID_STORAGE_KEY = 'selectedId'
 const DEFAULT_DIRECTION_GUIDANCE_SIGN = {
   template: 'direction-guidance',
   name: '分向指路标志',
@@ -62,54 +62,60 @@ const DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN = {
   entranceArrowDirection: 'front',
 } satisfies Partial<Sign>
 
-export interface WorkspaceState {
-  signs: Sign[]
-  selectedId: string
-}
-
-interface SavedWorkspace extends WorkspaceState {
-  version: typeof WORKSPACE_STORAGE_VERSION
-}
-
 export function getInitialWorkspace() {
   const fallbackSigns = getInitialSigns()
   return normalizeWorkspace(fallbackSigns, fallbackSigns[0].id)
 }
 
-export function loadSavedWorkspace() {
-  if (typeof window === 'undefined') {return null}
-  try {
-    const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
-    if (!raw) {return null}
-
-    const parsed = JSON.parse(raw) as Partial<SavedWorkspace>
-    if (parsed.version !== WORKSPACE_STORAGE_VERSION || !Array.isArray(parsed.signs)) {return null}
-
-    const restoredSigns = parsed.signs
-      .map(restoreSign)
-      .filter((sign): sign is Sign => Boolean(sign))
-    if (restoredSigns.length === 0) {return null}
-
-    return normalizeWorkspace(
-      restoredSigns,
-      typeof parsed.selectedId === 'string' ? parsed.selectedId : restoredSigns[0].id,
-    )
-  } catch {
-    return null
-  }
+export interface SignsStorage {
+  getItem(key: string, initialValue: Sign[]): Sign[]
+  setItem(key: string, value: Sign[]): void
+  removeItem(key: string): void
 }
 
-export function saveWorkspace(workspace: WorkspaceState) {
-  if (typeof window === 'undefined') {return}
+export function createSignsStorage(): SignsStorage {
+  return {
+    getItem(key, initialValue) {
+      if (typeof window === 'undefined') {return initialValue}
 
-  try {
-    const savedWorkspace: SavedWorkspace = {
-      version: WORKSPACE_STORAGE_VERSION,
-      ...workspace,
-    }
-    window.localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(savedWorkspace))
-  } catch {
-    // localStorage may be unavailable in private or restricted browser contexts.
+      try {
+        const raw = window.localStorage.getItem(key)
+        if (!raw) {return initialValue}
+
+        const signs = JSON.parse(raw) as unknown
+        if (!Array.isArray(signs)) {
+          return initialValue
+        }
+
+        const restoredSigns = (signs as unknown[])
+          .map(restoreSign)
+          .filter((sign): sign is Sign => Boolean(sign))
+        return restoredSigns.length > 0 ? restoredSigns : initialValue
+      } catch {
+        return initialValue
+      }
+    },
+    setItem(key, value) {
+      if (typeof window === 'undefined') {return}
+
+      try {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify(value),
+        )
+      } catch {
+        // localStorage may be unavailable in private or restricted browser contexts.
+      }
+    },
+    removeItem(key) {
+      if (typeof window === 'undefined') {return}
+
+      try {
+        window.localStorage.removeItem(key)
+      } catch {
+        // localStorage may be unavailable in private or restricted browser contexts.
+      }
+    },
   }
 }
 

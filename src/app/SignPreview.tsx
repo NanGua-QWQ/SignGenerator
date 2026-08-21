@@ -28,7 +28,6 @@ import {
 
 import {
   selectedSignAtom,
-  useWorkspacePersistence,
 } from './state/sign-workspace-store'
 
 interface Position {
@@ -46,7 +45,6 @@ interface Measurement {
 }
 
 export function SignPreview() {
-  useWorkspacePersistence()
   const sign = useAtomValue(selectedSignAtom)
   const scale = useAtomValue(scaleAtom)
   const zoomScale = useSetAtom(zoomScaleAtom)

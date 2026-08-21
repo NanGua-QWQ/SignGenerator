@@ -1,10 +1,9 @@
 import {
-  useEffect,
-} from 'react'
-
-import {
-  atom, useAtomValue, useSetAtom,
+  atom,
 } from 'jotai'
+import {
+  atomWithStorage,
+} from 'jotai/utils'
 
 import {
   createSign,
@@ -17,13 +16,25 @@ import type {
 } from '@/lib/types'
 
 import {
-  getInitialWorkspace, loadSavedWorkspace, saveWorkspace,
+  createSignsStorage,
+  getInitialWorkspace,
+  normalizeWorkspace,
+  SIGNS_STORAGE_KEY,
+  SELECTED_ID_STORAGE_KEY,
 } from './workspace-storage'
 
-const initial = getInitialWorkspace()
-export const signsAtom = atom<Sign[]>(initial.signs)
-export const selectedIdAtom = atom<string>(initial.selectedId)
-export const readyToSaveAtom = atom(false)
+const initialWorkspace = getInitialWorkspace()
+
+export const signsAtom = atomWithStorage<Sign[]>(
+  SIGNS_STORAGE_KEY,
+  initialWorkspace.signs,
+  createSignsStorage(),
+)
+
+export const selectedIdAtom = atomWithStorage<string>(
+  SELECTED_ID_STORAGE_KEY,
+  initialWorkspace.selectedId,
+)
 
 export const expresswaySignListAtom = atom(get =>
   get(signsAtom).filter(sign => sign.template === 'expressway'))
@@ -50,8 +61,9 @@ export const selectSignAtom = atom(
 export const initializeWorkspaceAtom = atom(
   null,
   (_get, set, state: { signs: Sign[]; selectedId: string }) => {
-    set(signsAtom, state.signs)
-    set(selectedIdAtom, state.selectedId)
+    const workspace = normalizeWorkspace(state.signs, state.selectedId)
+    set(signsAtom, workspace.signs)
+    set(selectedIdAtom, workspace.selectedId)
   },
 )
 
@@ -67,34 +79,33 @@ export const updateSelectedSignAtom = atom(
 
 export const addSignAtom = atom(
   null,
-  (_get, set, template?: SignTemplate) => {
+  (get, set, template?: SignTemplate) => {
     const sign = createSign({
       template: template ?? 'expressway',
     })
-    set(signsAtom, current => [...current, sign])
+    set(signsAtom, [...get(signsAtom), sign])
     set(selectedIdAtom, sign.id)
   },
 )
 
 export const updateSignByIdAtom = atom(
   null,
-  (_get, set, params: { id: string; updates: Partial<Sign> }) => {
-    set(signsAtom, current => updateSignAndReferences(current, params.id, params.updates))
+  (get, set, params: { id: string; updates: Partial<Sign> }) => {
+    set(signsAtom, updateSignAndReferences(get(signsAtom), params.id, params.updates))
   },
 )
 
 export const deleteSignAtom = atom(
   null,
   (get, set, id: string) => {
-    set(signsAtom, current => {
-      if (current.length <= 1) { return current }
+    const current = get(signsAtom)
+    if (current.length <= 1) { return }
 
-      const next = current.filter(sign => sign.id !== id)
-      if (id === get(effectiveSelectedIdAtom)) {
-        set(selectedIdAtom, next[0]?.id ?? '')
-      }
-      return next
-    })
+    const next = current.filter(sign => sign.id !== id)
+    if (id === get(effectiveSelectedIdAtom)) {
+      set(selectedIdAtom, next[0]?.id ?? '')
+    }
+    set(signsAtom, next)
   },
 )
 
@@ -179,35 +190,4 @@ function routeReferenceUpdates(side: 'left' | 'right', sign: Sign) {
     rightRouteProvinceLabel: sign.provinceLabel,
     rightRouteThreeDigitDescend: sign.threeDigitDescend,
   }
-}
-
-let persistenceInitialized = false
-
-export function useWorkspacePersistence() {
-  const signs = useAtomValue(signsAtom)
-  const selectedId = useAtomValue(selectedIdAtom)
-  const readyToSave = useAtomValue(readyToSaveAtom)
-  const setInitialize = useSetAtom(initializeWorkspaceAtom)
-  const setReadyToSave = useSetAtom(readyToSaveAtom)
-
-  useEffect(() => {
-    if (persistenceInitialized) { return }
-    persistenceInitialized = true
-
-    const savedWorkspace = loadSavedWorkspace()
-    if (savedWorkspace) {
-      setInitialize(savedWorkspace)
-    }
-    else {
-      setReadyToSave(true)
-    }
-  }, [setInitialize, setReadyToSave])
-
-  useEffect(() => {
-    if (!readyToSave) { return }
-    saveWorkspace({
-      signs,
-      selectedId,
-    })
-  }, [readyToSave, selectedId, signs])
 }

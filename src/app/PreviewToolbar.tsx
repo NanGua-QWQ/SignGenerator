@@ -35,11 +35,9 @@ import {
 
 import {
   selectedSignAtom,
-  useWorkspacePersistence,
 } from './state/sign-workspace-store'
 
 export function PreviewToolbar() {
-  useWorkspacePersistence()
   const sign = useAtomValue(selectedSignAtom)
   const [scale, setScale] = useAtom(scaleAtom)
   const zoomScale = useSetAtom(zoomScaleAtom)
