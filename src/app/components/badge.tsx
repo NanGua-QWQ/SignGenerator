@@ -6,7 +6,7 @@ import {
   cn,
 } from '@/lib/utils'
 
-const variants = {
+export const badgeVariants = {
   default:
     'bg-muted text-muted-foreground ring-1 ring-border dark:bg-muted dark:text-muted-foreground dark:ring-border',
   fork: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-950/35 dark:text-orange-300 dark:ring-orange-900/60',
@@ -33,7 +33,7 @@ const variants = {
 } as const
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: keyof typeof variants
+  variant?: keyof typeof badgeVariants
 }
 
 export function Badge({
@@ -43,7 +43,7 @@ export function Badge({
     <span
       className={cn(
         'inline-flex h-5 min-w-0 items-center justify-center rounded px-2 text-[11px] font-semibold leading-none tracking-normal',
-        variants[variant],
+        badgeVariants[variant],
         className,
       )}
       {...props}

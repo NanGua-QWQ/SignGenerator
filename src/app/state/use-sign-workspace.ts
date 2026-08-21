@@ -60,7 +60,7 @@ export function useSignWorkspace(tab: WorkspaceTab) {
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    if (!readyToSave) {return}
+    if (!readyToSave) { return }
     saveWorkspace({
       signs,
       selectedId,
@@ -96,7 +96,7 @@ export function useSignWorkspace(tab: WorkspaceTab) {
         if (
           !target
           || current.filter(sign => sign.template === target.template).length === 1
-        ) {return current}
+        ) { return current }
 
         const next = current.filter(sign => sign.id !== id)
         if (id === effectiveSelectedId) {
@@ -118,11 +118,11 @@ export function useSignWorkspace(tab: WorkspaceTab) {
           id === targetId
           || !signsForTab.some(sign => sign.id === id)
           || !signsForTab.some(sign => sign.id === targetId)
-        ) {return current}
+        ) { return current }
 
         const sourceIndex = current.findIndex(sign => sign.id === id)
         const targetIndex = current.findIndex(sign => sign.id === targetId)
-        if (sourceIndex < 0 || targetIndex < 0) {return current}
+        if (sourceIndex < 0 || targetIndex < 0) { return current }
 
         const next = [...current]
         const [movedSign] = next.splice(sourceIndex, 1)
@@ -139,7 +139,10 @@ export function useSignWorkspace(tab: WorkspaceTab) {
     [tab],
   )
 
-  const addChoices = [{ value: tab, label: TAB_TITLES_MAP[tab] }]
+  const addChoices = [{
+    value: tab,
+    label: TAB_TITLES_MAP[tab],
+  }]
   const signListTitle = TAB_TITLES_MAP[tab]
 
   return {
@@ -160,7 +163,7 @@ export function useSignWorkspace(tab: WorkspaceTab) {
 
 function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sign>) {
   const previous = signs.find(sign => sign.id === id)
-  if (!previous) {return signs}
+  if (!previous) { return signs }
 
   const updated = normalizeUpdatedSign(previous, updates)
   const nextSigns = signs.map(sign => sign.id === id ? updated : sign)
@@ -168,13 +171,13 @@ function updateSignAndReferences(signs: Sign[], id: string, updates: Partial<Sig
     previous.template !== 'expressway'
     || updated.template !== 'expressway'
     || !isExpresswayKind(updated.kind)
-  ) {return nextSigns}
+  ) { return nextSigns }
 
   return nextSigns.map(sign => syncForkRouteReference(sign, previous, updated))
 }
 
 function syncForkRouteReference(sign: Sign, previous: Sign, updated: Sign) {
-  if (!isForkTemplate(sign.template)) {return sign}
+  if (!isForkTemplate(sign.template)) { return sign }
 
   const updates: Partial<Sign> = {
   }

@@ -89,7 +89,7 @@ export function SignPreview({
       passive: false,
     })
     return () => preview.removeEventListener('wheel', handleWheel)
-  }, [])
+  }, [zoomScale])
 
   useEffect(() => {
     const eventName = 'sign-preview-position-toggle'

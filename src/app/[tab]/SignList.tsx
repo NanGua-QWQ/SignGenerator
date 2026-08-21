@@ -1,5 +1,5 @@
 import {
-  useState, type DragEvent, type MouseEvent,
+  useState, type DragEvent,
 } from 'react'
 
 import {
@@ -31,9 +31,6 @@ import type {
 } from '@/lib/types'
 
 import {
-  SignListDialogEditor, SignListPopoverEditor,
-} from './SignListEditor'
-import {
   deleteDialogTitle,
   isForkSign,
   signBadge,
@@ -56,7 +53,6 @@ interface SignListProps {
   addChoices?: AddChoice[]
   onDelete: (id: string) => void
   onReorder?: (id: string, targetId: string, position: 'before' | 'after') => void
-  onUpdate?: (id: string, updates: Partial<Sign>) => void
 }
 
 const SIGN_DRAG_TYPE = 'application/x-sign-id'
@@ -70,18 +66,11 @@ export function SignList({
   addChoices = [],
   onDelete,
   onReorder,
-  onUpdate,
 }: SignListProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(
     null,
   )
-  const [popoverEditor, setPopoverEditor] = useState<{ id: string; x: number; y: number } | null>(
-    null,
-  )
-  const [dialogEditorId, setDialogEditorId] = useState<string | null>(null)
-  const popoverSign = signs.find(sign => sign.id === popoverEditor?.id)
-  const dialogSign = signs.find(sign => sign.id === dialogEditorId)
   const actionButtonClass
     = 'flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent-foreground/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-30'
   const deleteButton = (sign: Sign, onClick?: () => void) => <button
@@ -124,15 +113,8 @@ export function SignList({
     setDraggingId(null)
     setDropTarget(null)
   }
-  function openEditor(event: MouseEvent<HTMLDivElement>, sign: Sign) {
-    if (!onUpdate) {return}
-    event.preventDefault()
+  function selectOnly(sign: Sign) {
     onSelect(sign.id)
-    setPopoverEditor({
-      id: sign.id,
-      x: Math.min(event.clientX, window.innerWidth - 340),
-      y: Math.min(event.clientY, window.innerHeight - 440),
-    })
   }
 
   return (
@@ -198,7 +180,10 @@ export function SignList({
                   draggingId === sign.id ? 'opacity-50' : '',
                   stateClass,
                 ].join(' ')}
-                onContextMenu={event => openEditor(event, sign)}
+                onContextMenu={(event) => {
+                  event.preventDefault()
+                  selectOnly(sign)
+                }}
                 onDragOver={event => overSign(event, sign)}
                 onDrop={event => dropSign(event, sign)}
               >
@@ -260,29 +245,6 @@ export function SignList({
             )
           })}
         </div>
-        {popoverSign && popoverEditor && onUpdate
-          && <SignListPopoverEditor
-            key={popoverSign.id}
-            sign={popoverSign}
-            x={popoverEditor.x}
-            y={popoverEditor.y}
-            onChange={updates => onUpdate(popoverSign.id, updates)}
-            onClose={() => setPopoverEditor(null)}
-            onOpenDialog={() => {
-              setDialogEditorId(popoverSign.id)
-              setPopoverEditor(null)
-            }}
-          />
-        }
-        {dialogSign && onUpdate
-          && <SignListDialogEditor
-            key={dialogSign.id}
-            sign={dialogSign}
-            open={Boolean(dialogSign)}
-            onChange={updates => onUpdate(dialogSign.id, updates)}
-            onClose={() => setDialogEditorId(null)}
-          />
-        }
       </div>
     </aside>
   )

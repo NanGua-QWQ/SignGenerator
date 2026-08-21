@@ -50,7 +50,6 @@ export default function TabPage() {
             addChoices={workspace.addChoices}
             onDelete={workspace.deleteSign}
             onReorder={workspace.reorderSign}
-            onUpdate={workspace.updateSignById}
           />
         </div>
         <SignPreview sign={workspace.selectedSign} />

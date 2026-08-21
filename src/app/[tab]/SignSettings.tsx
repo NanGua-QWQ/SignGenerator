@@ -30,7 +30,13 @@ import {
   PreviewToolbar,
 } from './PreviewToolbar'
 import {
-  signTitle,
+  badgeVariants,
+} from '../components/badge'
+import {
+  POPOVER_COLOR_OPTIONS,
+} from '../lib/popover-options'
+import {
+  signBadgeVariant,
 } from '../lib/sign-display'
 import {
   DIRECTION_OPTIONS,
@@ -135,10 +141,45 @@ function routeMetadata(sign: Sign | undefined) {
   }
 }
 
+function ColorBadgePicker({
+  sign,
+  value,
+  onChange,
+}: {
+  sign: Sign
+  value: Sign['popoverColor']
+  onChange: (color: Sign['popoverColor']) => void
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-1.5">
+      {POPOVER_COLOR_OPTIONS.map((option) => {
+        const active = value === option.value
+        const variant = option.value === 'slate' ? signBadgeVariant(sign) : option.value
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => {
+              onChange(option.value)
+            }}
+            className={`relative flex h-12 items-center justify-center rounded-md border-2 transition-colors ${badgeVariants[variant]} ${active ? 'border-primary' : 'border-transparent'}`}
+          >
+            {active && <span className="absolute right-1 top-1 size-2 rounded-full bg-current" />}
+            <span className="text-xs">{option.label}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export function SignSettings({
   sign, onChange, expresswaySignList = [],
 }: SignSettingsProps) {
-  const nameLimit = sign.digits.length === 4 ? 6 : 4
+  const nameLimit = sign.template === 'expressway'
+    ? sign.digits.length === 4 ? 6 : 4
+    : 10
+
   const composingRoadName = useRef(false)
   const composingExitField = useRef<'name' | 'destination' | null>(null)
   const [roadDigitsInput, setRoadDigitsInput] = useState(sign.digits)
@@ -316,16 +357,40 @@ export function SignSettings({
       provinceLabel: kind === 'provincial' ? sign.provinceLabel || '粤' : '',
     })
   }
-
-  const settingName = `${signTitle(sign)}设置`
   return (
     <aside className="h-full overflow-y-auto border-l bg-background max-lg:border-l-0 max-lg:border-t">
       <PreviewToolbar sign={sign} />
       <div className="p-4">
-        <h2 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          {settingName}
-        </h2>
         <div className="flex flex-col gap-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="option-name">选项名称</Label>
+            <Input
+              id="option-name"
+              value={roadNameInput}
+              onChange={updateName}
+              onCompositionStart={() => {
+                composingRoadName.current = true
+              }}
+              onCompositionEnd={finishRoadNameComposition}
+              placeholder="例如：沈海高速"
+              className="h-9"
+            />
+            <p className="text-xs text-muted-foreground">
+              当前最多 {nameLimit} 个字。
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <Label>颜色</Label>
+            <ColorBadgePicker
+              sign={sign}
+              value={sign.popoverColor}
+              onChange={(popoverColor) => {
+                onChange({
+                  popoverColor,
+                })
+              }}
+            />
+          </div>
           {sign.template === 'expressway' ? <>
             <div className="space-y-1.5">
               <Label>高速类型</Label>
@@ -405,23 +470,6 @@ export function SignSettings({
               >
                 {roadDigitsError ? <span className="text-destructive">{roadDigitsError}</span> : '只输入数字，支持 1-4 位编号。'
                 }
-              </p>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="road-name">高速名称</Label>
-              <Input
-                id="road-name"
-                value={roadNameInput}
-                onChange={updateName}
-                onCompositionStart={() => {
-                  composingRoadName.current = true
-                }}
-                onCompositionEnd={finishRoadNameComposition}
-                placeholder="例如：沈海高速"
-                className="h-9"
-              />
-              <p className="text-xs text-muted-foreground">
-                当前最多 {nameLimit} 个字，留空则生成不含路名的编号牌。
               </p>
             </div>
           </> : sign.template === 'ordinary-road' ? <>
