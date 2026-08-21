@@ -1,9 +1,12 @@
 'use client'
 
 import {
-  useState, type DragEvent,
+  useCallback, useState, type DragEvent,
 } from 'react'
 
+import {
+  useAtomValue, useSetAtom,
+} from 'jotai'
 import {
   GripVertical,
 } from 'lucide-react'
@@ -22,18 +25,29 @@ import type {
   Sign,
 } from '@/lib/types'
 import {
-  useSignWorkspace,
-} from '@/state/use-sign-workspace'
+  effectiveSelectedIdAtom,
+  reorderSignAtom,
+  selectSignAtom,
+  visibleSignsAtom,
+} from '@/state/sign-workspace-store'
 
 const SIGN_DRAG_TYPE = 'application/x-sign-id'
 
 export default function SignList() {
-  const {
-    signs,
-    selectedId,
-    selectId: onSelect,
-    reorderSign: onReorder,
-  } = useSignWorkspace()
+  const signs = useAtomValue(visibleSignsAtom)
+  const selectedId = useAtomValue(effectiveSelectedIdAtom)
+  const onSelect = useSetAtom(selectSignAtom)
+  const setReorderSign = useSetAtom(reorderSignAtom)
+  const onReorder = useCallback(
+    (id: string, targetId: string, position: 'before' | 'after') => {
+      setReorderSign({
+        id,
+        targetId,
+        position,
+      })
+    },
+    [setReorderSign],
+  )
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'before' | 'after' } | null>(
     null,
@@ -44,7 +58,6 @@ export default function SignList() {
     return event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
   }
   function startDrag(event: DragEvent<HTMLButtonElement>, sign: Sign) {
-    if (!onReorder) { return }
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData(SIGN_DRAG_TYPE, sign.id)
     setDraggingId(sign.id)

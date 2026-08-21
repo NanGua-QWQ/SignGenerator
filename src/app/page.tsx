@@ -5,6 +5,9 @@ import {
 } from 'react'
 
 import {
+  useAtomValue, useSetAtom,
+} from 'jotai'
+import {
   CircleQuestionMark, Trash2,
 } from 'lucide-react'
 
@@ -54,8 +57,11 @@ import type {
 } from '@/lib/types'
 
 import {
-  useSignWorkspace,
-} from './state/use-sign-workspace'
+  deleteSignAtom,
+  expresswaySignListAtom,
+  selectedSignAtom,
+  updateSelectedSignAtom,
+} from './state/sign-workspace-store'
 
 function DirectionSelect({
   id,
@@ -186,12 +192,10 @@ function ColorBadgePicker({
           expresswaySignList={workspace.expresswaySignList}
            */
 export default function SignSettings() {
-  const {
-    selectedSign: sign,
-    updateSign: onChange,
-    deleteSign: onDelete,
-    expresswaySignList,
-  } = useSignWorkspace()
+  const sign = useAtomValue(selectedSignAtom)
+  const onChange = useSetAtom(updateSelectedSignAtom)
+  const onDelete = useSetAtom(deleteSignAtom)
+  const expresswaySignList = useAtomValue(expresswaySignListAtom)
   const nameLimit = sign.template === 'expressway'
     ? sign.digits.length === 4 ? 6 : 4
     : 10

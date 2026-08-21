@@ -1,5 +1,9 @@
 import {
-  atom,
+  useEffect,
+} from 'react'
+
+import {
+  atom, useAtomValue, useSetAtom,
 } from 'jotai'
 
 import {
@@ -13,7 +17,7 @@ import type {
 } from '@/lib/types'
 
 import {
-  getInitialWorkspace,
+  getInitialWorkspace, loadSavedWorkspace, saveWorkspace,
 } from './workspace-storage'
 
 const initial = getInitialWorkspace()
@@ -35,6 +39,31 @@ export const selectedSignAtom = atom(get => {
   const id = get(effectiveSelectedIdAtom)
   return signs.find(sign => sign.id === id) ?? signs[0]
 })
+
+export const visibleSignsAtom = atom(get => get(signsAtom))
+
+export const selectSignAtom = atom(
+  null,
+  (_get, set, id: string) => set(selectedIdAtom, id),
+)
+
+export const initializeWorkspaceAtom = atom(
+  null,
+  (_get, set, state: { signs: Sign[]; selectedId: string }) => {
+    set(signsAtom, state.signs)
+    set(selectedIdAtom, state.selectedId)
+  },
+)
+
+export const updateSelectedSignAtom = atom(
+  null,
+  (get, set, updates: Partial<Sign>) => {
+    set(updateSignByIdAtom, {
+      id: get(effectiveSelectedIdAtom),
+      updates,
+    })
+  },
+)
 
 export const addSignAtom = atom(
   null,
@@ -150,4 +179,35 @@ function routeReferenceUpdates(side: 'left' | 'right', sign: Sign) {
     rightRouteProvinceLabel: sign.provinceLabel,
     rightRouteThreeDigitDescend: sign.threeDigitDescend,
   }
+}
+
+let persistenceInitialized = false
+
+export function useWorkspacePersistence() {
+  const signs = useAtomValue(signsAtom)
+  const selectedId = useAtomValue(selectedIdAtom)
+  const readyToSave = useAtomValue(readyToSaveAtom)
+  const setInitialize = useSetAtom(initializeWorkspaceAtom)
+  const setReadyToSave = useSetAtom(readyToSaveAtom)
+
+  useEffect(() => {
+    if (persistenceInitialized) { return }
+    persistenceInitialized = true
+
+    const savedWorkspace = loadSavedWorkspace()
+    if (savedWorkspace) {
+      setInitialize(savedWorkspace)
+    }
+    else {
+      setReadyToSave(true)
+    }
+  }, [setInitialize, setReadyToSave])
+
+  useEffect(() => {
+    if (!readyToSave) { return }
+    saveWorkspace({
+      signs,
+      selectedId,
+    })
+  }, [readyToSave, selectedId, signs])
 }

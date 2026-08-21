@@ -1,6 +1,9 @@
 'use client'
 
 import {
+  useSetAtom,
+} from 'jotai'
+import {
   useRouter,
 } from 'next/navigation'
 
@@ -9,13 +12,11 @@ import {
   TEMPLATE_TITLES,
 } from '@/lib/sign-model'
 import {
-  useSignWorkspace,
-} from '@/state/use-sign-workspace'
+  addSignAtom,
+} from '@/state/sign-workspace-store'
 
 export default function NewSignPage() {
-  const {
-    addSign,
-  } = useSignWorkspace()
+  const addSign = useSetAtom(addSignAtom)
   const router = useRouter()
 
   const handleSelect = (template: (typeof ALL_TEMPLATES)[number]) => {

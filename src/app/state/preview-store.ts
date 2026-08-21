@@ -16,7 +16,7 @@ export const offsetAtom = atom<PreviewOffset>({
 })
 export const zoomScaleAtom = atom(
   null,
-  (get, set, update: number) => set(scaleAtom, prev => Math.min(
+  (_get, set, update: number) => set(scaleAtom, prev => Math.min(
     MAX_SCALE,
     Math.max(
       MIN_SCALE,
