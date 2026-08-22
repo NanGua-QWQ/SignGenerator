@@ -1,3 +1,7 @@
+import type {
+  ReactNode,
+} from 'react'
+
 import {
   TooltipProvider,
 } from '@/components/tooltip'
@@ -55,7 +59,7 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>

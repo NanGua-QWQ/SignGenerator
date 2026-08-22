@@ -13,7 +13,7 @@ export type FontKey = keyof typeof FONT_URLS
 
 const fontCache = new Map<FontKey, Promise<Font>>()
 interface FontkitModule {
-  create(buffer: Uint8Array): Font
+  create(_buffer: Uint8Array): Font
 }
 let fontkitPromise: Promise<{ default: FontkitModule }> | undefined
 
