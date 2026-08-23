@@ -29,6 +29,10 @@ import {
 import {
   selectedSignAtom,
 } from './state/sign-workspace-store'
+import {
+  useFontError,
+  useFontsReady,
+} from './fonts/FontContext'
 
 interface Position {
     x: number
@@ -46,6 +50,8 @@ interface Measurement {
 
 export function SignPreview() {
   const sign = useAtomValue(selectedSignAtom)
+  const fontsReady = useFontsReady()
+  const fontError = useFontError()
   const scale = useAtomValue(scaleAtom)
   const zoomScale = useSetAtom(zoomScaleAtom)
   const [offset, setOffset] = useAtom(offsetAtom)
@@ -328,16 +334,21 @@ export function SignPreview() {
                       {measurement && <PixelMeasureOverlay measurement={measurement} />}
                     </>
         }
-        <SignErrorBoundary key={previewResetKey}>
-          <div
-            className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
-            style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-            }}
-          >
-            <SignSvg sign={sign} />
-          </div>
-        </SignErrorBoundary>
+        {fontsReady
+                    ? <SignErrorBoundary key={previewResetKey}>
+                        <div
+                          className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
+                          style={{
+                            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+                          }}
+                        >
+                          <SignSvg sign={sign} />
+                        </div>
+                      </SignErrorBoundary>
+                    : <div className="flex min-w-0 max-w-137.5 w-full items-center justify-center rounded-md border border-dashed border-border bg-background/50 px-6 py-12 text-sm text-muted-foreground">
+                        {fontError ? `字体加载失败：${fontError}` : '正在加载字体…'}
+                      </div>
+        }
       </div>
     </section>
   )

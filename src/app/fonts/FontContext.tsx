@@ -17,24 +17,43 @@ import type {
   Font,
 } from '@pdf-lib/fontkit'
 
-const FontContext = createContext<FontBuffers | null>(null)
+interface FontContextValue {
+    buffers: FontBuffers | null
+    error: string | null
+}
+
+const FontContext = createContext<FontContextValue>({
+  buffers: null,
+  error: null,
+})
 
 const fontInstances = new Map<FontKey, Font>()
 
 export function FontProvider({
   buffers,
+  error = null,
   children,
-}: { buffers: FontBuffers; children: ReactNode }) {
+}: { buffers: FontBuffers | null; error?: string | null; children: ReactNode }) {
   return (
-    <FontContext value={buffers}>
+    <FontContext value={{ buffers, error }}>
       {children}
     </FontContext>
   )
 }
 
+export function useFontsReady() {
+  const { buffers } = use(FontContext)
+  return buffers !== null
+}
+
+export function useFontError() {
+  const { error } = use(FontContext)
+  return error
+}
+
 export function useFont(kind: FontKey) {
-  const buffers = use(FontContext)
-  if (!buffers) throw new Error('useFont 必须在 FontProvider 内使用')
+  const { buffers } = use(FontContext)
+  if (!buffers) throw new Error('useFont 必须在字体加载完成后使用')
   const cached = fontInstances.get(kind)
   if (cached) return cached
   const buffer = buffers[kind]

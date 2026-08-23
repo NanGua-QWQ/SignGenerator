@@ -71,7 +71,6 @@ const ROAD_CONFIG: Record<OrdinaryRoadKind, OrdinaryRoadConfig> = {
 }
 
 const cleanDigits = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 3) || '105'
@@ -106,36 +105,35 @@ function OrdinaryRoadNode({
       role="img"
       aria-label={`${code} ${config.label}标识牌`}
     >
-      <rect
-        x={0}
-        y={0}
-        width={WIDTH}
-        height={HEIGHT}
-        rx={OUTER_RADIUS}
-        fill={config.fill}
+      <g
         stroke="none"
         strokeMiterlimit={10}
-      />
-      <rect
-        x={MIDDLE_INSET_X}
-        y={MIDDLE_INSET_Y}
-        width={MIDDLE_WIDTH}
-        height={MIDDLE_HEIGHT}
-        rx={MIDDLE_RADIUS}
-        fill={config.border}
-        stroke="none"
-        strokeMiterlimit={10}
-      />
-      <rect
-        x={INNER_INSET_X}
-        y={INNER_INSET_Y}
-        width={INNER_WIDTH}
-        height={INNER_HEIGHT}
-        rx={INNER_RADIUS}
-        fill={config.fill}
-        stroke="none"
-        strokeMiterlimit={10}
-      />
+      >
+        <rect
+          x={0}
+          y={0}
+          width={WIDTH}
+          height={HEIGHT}
+          rx={OUTER_RADIUS}
+          fill={config.fill}
+        />
+        <rect
+          x={MIDDLE_INSET_X}
+          y={MIDDLE_INSET_Y}
+          width={MIDDLE_WIDTH}
+          height={MIDDLE_HEIGHT}
+          rx={MIDDLE_RADIUS}
+          fill={config.border}
+        />
+        <rect
+          x={INNER_INSET_X}
+          y={INNER_INSET_Y}
+          width={INNER_WIDTH}
+          height={INNER_HEIGHT}
+          rx={INNER_RADIUS}
+          fill={config.fill}
+        />
+      </g>
 
       <OutlinedText
         font={fontLatin}

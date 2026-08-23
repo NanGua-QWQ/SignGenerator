@@ -49,7 +49,10 @@ export function PreviewToolbar() {
   const zoomScale = useSetAtom(zoomScaleAtom)
   const setOffset = useSetAtom(offsetAtom)
   const pathname = usePathname()
-  const { setTheme, resolvedTheme } = useTheme()
+  const {
+    setTheme,
+    resolvedTheme
+  } = useTheme()
 
   return (
     <div className="flex items-center gap-1 h-11 shrink-0 items-center justify-between border-b bg-background px-3">
@@ -147,7 +150,7 @@ export function PreviewToolbar() {
             className="size-7"
             onClick={() => {
               const svg = document.querySelector('svg[role="img"]')
-              if (!svg)  return
+              if (!svg) return
               const source = new XMLSerializer().serializeToString(svg)
               const blob = new Blob([source], {
                 type: 'image/svg+xml;charset=utf-8',

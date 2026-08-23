@@ -92,20 +92,17 @@ export function cleanExitText(value: string, fallback: string, limit: number) {
 }
 
 export const cleanExitDistance = (value: string) =>
-
   String(value || '')
     .replace(/[^\d.]/g, '')
     .replace(/(\..*)\./g, '$1')
     .slice(0, 1) || ' '
 
 export const cleanEntranceDistance = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '500'
 
 export const cleanExitRoute = (value: string, fallback: string) =>
-
   String(value || '')
     .trim()
     .toUpperCase()
@@ -154,7 +151,6 @@ export const cleanExitNumber = (value: string) =>
     .slice(0, 4)
 
 export const cleanRoute = (value: string, fallback: string) =>
-
   String(value || '')
     .trim()
     .toUpperCase()

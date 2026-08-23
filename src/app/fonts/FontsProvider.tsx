@@ -17,6 +17,7 @@ export function FontsProvider({
   children,
 }: { children: ReactNode }) {
   const [buffers, setBuffers] = useState<FontBuffers | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -26,17 +27,16 @@ export function FontsProvider({
       })
       .catch(error => {
         console.error(error)
+        if (!cancelled)
+          setError(error instanceof Error ? error.message : '字体加载失败')
       })
     return () => {
       cancelled = true
     }
   }, [])
 
-  if (!buffers)
-    return null
-
   return (
-    <FontProvider buffers={buffers}>
+    <FontProvider buffers={buffers} error={error}>
       {children}
     </FontProvider>
   )
