@@ -20,6 +20,12 @@ import Link from 'next/link'
 import {
   usePathname,
 } from 'next/navigation'
+import {
+  useTheme,
+} from 'next-themes'
+import {
+  Tooltip,
+} from '@radix-ui/themes'
 
 import {
   Button,
@@ -43,109 +49,120 @@ export function PreviewToolbar() {
   const zoomScale = useSetAtom(zoomScaleAtom)
   const setOffset = useSetAtom(offsetAtom)
   const pathname = usePathname()
+  const { setTheme, resolvedTheme } = useTheme()
 
   return (
     <div className="flex items-center gap-1 h-11 shrink-0 items-center justify-between border-b bg-background px-3">
-      <div className="flex">
-        {pathname !== '/' && <Link href="/">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            title="已创建的标牌"
-          >
-            <ArrowLeft className="size-3.5" />
-          </Button>
-        </Link>}
-        {pathname !== '/created' && <Link href="/created">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            title="已创建的标牌"
-          >
-            <Folder className="size-3.5" />
-          </Button>
-        </Link>}
-        {pathname !== '/new' && <Link href="/new">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            title="创建新标牌"
-          >
-            <Plus className="size-3.5" />
-          </Button>
-        </Link>}
+      <div className="flex items-center gap-1">
+        {pathname !== '/' && <Tooltip content="已创建的标牌">
+          <Link href="/" className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+            >
+              <ArrowLeft className="size-4" />
+            </Button>
+          </Link>
+        </Tooltip>}
+        {pathname !== '/created' && <Tooltip content="已创建的标牌">
+          <Link href="/created" className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+            >
+              <Folder className="size-4" />
+            </Button>
+          </Link>
+        </Tooltip>}
+        {pathname !== '/new' && <Tooltip content="创建新标牌">
+          <Link href="/new" className="flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+            >
+              <Plus className="size-4" />
+            </Button>
+          </Link>
+        </Tooltip>}
       </div>
-      <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={() => zoomScale(0.8)}
-          title="缩小"
-        >
-          <ZoomOut className="size-3.5" />
-        </Button>
+      <div className="flex items-center gap-1">
+        <Tooltip content="缩小">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => zoomScale(0.8)}
+          >
+            <ZoomOut className="size-4" />
+          </Button>
+        </Tooltip>
         <output className="w-11 text-center text-xs tabular-nums text-muted-foreground">
           {Math.round(scale * 100)}%
         </output>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={() => zoomScale(1.25)}
-          title="放大"
-        >
-          <ZoomIn className="size-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={() => {
-            setScale(1)
-            setOffset({
-              x: 0, y: 0,
-            })
-          }}
-          title="复位"
-        >
-          <RotateCcw className="size-3.5" />
-        </Button>
+        <Tooltip content="放大">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => zoomScale(1.25)}
+          >
+            <ZoomIn className="size-4" />
+          </Button>
+        </Tooltip>
+        <Tooltip content="复位">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => {
+              setScale(1)
+              setOffset({
+                x: 0, y: 0,
+              })
+            }}
+          >
+            <RotateCcw className="size-4" />
+          </Button>
+        </Tooltip>
       </div>
-      <div className="flex">
-        <Button variant="ghost" size="icon" onClick={() => {
-          window.darkmode.real = !window.darkmode.real
-          window.darkmode.apply()
-        }} title="切换主题" aria-label="切换主题" className="size-7">
-          <Sun className="size-3.5 scale-100 transition-all dark:scale-0" />
-          <Moon className="size-3.5 scale-0 transition-all dark:scale-100" />
-          <span className="sr-only">切换颜色主题</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={() => {
-            const svg = document.querySelector('svg[role="img"]')
-            if (!svg)  return
-            const source = new XMLSerializer().serializeToString(svg)
-            const blob = new Blob([source], {
-              type: 'image/svg+xml;charset=utf-8',
-            })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `${signFilename(sign)}.svg`
-            a.click()
-            URL.revokeObjectURL(url)
-          }}
-          title="下载 SVG"
-        >
-          <Download className="size-3.5" />
-        </Button>
+      <div className="flex items-center gap-1">
+        <Tooltip content="切换主题">
+          <Button variant="ghost" size="icon" onClick={() => {
+            setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+          }} aria-label="切换主题" className="size-7">
+            <span className="relative grid place-items-center">
+              <Sun className="col-start-1 row-start-1 size-5 scale-100 transition-all dark:scale-0" />
+              <Moon className="col-start-1 row-start-1 size-5 scale-0 transition-all dark:scale-100" />
+            </span>
+            <span className="sr-only">切换颜色主题</span>
+          </Button>
+        </Tooltip>
+        <Tooltip content="下载 SVG">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => {
+              const svg = document.querySelector('svg[role="img"]')
+              if (!svg)  return
+              const source = new XMLSerializer().serializeToString(svg)
+              const blob = new Blob([source], {
+                type: 'image/svg+xml;charset=utf-8',
+              })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = `${signFilename(sign)}.svg`
+              a.click()
+              URL.revokeObjectURL(url)
+            }}
+          >
+            <Download className="size-4" />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   )

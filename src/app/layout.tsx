@@ -1,23 +1,12 @@
 import type {
   ReactNode,
 } from 'react'
-
-import {
-  TooltipProvider,
-} from '@/components/tooltip'
-import {
-  FontsProvider,
-} from '@/fonts/FontsProvider'
-
-// @ts-expect-error 导入它本身而不是作为模块
-import applyDarkmode from './applyDarkmode.raw.ts'
-import WorkspacePage from './WorkspacePage'
-
-import type {
-  Metadata,
-  Viewport,
-} from 'next'
+import ThemeProvider from './theme-provider'
 import './globals.css'
+import type {
+  Metadata, Viewport,
+} from 'next'
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://sign-generator.example.com'),
   title: {
@@ -56,6 +45,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
 }
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,21 +53,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: applyDarkmode,
-          }}
-        />
-      </head>
-      <body className="flex h-dvh flex-col bg-background">
-        <FontsProvider>
-          <TooltipProvider delayDuration={300}>
-            <WorkspacePage>
-              {children}
-            </WorkspacePage>
-          </TooltipProvider>
-        </FontsProvider>
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

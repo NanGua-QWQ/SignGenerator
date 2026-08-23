@@ -1,33 +1,25 @@
-import type {
-  ButtonHTMLAttributes,
-} from 'react'
 import {
   forwardRef,
 } from 'react'
+import type {
+  ButtonHTMLAttributes,
+} from 'react'
 
 import {
-  WithTooltip,
-} from '@/components/tooltip'
-import {
-  cn,
-} from '@/lib/utils'
+  Button as ThemeButton,
+} from '@radix-ui/themes'
 
-const variants = {
-  default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-  ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-} as const
-
-const sizes = {
-  default: 'h-9 px-4 py-2',
-  icon: 'size-9',
-} as const
-
-type ButtonVariant = keyof typeof variants
-type ButtonSize = keyof typeof sizes
+type ButtonVariant = 'default' | 'ghost'
+type ButtonSize = 'default' | 'icon'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
+}
+
+const variantMap: Record<ButtonVariant, 'solid' | 'ghost'> = {
+  default: 'solid',
+  ghost: 'ghost',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
@@ -35,28 +27,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   variant = 'default',
   size = 'default',
   type = 'button',
-  title,
   ...props
 }, ref) {
-  const button =
-    <button
+  return (
+    <ThemeButton
       ref={ref}
       type={type}
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors outline-none disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-3 focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:shrink-0',
-        variants[variant],
-        sizes[size],
-        className,
-      )}
-      {...props}
+      variant={variantMap[variant]}
+      size={size === 'icon' ? '1' : '2'}
+      className={className}
+      {...(props as object)}
     />
-
-  if (title)
-    return (
-      <WithTooltip content={title}>
-        {button}
-      </WithTooltip>
-    )
-
-  return button
+  )
 })

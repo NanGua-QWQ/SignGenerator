@@ -14,8 +14,8 @@ import {
   Badge,
 } from '@/components/badge'
 import {
-  WithTooltip,
-} from '@/components/tooltip'
+  Tooltip,
+} from '@radix-ui/themes'
 import {
   isForkSign,
   signBadge,
@@ -105,7 +105,7 @@ export default function SignList() {
             onDragOver={event => overSign(event, sign)}
             onDrop={event => dropSign(event, sign)}
           >
-            <WithTooltip content="拖动排序">
+            <Tooltip content="拖动排序">
               <button
                 type="button"
                 draggable={Boolean(onReorder)}
@@ -116,7 +116,7 @@ export default function SignList() {
               >
                 <GripVertical className="size-3.5" />
               </button>
-            </WithTooltip>
+            </Tooltip>
             <button
               type="button"
               onClick={() => onSelect(sign.id)}

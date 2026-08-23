@@ -19,7 +19,6 @@ const
     turbopack: {
       rules: {
         '*.svg': rawRule,
-        '*.raw.ts': rawRule,
       },
     },
   }

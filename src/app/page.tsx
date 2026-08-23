@@ -5,21 +5,15 @@ import {
 } from 'react'
 
 import {
+  AlertDialog, Button as ThemeButton, Select,
+} from '@radix-ui/themes'
+import {
   useAtomValue, useSetAtom,
 } from 'jotai'
 import {
   CircleQuestionMark, Trash2,
 } from 'lucide-react'
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/alert-dialog'
 import {
   badgeVariants,
 } from '@/components/badge'
@@ -32,13 +26,6 @@ import {
 import {
   Label,
 } from '@/components/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/select'
 import {
   POPOVER_COLOR_OPTIONS,
 } from '@/lib/popover-options'
@@ -73,17 +60,15 @@ function DirectionSelect({
   onValueChange: (value: string) => void
 }) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger id={id}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {DIRECTION_OPTIONS.map(direction => <SelectItem key={direction} value={direction}>
+    <Select.Root value={value} onValueChange={onValueChange}>
+      <Select.Trigger id={id} placeholder="选择..." />
+      <Select.Content>
+        {DIRECTION_OPTIONS.map(direction => <Select.Item key={direction} value={direction}>
           {direction}
-        </SelectItem>,
+        </Select.Item>,
         )}
-      </SelectContent>
-    </Select>
+      </Select.Content>
+    </Select.Root>
   )
 }
 
@@ -120,25 +105,23 @@ function RouteSelect({
   const selectedSign = signs.find(s => s.id === selectedSignId) ?? signs.find(s => s.code === value)
   const selectValue = selectedSign?.id ?? `custom:${value || id}`
   return (
-    <Select
+    <Select.Root
       value={selectValue}
       onValueChange={signId => {
         const selected = signs.find(s => s.id === signId)
         if (selected)  onValueChange(selected)
       }}
     >
-      <SelectTrigger id={id}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {!selectedSign && <SelectItem value={selectValue}>{value}</SelectItem>}
-        {signs.map(s => <SelectItem key={s.id} value={s.id}>
+      <Select.Trigger id={id} placeholder="选择路线..." />
+      <Select.Content>
+        {!selectedSign && <Select.Item value={selectValue}>{value}</Select.Item>}
+        {signs.map(s => <Select.Item key={s.id} value={s.id}>
           {s.code}
           {s.name ? ` ${s.name}` : ''}
-        </SelectItem>,
+        </Select.Item>,
         )}
-      </SelectContent>
-    </Select>
+      </Select.Content>
+    </Select.Root>
   )
 }
 
@@ -394,35 +377,32 @@ export default function SignSettings() {
               placeholder="例如：沈海高速"
               className="h-9"
             />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
+            <AlertDialog.Root>
+              <AlertDialog.Trigger title="删除此标志">
+                <ThemeButton
                   variant="ghost"
-                  size="icon"
-                  className="size-9 shrink-0 hover:text-destructive"
-                  title="删除此标志"
+                  color="gray"
+                  size="2"
+                  className="shrink-0 !bg-transparent !shadow-none hover:!bg-gray-100 dark:hover:!bg-gray-800"
                 >
                   <Trash2 className="size-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogTitle>{deleteDialogTitle(sign)}</AlertDialogTitle>
-                <AlertDialogDescription>
+                </ThemeButton>
+              </AlertDialog.Trigger>
+              <AlertDialog.Content>
+                <AlertDialog.Title>{deleteDialogTitle(sign)}</AlertDialog.Title>
+                <AlertDialog.Description>
                   此操作不可撤销，删除后将无法恢复「{signTitle(sign)}」。
-                </AlertDialogDescription>
+                </AlertDialog.Description>
                 <div className="flex justify-end gap-2">
-                  <AlertDialogCancel className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm font-medium hover:bg-accent">
-                    取消
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-3 text-sm font-medium text-white hover:bg-destructive/90"
-                    onClick={() => onDelete(sign.id)}
-                  >
-                    删除
-                  </AlertDialogAction>
+                  <AlertDialog.Cancel>
+                    <ThemeButton variant="soft" color="gray">取消</ThemeButton>
+                  </AlertDialog.Cancel>
+                  <AlertDialog.Action>
+                    <ThemeButton variant="solid" color="red" onClick={() => onDelete(sign.id)}>删除</ThemeButton>
+                  </AlertDialog.Action>
                 </div>
-              </AlertDialogContent>
-            </AlertDialog>
+              </AlertDialog.Content>
+            </AlertDialog.Root>
           </div>
           <p className="text-xs text-muted-foreground">
             当前最多 {nameLimit} 个字。
