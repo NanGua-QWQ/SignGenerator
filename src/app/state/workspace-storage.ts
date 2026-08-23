@@ -1,18 +1,12 @@
 import {
-  useSearchParams,
-} from 'next/navigation'
-
-import {
-  isTemplateParam,
-  parseInitialKind,
   restoreSign,
 } from '@/lib/sign-model'
 import type {
   Sign, SignTemplate,
 } from '@/lib/types'
 
-const WORKSPACE_STORAGE_KEY = 'expressway-sign-generator:workspace'
-const WORKSPACE_STORAGE_VERSION = 1
+export const SIGNS_STORAGE_KEY = 'signs'
+export const SELECTED_ID_STORAGE_KEY = 'selectedId'
 const DEFAULT_DIRECTION_GUIDANCE_SIGN = {
   template: 'direction-guidance',
   name: '分向指路标志',
@@ -68,54 +62,59 @@ const DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN = {
   entranceArrowDirection: 'front',
 } satisfies Partial<Sign>
 
-export interface WorkspaceState {
-  signs: Sign[]
-  selectedId: string
-}
-
-interface SavedWorkspace extends WorkspaceState {
-  version: typeof WORKSPACE_STORAGE_VERSION
-}
-
-export function useCreateInitialWorkspace() {
-  const fallbackSigns = useCreateInitialSigns()
+export function getInitialWorkspace() {
+  const fallbackSigns = getInitialSigns()
   return normalizeWorkspace(fallbackSigns, fallbackSigns[0].id)
 }
 
-export function loadSavedWorkspace() {
-  if (typeof window === 'undefined') {return null}
-  try {
-    const raw = window.localStorage.getItem(WORKSPACE_STORAGE_KEY)
-    if (!raw) {return null}
-
-    const parsed = JSON.parse(raw) as Partial<SavedWorkspace>
-    if (parsed.version !== WORKSPACE_STORAGE_VERSION || !Array.isArray(parsed.signs)) {return null}
-
-    const restoredSigns = parsed.signs
-      .map(restoreSign)
-      .filter((sign): sign is Sign => Boolean(sign))
-    if (restoredSigns.length === 0) {return null}
-
-    return normalizeWorkspace(
-      restoredSigns,
-      typeof parsed.selectedId === 'string' ? parsed.selectedId : restoredSigns[0].id,
-    )
-  } catch {
-    return null
-  }
+export interface SignsStorage {
+  getItem(key: string, initialValue: Sign[]): Sign[]
+  setItem(key: string, value: Sign[]): void
+  removeItem(key: string): void
 }
 
-export function saveWorkspace(workspace: WorkspaceState) {
-  if (typeof window === 'undefined') {return}
+export function createSignsStorage(): SignsStorage {
+  return {
+    getItem(key, initialValue) {
+      if (typeof window === 'undefined') return initialValue
 
-  try {
-    const savedWorkspace: SavedWorkspace = {
-      version: WORKSPACE_STORAGE_VERSION,
-      ...workspace,
-    }
-    window.localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(savedWorkspace))
-  } catch {
-    // localStorage may be unavailable in private or restricted browser contexts.
+      try {
+        const raw = window.localStorage.getItem(key)
+        if (!raw) return initialValue
+
+        const signs = JSON.parse(raw) as unknown
+        if (!Array.isArray(signs))
+          return initialValue
+
+        const restoredSigns = (signs as unknown[])
+          .map(restoreSign)
+          .filter((sign): sign is Sign => Boolean(sign))
+        return restoredSigns.length > 0 ? restoredSigns : initialValue
+      } catch {
+        return initialValue
+      }
+    },
+    setItem(key, value) {
+      if (typeof window === 'undefined') return
+
+      try {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify(value),
+        )
+      } catch {
+        // localStorage may be unavailable in private or restricted browser contexts.
+      }
+    },
+    removeItem(key) {
+      if (typeof window === 'undefined') return
+
+      try {
+        window.localStorage.removeItem(key)
+      } catch {
+        // localStorage may be unavailable in private or restricted browser contexts.
+      }
+    },
   }
 }
 
@@ -130,26 +129,23 @@ export function normalizeWorkspace(
   }
 }
 
-function useCreateInitialSigns() {
-  const params = useSearchParams()
-  const requestedTemplate = params.get('template')
-  const template: SignTemplate = isTemplateParam(requestedTemplate) ? requestedTemplate : requestedTemplate === 'exit-location' ? 'direction-guidance' : 'expressway'
-  const code = params.get('code') ?? 'G15'
-  const kind = parseInitialKind(params.get('kind'))
-  const name = params.get('name') ?? '沈海高速'
-  const exitNumber = params.get('exitNumber') ?? '360'
-  const exitDistance = params.get('exitDistance') ?? '2'
-  const exitName = params.get('exitName') ?? '清远'
-  const exitDestinationParam = params.get('exitDestination')
-  const roadForkExitDestination = exitDestinationParam ?? '东莞 深圳'
-  const twoLaneExitDestination = exitDestinationParam ?? '广州'
-  const dualExitDestination = exitDestinationParam ?? '广州'
-  const leftRoute = params.get('leftRoute') ?? 'G0421'
-  const rightRoute = params.get('rightRoute') ?? 'G15'
-  const dualLeftRoute = params.get('leftRoute') ?? 'G55'
-  const dualRightRoute = params.get('rightRoute') ?? 'G55'
-  const leftDirection = params.get('leftDirection') ?? '北'
-  const rightDirection = params.get('rightDirection') ?? '东'
+function getInitialSigns() {
+  const template = 'expressway' as SignTemplate
+  const code = 'G15'
+  const kind = 'national'
+  const name = '沈海高速'
+  const exitNumber = '360'
+  const exitDistance = '2'
+  const exitName = '清远'
+  const roadForkExitDestination = '东莞 深圳'
+  const twoLaneExitDestination = '广州'
+  const dualExitDestination = '广州'
+  const leftRoute = 'G0421'
+  const rightRoute = 'G15'
+  const dualLeftRoute = 'G55'
+  const dualRightRoute = 'G55'
+  const leftDirection = '北'
+  const rightDirection = '东'
 
   switch (template) {
     case 'direction-guidance': {
@@ -197,8 +193,8 @@ function useCreateInitialSigns() {
         createInitialSign('initial-dual-exit-interchange-preview', {
           template: 'dual-exit-interchange-preview',
           name: '双出口枢纽式互通立体交叉出口预告',
-          exitDistance: params.get('exitDistance') ?? '3',
-          exitName: params.get('exitName') ?? '永州',
+          exitDistance: '3',
+          exitName: '永州',
           exitDestination: dualExitDestination,
           leftRoute: dualLeftRoute,
           rightRoute: dualRightRoute,
@@ -278,8 +274,8 @@ function useCreateInitialSigns() {
         createInitialSign('initial-dual-exit-interchange-preview', {
           template: 'dual-exit-interchange-preview',
           name: '双出口枢纽式互通立体交叉出口预告',
-          exitDistance: params.get('exitDistance') ?? '3',
-          exitName: params.get('exitName') ?? '永州',
+          exitDistance: '3',
+          exitName: '永州',
           exitDestination: dualExitDestination,
           leftRoute: dualLeftRoute,
           rightRoute: dualRightRoute,
@@ -307,9 +303,9 @@ function useCreateInitialSigns() {
       return [
         createInitialSign('initial-entrance-preview-two-directions', {
           ...DEFAULT_ENTRANCE_PREVIEW_TWO_DIRECTIONS_SIGN,
-          exitDistance: params.get('exitDistance') ?? '500',
-          exitName: params.get('exitName') ?? '汕头',
-          exitDestination: exitDestinationParam ?? '深圳',
+          exitDistance: '500',
+          exitName: '汕头',
+          exitDestination: '深圳',
           rightRoute,
         }),
         createInitialSign('initial-road-fork-preview', {
@@ -408,6 +404,6 @@ function createInitialSign(id: string, overrides: Partial<Sign>) {
     id,
     ...overrides,
   })
-  if (!sign) {throw new Error(`无法创建默认标志：${id}`)}
+  if (!sign) throw new Error(`无法创建默认标志：${id}`)
   return sign
 }

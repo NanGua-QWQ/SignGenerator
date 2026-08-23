@@ -9,21 +9,18 @@ import {
 import {
   routeSignWidth, cleanExitText, cleanExitRoute, cleanDirection,
 } from '../generator'
-import {
-  RawSvg,
-} from '../raw-svg'
+import RawSvg from '../raw-svg'
 import {
   ExpresswaySignNode,
 } from '../sign/expressway'
 import {
   GREEN, WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
-import {
+import NumberedExitSignNode, {
   NUMBERED_EXIT_RIGHT_MARGIN,
   NUMBERED_EXIT_WIDTH,
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
-  NumberedExitSignNode,
 } from './numbered-exit'
 
 import type {
@@ -46,7 +43,6 @@ const DESTINATION_TEXT_OPTIONS = {
 }
 
 const cleanExitNumber = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '360'
@@ -76,7 +72,7 @@ function DirectionPlate({
   )
 }
 
-export function TwoLaneInterchangeExitSign({
+export default function TwoLaneInterchangeExitSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')

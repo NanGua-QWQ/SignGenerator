@@ -20,11 +20,11 @@ export type FontBuffers = Record<FontKey, Uint8Array>
 
 export async function loadFontBuffers() {
   const entries = await Promise.all(
-    (Object.keys(FONT_URLS) as FontKey[]).map(async (kind) => {
+    (Object.keys(FONT_URLS) as FontKey[]).map(async kind => {
       const response = await fetch(FONT_URLS[kind])
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`)
-      }
+
       const buffer = await response.arrayBuffer()
       return [kind, new Uint8Array(buffer)] as const
     }),

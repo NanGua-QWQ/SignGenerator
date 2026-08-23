@@ -15,9 +15,7 @@ const eslintConfig = defineConfig([
     ...nextVitals,
     ...nextTs,
 
-    // ----- SignGenerator-old 基础 -----
     js.configs.recommended,
-    ...tseslint.configs.recommended,
 
     // 合并忽略项（去重）
     globalIgnores([
@@ -45,7 +43,12 @@ const eslintConfig = defineConfig([
             }
         },
         settings: {
-            react: { version: "detect" }
+            react: {
+                /**
+                 * 不能为 `detect`
+                 */
+                version: "19.2.8"
+            }
         },
         plugins: {
             react,
@@ -55,6 +58,11 @@ const eslintConfig = defineConfig([
         rules: {
             ...react.configs.recommended.rules,
             ...reactHooks.configs.recommended.rules,
+
+            // 关闭 JS 版规则，TS 文件统一交由 typescript-eslint 版本处理
+            // （base 版不识别类型/接口，会误报 no-undef、no-unused-vars）
+            "no-undef": "off",
+            "no-unused-vars": "off",
 
             // ===== TypeScript（对齐 tsconfig strict 系列） =====
             "@typescript-eslint/no-unused-vars": [
@@ -116,7 +124,7 @@ const eslintConfig = defineConfig([
             // ===== 通用代码风格 =====
             "no-console": "off",
             eqeqeq: ["error", "always", { null: "ignore" }],
-            curly: ["error", "all"],
+            curly: ["error", "multi"],
             "prefer-const": "error",
             "no-var": "error",
             "object-shorthand": "error",
@@ -162,7 +170,7 @@ const eslintConfig = defineConfig([
             "object-curly-spacing": ["error", "always"],
             "array-bracket-spacing": ["error", "never"],
             // 箭头函数参数：单参数省略括号
-            "arrow-parens": ["error", "as-needed", { requireForBlockBody: true }],
+            "arrow-parens": ["error", "as-needed", { requireForBlockBody: false }],
             // 仓库文件在 Windows 工作区中使用 CRLF
             "linebreak-style": ["error", "windows"],
             // 文件末尾保留单个换行

@@ -23,18 +23,17 @@ export async function GET(
   _request: Request,
   {
     params,
-  }: { params: Promise<{ font: string }> },
+  }: RouteContext<'/fonts/[font]'>,
 ) {
   const {
     font,
   } = await params
-  if (!isFontKey(font)) {
+  if (!isFontKey(font))
     return NextResponse.json({
       error: 'Not found',
     }, {
       status: 404,
     })
-  }
 
   const filename = FONT_FILES[font]
   const filePath = join(FONT_DIRECTORY, filename)

@@ -9,9 +9,7 @@ import {
 import {
   cleanDirection, cleanExitRoute, routeSignWidth,
 } from '../generator'
-import {
-  RawSvg,
-} from '../raw-svg'
+import RawSvg from '../raw-svg'
 import {
   ExpresswaySignNode,
 } from '../sign/expressway'
@@ -24,7 +22,7 @@ const TEMPLATE_HEIGHT = 299.75
 const ROUTE_SIGN_HEIGHT = 100
 const ROUTE_SIGN_Y = 100
 
-export function DirectionGuidanceSign({
+export default function DirectionGuidanceSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')

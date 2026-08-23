@@ -6,12 +6,11 @@ import type {
 import {
   useFont,
 } from '../../fonts/FontContext'
-import {
+import NumberedExitSignNode, {
   NUMBERED_EXIT_RIGHT_MARGIN,
   NUMBERED_EXIT_WIDTH,
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
-  NumberedExitSignNode,
 } from '../exit/numbered-exit'
 import {
   routeSignWidth,
@@ -20,9 +19,7 @@ import {
   cleanExitRoute,
   cleanDirection,
 } from '../generator'
-import {
-  RawSvg,
-} from '../raw-svg'
+import RawSvg from '../raw-svg'
 import {
   ExpresswaySignNode,
 } from '../sign/expressway'
@@ -49,7 +46,6 @@ const DESTINATION_TEXT_OPTIONS = {
 }
 
 const cleanExitNumber = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '360'
@@ -79,7 +75,7 @@ function DirectionPlate({
   )
 }
 
-export function RoadForkPreviewSign({
+export default function RoadForkPreviewSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')

@@ -1,6 +1,7 @@
+'use client'
+
 import {
   Component,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -11,44 +12,50 @@ import {
 } from 'react'
 
 import {
-  Download, RotateCcw, ZoomIn, ZoomOut,
-} from 'lucide-react'
+  useAtom,
+  useAtomValue,
+  useSetAtom,
+} from 'jotai'
 
 import {
-  Button,
-} from '@/components/button'
-import {
-  SignSvg, signFilename,
+  SignSvg,
 } from '@/generators/generator'
-import type {
-  Sign,
-} from '@/lib/types'
+import {
+  offsetAtom,
+  scaleAtom,
+  zoomScaleAtom,
+} from '@/state/preview-store'
 
-const MIN_SCALE = 0.4
-const MAX_SCALE = 3
+import {
+  selectedSignAtom,
+} from './state/sign-workspace-store'
+import {
+  useFontError,
+  useFontsReady,
+} from './fonts/FontContext'
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary'
 
 interface Position {
-    x: number
-    y: number
+  x: number
+  y: number
 }
 type Offset = Position
 type BoardPosition = Position
 
 interface Measurement {
-    start: BoardPosition
-    end: BoardPosition
-    startPoint: Offset
-    endPoint: Offset
+  start: BoardPosition
+  end: BoardPosition
+  startPoint: Offset
+  endPoint: Offset
 }
 
-export function SignPreview({
-  sign,
-}: { sign: Sign }) {
-  const [scale, setScale] = useState(1)
-  const [offset, setOffset] = useState<Offset>({
-    x: 0,
-    y: 0,
-  })
+export default function SignPreview() {
+  const sign = useAtomValue(selectedSignAtom)
+  const fontsReady = useFontsReady()
+  const fontError = useFontError()
+  const scale = useAtomValue(scaleAtom)
+  const zoomScale = useSetAtom(zoomScaleAtom)
+  const [offset, setOffset] = useAtom(offsetAtom)
   const [isDragging, setIsDragging] = useState(false)
   const [showPosition, setShowPosition] = useState(false)
   const [showPixelMeasure, setShowPixelMeasure] = useState(false)
@@ -79,26 +86,19 @@ export function SignPreview({
     sign.rightRouteThreeDigitDescend,
   ].join('|')
 
-  const zoom = useCallback(
-    (multiplier: number) => setScale(
-      current => Math.min(MAX_SCALE, Math.max(MIN_SCALE, current * multiplier)),
-    ),
-    [],
-  )
-
   useEffect(() => {
     const preview = previewRef.current
-    if (!preview) {return}
+    if (!preview) return
     const handleWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey) {return}
+      if (!event.ctrlKey) return
       event.preventDefault()
-      zoom(event.deltaY < 0 ? 1.1 : 0.9)
+      zoomScale(event.deltaY < 0 ? 1.1 : 0.9)
     }
     preview.addEventListener('wheel', handleWheel, {
       passive: false,
     })
     return () => preview.removeEventListener('wheel', handleWheel)
-  }, [zoom])
+  }, [zoomScale])
 
   useEffect(() => {
     const eventName = 'sign-preview-position-toggle'
@@ -106,7 +106,7 @@ export function SignPreview({
     const previousPositionDescriptor = Object.getOwnPropertyDescriptor(window, 'position')
 
     window.addEventListener(eventName, togglePosition)
-    if (!previousPositionDescriptor || previousPositionDescriptor.configurable) {
+    if (!previousPositionDescriptor || previousPositionDescriptor.configurable)
       Object.defineProperty(window, 'position', {
         configurable: true,
         get() {
@@ -114,31 +114,29 @@ export function SignPreview({
           return 'position overlay toggled'
         },
       })
-    }
 
     return () => {
       window.removeEventListener(eventName, togglePosition)
-      if (previousPositionDescriptor) {
+      if (previousPositionDescriptor)
         Object.defineProperty(window, 'position', previousPositionDescriptor)
-      } else {
+      else
         delete (window as Window & { position?: unknown }).position
-      }
     }
   }, [])
 
   useEffect(() => {
     const eventName = 'sign-preview-pixel-measure-toggle'
     const togglePixelMeasure = () => {
-      setShowPixelMeasure((current) => {
+      setShowPixelMeasure(current => {
         const next = !current
-        if (!next) {setMeasurement(null)}
+        if (!next) setMeasurement(null)
         return next
       })
     }
     const previousPxDescriptor = Object.getOwnPropertyDescriptor(window, 'px')
 
     window.addEventListener(eventName, togglePixelMeasure)
-    if (!previousPxDescriptor || previousPxDescriptor.configurable) {
+    if (!previousPxDescriptor || previousPxDescriptor.configurable)
       Object.defineProperty(window, 'px', {
         configurable: true,
         get() {
@@ -146,21 +144,19 @@ export function SignPreview({
           return 'pixel measurer toggled'
         },
       })
-    }
 
     return () => {
       window.removeEventListener(eventName, togglePixelMeasure)
-      if (previousPxDescriptor) {
+      if (previousPxDescriptor)
         Object.defineProperty(window, 'px', previousPxDescriptor)
-      } else {
+      else
         delete (window as Window & { px?: unknown }).px
-      }
     }
   }, [])
 
   function boardPositionFromClient(clientX: number, clientY: number) {
     const svgElement = previewRef.current?.querySelector('svg')
-    if (!svgElement) {return null}
+    if (!svgElement) return null
     const rect = svgElement.getBoundingClientRect()
     const viewBox = svgElement.viewBox.baseVal
     if (
@@ -168,7 +164,7 @@ export function SignPreview({
       || rect.height <= 0
       || viewBox.width <= 0
       || viewBox.height <= 0
-    ) {return null}
+    ) return null
 
     return {
       x: viewBox.x + (clientX - rect.left) / rect.width * viewBox.width,
@@ -178,7 +174,7 @@ export function SignPreview({
 
   function previewPointFromClient(clientX: number, clientY: number) {
     const previewRect = previewRef.current?.getBoundingClientRect()
-    if (!previewRect) {return null}
+    if (!previewRect) return null
     return {
       x: clientX - previewRect.left,
       y: clientY - previewRect.top,
@@ -188,7 +184,7 @@ export function SignPreview({
   function measurePointFromEvent(event: ReactPointerEvent<HTMLDivElement>) {
     const board = boardPositionFromClient(event.clientX, event.clientY)
     const point = previewPointFromClient(event.clientX, event.clientY)
-    if (!board || !point) {return null}
+    if (!board || !point) return null
     return {
       board,
       point,
@@ -200,10 +196,10 @@ export function SignPreview({
     next: { board: BoardPosition; point: Offset },
     constrained: boolean,
   ) {
-    if (!constrained) {return next}
+    if (!constrained) return next
 
     const lockHorizontal
-            = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
+      = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
     return lockHorizontal ? {
       board: {
         x: next.board.x,
@@ -226,7 +222,7 @@ export function SignPreview({
   }
 
   function updateBoardPosition(event: ReactPointerEvent<HTMLDivElement>) {
-    if (!showPosition && !showPixelMeasure) {return}
+    if (!showPosition && !showPixelMeasure) return
     const position = boardPositionFromClient(event.clientX, event.clientY)
     if (!position) {
       setBoardPosition(null)
@@ -235,34 +231,12 @@ export function SignPreview({
     setBoardPosition(position)
   }
 
-  function reset() {
-    setScale(1)
-    setOffset({
-      x: 0,
-      y: 0,
-    })
-  }
-  function download() {
-    const svgElement = document.querySelector('svg[role=img]')
-    if (!svgElement) {return}
-    const svgString = svgElement.outerHTML
-    const blob = new Blob([svgString], {
-      type: 'image/svg+xml;charset=utf-8',
-    })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = signFilename(sign)
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(url), 0)
-  }
-
   function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    if (event.button !== 0) {return}
+    if (event.button !== 0) return
     event.preventDefault()
     if (showPixelMeasure) {
       const point = measurePointFromEvent(event)
-      if (!point) {return}
+      if (!point) return
       measuring.current = true
       setMeasurement({
         start: point.board,
@@ -286,9 +260,9 @@ export function SignPreview({
     updateBoardPosition(event)
     if (measuring.current) {
       const point = measurePointFromEvent(event)
-      if (point) {
-        setMeasurement((current) => {
-          if (!current) {return null}
+      if (point)
+        setMeasurement(current => {
+          if (!current) return null
           const next = constrainedMeasurePoint(current, point, event.shiftKey)
           return {
             ...current,
@@ -296,10 +270,10 @@ export function SignPreview({
             endPoint: next.point,
           }
         })
-      }
+
       return
     }
-    if (!dragging.current) {return}
+    if (!dragging.current) return
     setOffset(current => ({
       x: current.x + event.clientX - lastPosition.current.x,
       y: current.y + event.clientY - lastPosition.current.y,
@@ -314,9 +288,8 @@ export function SignPreview({
     dragging.current = false
     measuring.current = false
     setIsDragging(false)
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+    if (event.currentTarget.hasPointerCapture(event.pointerId))
       event.currentTarget.releasePointerCapture(event.pointerId)
-    }
   }
 
   const measureDelta = measurement ? {
@@ -330,37 +303,6 @@ export function SignPreview({
 
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-col bg-muted">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b bg-background px-3">
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() => zoom(0.8)}
-            title="缩小"
-          >
-            <ZoomOut className="size-3.5" />
-          </Button>
-          <output className="w-11 text-center text-xs tabular-nums text-muted-foreground">
-            {Math.round(scale * 100)}%
-          </output>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={() => zoom(1.25)}
-            title="放大"
-          >
-            <ZoomIn className="size-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="size-7" onClick={reset} title="复位">
-            <RotateCcw className="size-3.5" />
-          </Button>
-        </div>
-        <Button variant="ghost" size="icon" className="size-7" onClick={download} title="下载 SVG">
-          <Download className="size-3.5" />
-        </Button>
-      </div>
       <div
         ref={previewRef}
         className={`relative flex min-h-0 min-w-0 w-full flex-1 touch-none select-none items-center justify-center overflow-hidden p-6 ${showPixelMeasure ? 'cursor-crosshair' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
@@ -376,33 +318,45 @@ export function SignPreview({
         onLostPointerCapture={endDrag}
       >
         {showPosition
-                    && <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
-                        x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y{' '}
-                      {boardPosition ? boardPosition.y.toFixed(1) : '--'}
-                    </output>
+          && <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
+            x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y{' '}
+            {boardPosition ? boardPosition.y.toFixed(1) : '--'}
+          </output>
         }
         {showPixelMeasure
-                    && <>
-                      <output
-                        className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}
-                      >
-                            dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy{' '}
-                        {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px{' '}
-                        {measureDelta ? measureDelta.length.toFixed(1) : '--'}
-                      </output>
-                      {measurement && <PixelMeasureOverlay measurement={measurement} />}
-                    </>
+          && <>
+            <output
+              className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}
+            >
+              dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy{' '}
+              {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px{' '}
+              {measureDelta ? measureDelta.length.toFixed(1) : '--'}
+            </output>
+            {measurement && <PixelMeasureOverlay measurement={measurement} />}
+          </>
         }
-        <SignErrorBoundary key={previewResetKey}>
-          <div
-            className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
-            style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-            }}
-          >
-            <SignSvg sign={sign} />
+        {fontsReady
+          ? <ErrorBoundary fallbackRender={({
+            error
+          }) =>
+            <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
+              {getErrorMessage(error)}
+            </p>
+          } onError={(...args) => console.error('标志预览渲染失败', ...args)}>
+            <div
+              className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
+              style={{
+                transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+              }}
+            >
+              <SignSvg sign={sign} />
+            </div>
+          </ErrorBoundary>/*<SignErrorBoundary key={previewResetKey}>
+          </SignErrorBoundary>*/
+          : <div className="flex min-w-0 max-w-137.5 w-full items-center justify-center rounded-md border border-dashed border-border bg-background/50 px-6 py-12 text-sm text-muted-foreground">
+            {fontError ? `字体加载失败：${fontError}` : '正在加载字体…'}
           </div>
-        </SignErrorBoundary>
+        }
       </div>
     </section>
   )
@@ -461,32 +415,5 @@ function PixelMeasureOverlay({
 }
 
 interface SignErrorBoundaryState {
-    error: Error | null
-}
-
-class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoundaryState> {
-  state: SignErrorBoundaryState = {
-    error: null,
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return {
-      error,
-    }
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('标志预览渲染失败', error, info)
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
-          {this.state.error.message}
-        </p>
-      )
-    }
-    return this.props.children
-  }
+  error: Error | null
 }

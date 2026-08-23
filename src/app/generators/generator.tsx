@@ -1,27 +1,17 @@
 import type {
-  EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign,
+  EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign, SignTemplate,
 } from '@/lib/types'
 
-import {
-  TwoLaneInterchangeExitSign,
-} from './exit/two-lane-interchange-exit'
-import {
-  DirectionGuidanceSign,
-} from './interchange/direction-guidance'
-import {
-  DualExitInterchangePreviewSign,
-} from './interchange/dual-exit-interchange-preview'
-import {
-  EntrancePreviewTwoDirectionsSign,
-} from './interchange/entrance-preview-two-directions'
-import {
-  RoadForkPreviewSign,
-} from './interchange/road-fork-preview'
-import {
-  ExpresswaySignSvg, expresswaySignNaturalSize,
+import TwoLaneInterchangeExitSign from './exit/two-lane-interchange-exit'
+import DirectionGuidanceSign from './interchange/direction-guidance'
+import DualExitInterchangePreviewSign from './interchange/dual-exit-interchange-preview'
+import EntrancePreviewTwoDirectionsSign from './interchange/entrance-preview-two-directions'
+import RoadForkPreviewSign from './interchange/road-fork-preview'
+import ExpresswaySignSvg, {
+  expresswaySignNaturalSize,
 } from './sign/expressway'
-import {
-  OrdinaryRoadSignSvg, ordinaryRoadFilename,
+import OrdinaryRoadSignSvg, {
+  ordinaryRoadFilename,
 } from './sign/ordinary_road'
 
 function SignSvgContent(sign: Sign) {
@@ -57,38 +47,16 @@ export function SignSvg({
   return SignSvgContent(sign)
 }
 
+const SIGN_FILENAME_CODE: Partial<Record<SignTemplate, (sign: Sign) => string>> = {
+  'road-fork-preview': sign => `道路分岔预告_${sign.exitNumber}`,
+  'direction-guidance': sign => `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`,
+  'two-lane-interchange-exit': sign => `2车道立交枢纽出口_${sign.rightRoute}`,
+  'dual-exit-interchange-preview': sign => `双出口枢纽式互通立体交叉出口预告_${sign.leftRoute}_${sign.rightRoute}`,
+  'entrance-preview-two-directions': sign => `入口预告-2方向_${sign.rightRoute}`,
+  'ordinary-road': sign => ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, ''),
+}
 export function signFilename(sign: Sign) {
-  let code: string
-  switch (sign.template) {
-    case 'road-fork-preview': {
-      code = `道路分岔预告_${sign.exitNumber}`
-      break
-    }
-    case 'direction-guidance': {
-      code = `分向指路标志_${sign.leftRoute}_${sign.rightRoute}`
-      break
-    }
-    case 'two-lane-interchange-exit': {
-      code = `2车道立交枢纽出口_${sign.rightRoute}`
-      break
-    }
-    case 'dual-exit-interchange-preview': {
-      code = `双出口枢纽式互通立体交叉出口预告_${sign.leftRoute}_${sign.rightRoute}`
-      break
-    }
-    case 'entrance-preview-two-directions': {
-      code = `入口预告-2方向_${sign.rightRoute}`
-      break
-    }
-    case 'ordinary-road': {
-      code = ordinaryRoadFilename(sign.kind as OrdinaryRoadKind, sign.digits).replace(/\.svg$/, '')
-      break
-    }
-    default: {
-      code = sign.code
-      break
-    }
-  }
+  const code = SIGN_FILENAME_CODE[sign.template]?.(sign) ?? sign.code
   const name
     = sign.template === 'expressway' || sign.template === 'ordinary-road' ? sign.name : sign.exitName || sign.name
   const safeCode = String(code || 'road-sign')
@@ -98,7 +66,7 @@ export function signFilename(sign: Sign) {
     .trim()
     .replace(/[<>:"/\\|?*]/g, '_')
   const base = `${safeCode}${safeName ? `_${safeName}` : ''}`
-  return `${base || 'road-sign'}.svg`
+  return base || 'road-sign'
 }
 
 export function routeSignWidth(code: string, ROUTE_SIGN_HEIGHT: number) {
@@ -114,20 +82,17 @@ export function cleanExitText(value: string, fallback: string, limit: number) {
 }
 
 export const cleanExitDistance = (value: string) =>
-
   String(value || '')
     .replace(/[^\d.]/g, '')
     .replace(/(\..*)\./g, '$1')
     .slice(0, 1) || ' '
 
 export const cleanEntranceDistance = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '500'
 
 export const cleanExitRoute = (value: string, fallback: string) =>
-
   String(value || '')
     .trim()
     .toUpperCase()
@@ -176,7 +141,6 @@ export const cleanExitNumber = (value: string) =>
     .slice(0, 4)
 
 export const cleanRoute = (value: string, fallback: string) =>
-
   String(value || '')
     .trim()
     .toUpperCase()

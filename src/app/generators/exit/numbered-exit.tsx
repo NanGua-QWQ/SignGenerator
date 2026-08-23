@@ -36,19 +36,18 @@ interface NumberedExitSignNodeProps {
 }
 
 const cleanExitNumber = (value: string) =>
-
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '360'
 
 function fittedNumberHeight(font: Font, text: string) {
-  for (let height = NUMBER_MAX_HEIGHT; height >= NUMBER_MIN_HEIGHT; height -= 1) {
-    if (textLayout(font, text, height).usedWidth <= NUMBER_MAX_WIDTH) {return height}
-  }
+  for (let height = NUMBER_MAX_HEIGHT; height >= NUMBER_MIN_HEIGHT; height -= 1)
+    if (textLayout(font, text, height).usedWidth <= NUMBER_MAX_WIDTH) return height
+
   return NUMBER_MIN_HEIGHT
 }
 
-export function NumberedExitSignNode({
+export default function NumberedExitSignNode({
   exitNumber,
   fontChinese,
   fontLatin,
