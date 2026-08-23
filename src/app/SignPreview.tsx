@@ -33,19 +33,20 @@ import {
   useFontError,
   useFontsReady,
 } from './fonts/FontContext'
+import { ErrorBoundary, getErrorMessage } from 'react-error-boundary'
 
 interface Position {
-    x: number
-    y: number
+  x: number
+  y: number
 }
 type Offset = Position
 type BoardPosition = Position
 
 interface Measurement {
-    start: BoardPosition
-    end: BoardPosition
-    startPoint: Offset
-    endPoint: Offset
+  start: BoardPosition
+  end: BoardPosition
+  startPoint: Offset
+  endPoint: Offset
 }
 
 export function SignPreview() {
@@ -198,7 +199,7 @@ export function SignPreview() {
     if (!constrained) return next
 
     const lockHorizontal
-            = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
+      = Math.abs(next.board.x - start.start.x) >= Math.abs(next.board.y - start.start.y)
     return lockHorizontal ? {
       board: {
         x: next.board.x,
@@ -317,37 +318,44 @@ export function SignPreview() {
         onLostPointerCapture={endDrag}
       >
         {showPosition
-                    && <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
-                        x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y{' '}
-                      {boardPosition ? boardPosition.y.toFixed(1) : '--'}
-                    </output>
+          && <output className="pointer-events-none absolute right-3 top-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm">
+            x {boardPosition ? boardPosition.x.toFixed(1) : '--'} y{' '}
+            {boardPosition ? boardPosition.y.toFixed(1) : '--'}
+          </output>
         }
         {showPixelMeasure
-                    && <>
-                      <output
-                        className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}
-                      >
-                            dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy{' '}
-                        {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px{' '}
-                        {measureDelta ? measureDelta.length.toFixed(1) : '--'}
-                      </output>
-                      {measurement && <PixelMeasureOverlay measurement={measurement} />}
-                    </>
+          && <>
+            <output
+              className={`pointer-events-none absolute right-3 z-10 rounded-md border border-border bg-background/95 px-2.5 py-1.5 text-xs font-medium tabular-nums text-foreground shadow-sm ${showPosition ? 'top-12' : 'top-3'}`}
+            >
+              dx {measureDelta ? Math.abs(measureDelta.x).toFixed(1) : '--'} dy{' '}
+              {measureDelta ? Math.abs(measureDelta.y).toFixed(1) : '--'} px{' '}
+              {measureDelta ? measureDelta.length.toFixed(1) : '--'}
+            </output>
+            {measurement && <PixelMeasureOverlay measurement={measurement} />}
+          </>
         }
         {fontsReady
-                    ? <SignErrorBoundary key={previewResetKey}>
-                        <div
-                          className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
-                          style={{
-                            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-                          }}
-                        >
-                          <SignSvg sign={sign} />
-                        </div>
-                      </SignErrorBoundary>
-                    : <div className="flex min-w-0 max-w-137.5 w-full items-center justify-center rounded-md border border-dashed border-border bg-background/50 px-6 py-12 text-sm text-muted-foreground">
-                        {fontError ? `字体加载失败：${fontError}` : '正在加载字体…'}
-                      </div>
+          ? <ErrorBoundary fallbackRender={({
+            error
+          }) =>
+            <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
+              {getErrorMessage(error)}
+            </p>
+          } onError={(...args) => console.error('标志预览渲染失败', ...args)}>
+            <div
+              className="min-w-0 w-full max-w-137.5 [&_svg]:block [&_svg]:h-auto [&_svg]:w-full drop-shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
+              style={{
+                transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+              }}
+            >
+              <SignSvg sign={sign} />
+            </div>
+          </ErrorBoundary>/*<SignErrorBoundary key={previewResetKey}>
+          </SignErrorBoundary>*/
+          : <div className="flex min-w-0 max-w-137.5 w-full items-center justify-center rounded-md border border-dashed border-border bg-background/50 px-6 py-12 text-sm text-muted-foreground">
+            {fontError ? `字体加载失败：${fontError}` : '正在加载字体…'}
+          </div>
         }
       </div>
     </section>
@@ -407,32 +415,5 @@ function PixelMeasureOverlay({
 }
 
 interface SignErrorBoundaryState {
-    error: Error | null
-}
-
-class SignErrorBoundary extends Component<{ children: ReactNode }, SignErrorBoundaryState> {
-  state: SignErrorBoundaryState = {
-    error: null,
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return {
-      error,
-    }
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('标志预览渲染失败', error, info)
-  }
-
-  render() {
-    if (this.state.error)
-      return (
-        <p className="max-w-sm rounded-md border border-destructive/30 bg-background p-4 text-sm text-destructive">
-          {this.state.error.message}
-        </p>
-      )
-
-    return this.props.children
-  }
+  error: Error | null
 }
