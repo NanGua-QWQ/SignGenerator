@@ -75,9 +75,7 @@ export default function RootLayout({
             accentColor="gray"
             grayColor="slate"
             radius="medium">
-            <main style={{
-              height: '100vh',
-            }} className="grid min-h-0 flex-1 grid-cols-[75vw_1fr] max-lg:grid-cols-[70vh_1fr] max-md:grid-cols-1 max-md:grid-rows-[50vh_1fr]">
+            <main className="grid min-h-0 flex-1 grid-cols-[65vw_1fr] max-lg:grid-cols-[70vh_1fr] max-md:grid-cols-1 max-md:grid-rows-[50vh_1fr]">
               <FontsProvider>
                 <SignPreview />
               </FontsProvider>

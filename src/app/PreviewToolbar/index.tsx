@@ -39,9 +39,11 @@ import {
   zoomScaleAtom,
 } from '@/state/preview-store'
 
+import "./previewtoolbar.css"
+
 import {
   selectedSignAtom,
-} from './state/sign-workspace-store'
+} from '../state/sign-workspace-store'
 
 export default function PreviewToolbar() {
   const sign = useAtomValue(selectedSignAtom)
@@ -55,7 +57,7 @@ export default function PreviewToolbar() {
   } = useTheme()
 
   return (
-    <div className="flex items-center gap-1 h-11 shrink-0 items-center justify-between border-b bg-background px-3">
+    <div className="preview-toolbar flex items-center gap-1 h-11 shrink-0 items-center justify-between border-b bg-background px-3">
       <div className="flex items-center gap-1">
         {pathname !== '/' && <Tooltip content="已创建的标牌">
           <Link href="/" className="flex items-center justify-center">

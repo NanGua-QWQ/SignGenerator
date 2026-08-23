@@ -43,6 +43,8 @@ import type {
   ExpresswayKind, Sign,
 } from '@/lib/types'
 
+import styles from "./page.module.css";
+
 import {
   deleteSignAtom,
   expresswaySignListAtom,
@@ -630,10 +632,7 @@ export default function SignSettings() {
                   }
                 />
                 单方向
-                <CircleQuestionMark style={{
-                  width: 12,
-                  height: 12,
-                }} />
+                <CircleQuestionMark className={styles["single-direction-icon"]} />
               </Label>
             </div>
             {sign.entranceSecondDirectionEnabled ? <Input

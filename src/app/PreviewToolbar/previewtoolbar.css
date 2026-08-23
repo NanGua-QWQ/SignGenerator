@@ -1,0 +1,9 @@
+.preview-toolbar {
+  app-region: drag;
+  height: env(titlebar-area-height, 44px);
+  padding-left: 8px;
+  padding-right: calc(8px + calc(100vw - env(titlebar-area-width, 100vw)));
+}
+.preview-toolbar * {
+  app-region: no-drag;
+}

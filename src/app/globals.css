@@ -62,6 +62,10 @@
   body {
     background-color: var(--color-background);
   }
+
+  main {
+    height: 100vh;
+  }
 }
 
 @utility accent-primary {
