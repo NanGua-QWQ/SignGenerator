@@ -157,7 +157,7 @@ interface OrdinaryRoadSignSvgProps {
   digits: string
 }
 
-export function OrdinaryRoadSignSvg({
+export default function OrdinaryRoadSignSvg({
   kind, digits,
 }: OrdinaryRoadSignSvgProps) {
   const fontLatin = useFont('b')

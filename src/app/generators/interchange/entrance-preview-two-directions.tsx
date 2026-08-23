@@ -17,9 +17,7 @@ import {
   cleanExitText,
   routeSignWidth,
 } from '../generator'
-import {
-  RawSvg,
-} from '../raw-svg'
+import RawSvg from '../raw-svg'
 import {
   ExpresswaySignNode,
 } from '../sign/expressway'
@@ -106,7 +104,7 @@ function DirectionPlate({
   )
 }
 
-export function EntrancePreviewTwoDirectionsSign({
+export default function EntrancePreviewTwoDirectionsSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')

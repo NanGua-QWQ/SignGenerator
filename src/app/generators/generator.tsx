@@ -2,26 +2,16 @@ import type {
   EntranceArrowDirection, ExpresswayKind, OrdinaryRoadKind, Sign, SignTemplate,
 } from '@/lib/types'
 
-import {
-  TwoLaneInterchangeExitSign,
-} from './exit/two-lane-interchange-exit'
-import {
-  DirectionGuidanceSign,
-} from './interchange/direction-guidance'
-import {
-  DualExitInterchangePreviewSign,
-} from './interchange/dual-exit-interchange-preview'
-import {
-  EntrancePreviewTwoDirectionsSign,
-} from './interchange/entrance-preview-two-directions'
-import {
-  RoadForkPreviewSign,
-} from './interchange/road-fork-preview'
-import {
-  ExpresswaySignSvg, expresswaySignNaturalSize,
+import TwoLaneInterchangeExitSign from './exit/two-lane-interchange-exit'
+import DirectionGuidanceSign from './interchange/direction-guidance'
+import DualExitInterchangePreviewSign from './interchange/dual-exit-interchange-preview'
+import EntrancePreviewTwoDirectionsSign from './interchange/entrance-preview-two-directions'
+import RoadForkPreviewSign from './interchange/road-fork-preview'
+import ExpresswaySignSvg, {
+  expresswaySignNaturalSize,
 } from './sign/expressway'
-import {
-  OrdinaryRoadSignSvg, ordinaryRoadFilename,
+import OrdinaryRoadSignSvg, {
+  ordinaryRoadFilename,
 } from './sign/ordinary_road'
 
 function SignSvgContent(sign: Sign) {

@@ -23,7 +23,7 @@ export async function GET(
   _request: Request,
   {
     params,
-  }: { params: Promise<{ font: string }> },
+  }: RouteContext<'/fonts/[font]'>,
 ) {
   const {
     font,

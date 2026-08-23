@@ -45,12 +45,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
 }
 
-import {
-  PreviewToolbar,
-} from './PreviewToolbar'
-import {
-  SignPreview,
-} from './SignPreview'
+import PreviewToolbar from './PreviewToolbar'
+import SignPreview from './SignPreview'
 import {
   FontsProvider,
 } from './fonts/FontsProvider'

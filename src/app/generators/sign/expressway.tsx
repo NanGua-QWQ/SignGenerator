@@ -344,7 +344,7 @@ interface ExpresswaySignSvgProps {
   ariaLabel?: string
 }
 
-export function ExpresswaySignSvg({
+export default function ExpresswaySignSvg({
   code,
   name = '',
   provinceLabel = '',

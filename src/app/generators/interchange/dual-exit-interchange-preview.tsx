@@ -9,9 +9,7 @@ import {
 import {
   cleanExitDistance, cleanExitRoute, cleanExitText, routeSignWidth,
 } from '../generator'
-import {
-  RawSvg,
-} from '../raw-svg'
+import RawSvg from '../raw-svg'
 import {
   ExpresswaySignNode,
 } from '../sign/expressway'
@@ -34,7 +32,7 @@ const DESTINATION_TEXT_OPTIONS = {
   minGap: 14,
 }
 
-export function DualExitInterchangePreviewSign({
+export default function DualExitInterchangePreviewSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')

@@ -47,7 +47,7 @@ function fittedNumberHeight(font: Font, text: string) {
   return NUMBER_MIN_HEIGHT
 }
 
-export function NumberedExitSignNode({
+export default function NumberedExitSignNode({
   exitNumber,
   fontChinese,
   fontLatin,

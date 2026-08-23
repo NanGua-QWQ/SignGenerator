@@ -49,7 +49,7 @@ interface Measurement {
   endPoint: Offset
 }
 
-export function SignPreview() {
+export default function SignPreview() {
   const sign = useAtomValue(selectedSignAtom)
   const fontsReady = useFontsReady()
   const fontError = useFontError()

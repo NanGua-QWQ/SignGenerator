@@ -21,7 +21,7 @@ const extractViewBox = (template: string) => {
   return match?.[1]
 }
 
-export function RawSvg({
+export default function RawSvg({
   template, label, width, height, children,
 }: RawSvgProps) {
   const inner = extractInner(template)
