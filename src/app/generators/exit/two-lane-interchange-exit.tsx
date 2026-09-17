@@ -7,20 +7,23 @@ import {
   useFont,
 } from '../../fonts/FontContext'
 import {
-  routeSignWidth, cleanExitText, cleanExitRoute, cleanDirection,
+  routeSignWidth, fitRoutePairWidths, cleanExitText, cleanExitRoute, cleanDirection,
 } from '../generator'
-import RawSvg from '../raw-svg'
 import {
-  ExpresswaySignNode,
-} from '../sign/expressway'
+  RawSvg,
+} from '../raw-svg'
+import {
+  RouteSignNode,
+} from '../sign/route-sign'
 import {
   GREEN, WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
-import NumberedExitSignNode, {
+import {
   NUMBERED_EXIT_RIGHT_MARGIN,
   NUMBERED_EXIT_WIDTH,
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
+  NumberedExitSignNode,
 } from './numbered-exit'
 
 import type {
@@ -43,6 +46,7 @@ const DESTINATION_TEXT_OPTIONS = {
 }
 
 const cleanExitNumber = (value: string) =>
+
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '360'
@@ -72,7 +76,7 @@ function DirectionPlate({
   )
 }
 
-export default function TwoLaneInterchangeExitSign({
+export function TwoLaneInterchangeExitSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')
@@ -80,13 +84,20 @@ export default function TwoLaneInterchangeExitSign({
   const exitNumber = cleanExitNumber(sign.exitNumber)
   const exitName = cleanExitText(sign.exitName, '', 6)
   const destination = cleanExitText(sign.exitDestination, '', 6)
-  const leftRoute = cleanExitRoute(sign.leftRoute, 'G0421')
-  const rightRoute = cleanExitRoute(sign.rightRoute, 'G15')
+  const leftRoute = cleanExitRoute(sign.leftRoute, 'G0421', sign.leftRouteKind)
+  const rightRoute = cleanExitRoute(sign.rightRoute, 'G15', sign.rightRouteKind)
   const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
-  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT)
-  const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT)
-  const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
+  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT, sign.leftRouteKind)
+  const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT, sign.rightRouteKind)
+  const fittedRouteWidths = fitRoutePairWidths(
+    leftRouteWidth,
+    rightRouteWidth,
+    RIGHT_ROUTE_SIGN_RIGHT - LEFT_ROUTE_SIGN_X,
+  )
+  const fittedLeftRouteWidth = fittedRouteWidths.leftWidth
+  const fittedRightRouteWidth = fittedRouteWidths.rightWidth
+  const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - fittedRightRouteWidth
   const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 16
   const label = escapeXml(
     `${leftDirection} ${leftRoute} ${exitName} ${rightDirection} ${rightRoute} ${destination}`,
@@ -117,7 +128,7 @@ export default function TwoLaneInterchangeExitSign({
           x={LEFT_DIRECTION_X}
           y={55}
         />
-        <ExpresswaySignNode
+        <RouteSignNode
           code={leftRoute}
           kind={sign.leftRouteKind}
           provinceLabel={sign.leftRouteProvinceLabel}
@@ -126,10 +137,10 @@ export default function TwoLaneInterchangeExitSign({
           fontLatin={fontLatin}
           x={LEFT_ROUTE_SIGN_X}
           y={ROUTE_SIGN_Y}
-          width={leftRouteWidth}
+          width={fittedLeftRouteWidth}
           height={ROUTE_SIGN_HEIGHT}
         />
-        <ExpresswaySignNode
+        <RouteSignNode
           code={rightRoute}
           kind={sign.rightRouteKind}
           provinceLabel={sign.rightRouteProvinceLabel}
@@ -138,7 +149,7 @@ export default function TwoLaneInterchangeExitSign({
           fontLatin={fontLatin}
           x={rightRouteX}
           y={ROUTE_SIGN_Y}
-          width={rightRouteWidth}
+          width={fittedRightRouteWidth}
           height={ROUTE_SIGN_HEIGHT}
         />
         <DirectionPlate

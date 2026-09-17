@@ -19,21 +19,30 @@ const FONT_MIME_TYPES: Record<string, string> = {
   '.ttf': 'font/ttf',
 }
 
+export const dynamic = 'force-static'
+
+export function generateStaticParams() {
+  return Object.keys(FONT_FILES).map(font => ({
+    font,
+  }))
+}
+
 export async function GET(
   _request: Request,
   {
     params,
-  }: RouteContext<'/fonts/[font]'>,
+  }: { params: Promise<{ font: string }> },
 ) {
   const {
     font,
   } = await params
-  if (!isFontKey(font))
+  if (!isFontKey(font)) {
     return NextResponse.json({
       error: 'Not found',
     }, {
       status: 404,
     })
+  }
 
   const filename = FONT_FILES[font]
   const filePath = join(FONT_DIRECTORY, filename)

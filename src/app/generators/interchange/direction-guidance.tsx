@@ -9,10 +9,12 @@ import {
 import {
   cleanDirection, cleanExitRoute, routeSignWidth,
 } from '../generator'
-import RawSvg from '../raw-svg'
 import {
-  ExpresswaySignNode,
-} from '../sign/expressway'
+  RawSvg,
+} from '../raw-svg'
+import {
+  RouteSignNode,
+} from '../sign/route-sign'
 import {
   GREEN, escapeXml, OutlinedText,
 } from '../svg-text'
@@ -22,15 +24,15 @@ const TEMPLATE_HEIGHT = 299.75
 const ROUTE_SIGN_HEIGHT = 100
 const ROUTE_SIGN_Y = 100
 
-export default function DirectionGuidanceSign({
+export function DirectionGuidanceSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')
   const fontLatin = useFont('b')
   const leftDirection = cleanDirection(sign.leftDirection, '东')
   const rightDirection = cleanDirection(sign.rightDirection, '西')
-  const route = cleanExitRoute(sign.leftRoute, 'G78')
-  const leftRouteWidth = routeSignWidth(route, ROUTE_SIGN_HEIGHT)
+  const route = cleanExitRoute(sign.leftRoute, 'G78', sign.leftRouteKind)
+  const leftRouteWidth = routeSignWidth(route, ROUTE_SIGN_HEIGHT, sign.leftRouteKind)
   const leftRouteX = (TEMPLATE_WIDTH - leftRouteWidth) / 2
   const label = escapeXml(`${leftDirection} ${route} ${rightDirection}`)
 
@@ -55,7 +57,7 @@ export default function DirectionGuidanceSign({
             minGap: 8,
           }}
         />
-        <ExpresswaySignNode
+        <RouteSignNode
           code={route}
           kind={sign.leftRouteKind}
           provinceLabel={sign.leftRouteProvinceLabel}

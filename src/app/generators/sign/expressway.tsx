@@ -2,6 +2,9 @@ import type {
   ReactNode,
 } from 'react'
 
+import {
+  expresswayNameLimit,
+} from '@/lib/expressway-name'
 import type {
   ExpresswayKind,
 } from '@/lib/types'
@@ -72,28 +75,28 @@ function parseCode(value: string) {
     .trim()
     .toUpperCase()
   const national = /^G(\d{1,4})$/.exec(code)
-  if (national) return {
+  if (national) {return {
     code,
     digits: national[1],
     kind: 'national',
     provinceLabel: '',
-  }
+  }}
 
   const provincial = /^S(\d{1,4})$/.exec(code)
-  if (provincial) return {
+  if (provincial) {return {
     code,
     digits: provincial[1],
     kind: 'provincial',
     provinceLabel: '粤',
-  }
+  }}
 
   const legacyProvincial = /^(.)(S(\d{1,4}))$/u.exec(code)
-  if (legacyProvincial) return {
+  if (legacyProvincial) {return {
     code: legacyProvincial[2],
     digits: legacyProvincial[3],
     kind: 'provincial',
     provinceLabel: legacyProvincial[1],
-  }
+  }}
 
   throw new Error('请输入 1-4 位数字编号')
 }
@@ -140,7 +143,7 @@ export function ExpresswaySignNode(
     ...parsedCode,
     kind: options.kind,
   } : parsedCode
-  const nameLimit = sign.digits.length === 4 ? 6 : 4
+  const nameLimit = expresswayNameLimit(sign.kind as ExpresswayKind, sign.digits)
   const name = Array.from((options.name ?? '').trim())
     .slice(0, nameLimit)
     .join('')
@@ -268,7 +271,7 @@ export function ExpresswaySignNode(
         {WHITE}
       </Layout>,
     )
-  } else
+  } else {
     content.push(
       <OutlinedText
         key="main-code"
@@ -285,7 +288,7 @@ export function ExpresswaySignNode(
         }}
       />,
     )
-
+  }
   if (named) {
     const nameWidth
       = sign.digits.length === 1
@@ -344,7 +347,7 @@ interface ExpresswaySignSvgProps {
   ariaLabel?: string
 }
 
-export default function ExpresswaySignSvg({
+export function ExpresswaySignSvg({
   code,
   name = '',
   provinceLabel = '',

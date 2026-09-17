@@ -6,23 +6,27 @@ import type {
 import {
   useFont,
 } from '../../fonts/FontContext'
-import NumberedExitSignNode, {
+import {
   NUMBERED_EXIT_RIGHT_MARGIN,
   NUMBERED_EXIT_WIDTH,
   NUMBERED_EXIT_Y,
   expandCanvasForNumberedExit,
+  NumberedExitSignNode,
 } from '../exit/numbered-exit'
 import {
   routeSignWidth,
+  fitRoutePairWidths,
   cleanExitText,
   cleanExitDistance,
   cleanExitRoute,
   cleanDirection,
 } from '../generator'
-import RawSvg from '../raw-svg'
 import {
-  ExpresswaySignNode,
-} from '../sign/expressway'
+  RawSvg,
+} from '../raw-svg'
+import {
+  RouteSignNode,
+} from '../sign/route-sign'
 import {
   GREEN, WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
@@ -46,6 +50,7 @@ const DESTINATION_TEXT_OPTIONS = {
 }
 
 const cleanExitNumber = (value: string) =>
+
   String(value || '')
     .replace(/\D/g, '')
     .slice(0, 4) || '360'
@@ -75,7 +80,7 @@ function DirectionPlate({
   )
 }
 
-export default function RoadForkPreviewSign({
+export function RoadForkPreviewSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')
@@ -84,13 +89,20 @@ export default function RoadForkPreviewSign({
   const exitDistance = cleanExitDistance(sign.exitDistance)
   const exitName = cleanExitText(sign.exitName, '', 6)
   const destination = cleanExitText(sign.exitDestination, '', 6)
-  const leftRoute = cleanExitRoute(sign.leftRoute, 'G72')
-  const rightRoute = cleanExitRoute(sign.rightRoute, 'G80')
+  const leftRoute = cleanExitRoute(sign.leftRoute, 'G72', sign.leftRouteKind)
+  const rightRoute = cleanExitRoute(sign.rightRoute, 'G80', sign.rightRouteKind)
   const leftDirection = cleanDirection(sign.leftDirection, '北')
   const rightDirection = cleanDirection(sign.rightDirection, '东')
-  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT)
-  const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT)
-  const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - rightRouteWidth
+  const leftRouteWidth = routeSignWidth(leftRoute, ROUTE_SIGN_HEIGHT, sign.leftRouteKind)
+  const rightRouteWidth = routeSignWidth(rightRoute, ROUTE_SIGN_HEIGHT, sign.rightRouteKind)
+  const fittedRouteWidths = fitRoutePairWidths(
+    leftRouteWidth,
+    rightRouteWidth,
+    RIGHT_ROUTE_SIGN_RIGHT - LEFT_ROUTE_SIGN_X,
+  )
+  const fittedLeftRouteWidth = fittedRouteWidths.leftWidth
+  const fittedRightRouteWidth = fittedRouteWidths.rightWidth
+  const rightRouteX = RIGHT_ROUTE_SIGN_RIGHT - fittedRightRouteWidth
   const rightDirectionX = RIGHT_ROUTE_SIGN_RIGHT + 14
   const label = escapeXml(`${exitName} ${exitNumber} ${destination} ${exitDistance}km`)
   const template = expandCanvasForNumberedExit(
@@ -114,7 +126,7 @@ export default function RoadForkPreviewSign({
           y={NUMBERED_EXIT_Y}
         />
         <DirectionPlate fontChinese={fontChinese} text={leftDirection} x={150} y={58} />
-        <ExpresswaySignNode
+        <RouteSignNode
           code={leftRoute}
           kind={sign.leftRouteKind}
           provinceLabel={sign.leftRouteProvinceLabel}
@@ -123,10 +135,10 @@ export default function RoadForkPreviewSign({
           fontLatin={fontLatin}
           x={LEFT_ROUTE_SIGN_X}
           y={ROUTE_SIGN_Y}
-          width={leftRouteWidth}
+          width={fittedLeftRouteWidth}
           height={ROUTE_SIGN_HEIGHT}
         />
-        <ExpresswaySignNode
+        <RouteSignNode
           code={rightRoute}
           kind={sign.rightRouteKind}
           provinceLabel={sign.rightRouteProvinceLabel}
@@ -135,7 +147,7 @@ export default function RoadForkPreviewSign({
           fontLatin={fontLatin}
           x={rightRouteX}
           y={ROUTE_SIGN_Y}
-          width={rightRouteWidth}
+          width={fittedRightRouteWidth}
           height={ROUTE_SIGN_HEIGHT}
         />
         <DirectionPlate

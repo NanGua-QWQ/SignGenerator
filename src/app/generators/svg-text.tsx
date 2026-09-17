@@ -1,19 +1,23 @@
+import {
+  publicUrl,
+} from '../lib/public-url'
+
 import type {
   Font, Glyph,
 } from '@pdf-lib/fontkit'
 
 const FONT_URLS = {
-  han: '/fonts/SourceHanSansSC-Bold.otf',
-  a: '/fonts/jtbz_A.ttf',
-  b: '/fonts/jtbz_B.ttf',
-  c: '/fonts/jtbz_C.ttf',
+  han: publicUrl('/fonts/SourceHanSansSC-Bold.otf'),
+  a: publicUrl('/fonts/jtbz_A.ttf'),
+  b: publicUrl('/fonts/jtbz_B.ttf'),
+  c: publicUrl('/fonts/jtbz_C.ttf'),
 } as const
 
 export type FontKey = keyof typeof FONT_URLS
 
 const fontCache = new Map<FontKey, Promise<Font>>()
 interface FontkitModule {
-  create(_buffer: Uint8Array): Font
+  create(buffer: Uint8Array): Font
 }
 let fontkitPromise: Promise<{ default: FontkitModule }> | undefined
 
@@ -37,11 +41,11 @@ export const escapeXml = (value: string) =>
 
 export function loadFont(kind: FontKey) {
   const cached = fontCache.get(kind)
-  if (cached)  return cached
-  if (!fontkitPromise)  fontkitPromise = import('@pdf-lib/fontkit')
+  if (cached) { return cached }
+  if (!fontkitPromise) { fontkitPromise = import('@pdf-lib/fontkit') }
   const fontPromise = Promise.all([
-    fetch(FONT_URLS[kind]).then(response => {
-      if (!response.ok)  throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`)
+    fetch(FONT_URLS[kind]).then((response) => {
+      if (!response.ok) { throw new Error(`无法加载 ${kind.toUpperCase()} 型交通标志字体`) }
       return response.arrayBuffer()
     }),
     fontkitPromise,
@@ -70,12 +74,12 @@ function referenceScale(font: Font, text: string, height: number) {
     .filter(char => char !== ' ')
     .map(char => font.glyphForCodePoint(char.codePointAt(0) ?? 0).bbox)
   const validBoxes = boxes.filter(box => box.maxY > box.minY)
-  if (validBoxes.length === 0)  return null
+  if (validBoxes.length === 0) { return null }
 
   const minY = Math.min(...validBoxes.map(box => box.minY))
   const maxY = Math.max(...validBoxes.map(box => box.maxY))
   const referenceHeight = maxY - minY
-  if (referenceHeight <= 0)  return null
+  if (referenceHeight <= 0) { return null }
 
   return {
     scale: height / referenceHeight,
@@ -98,11 +102,11 @@ export function textLayout(
   const unitsPerEm = font.unitsPerEm || 1000
   const reference
     = options.scaleMode === 'reference' ? referenceScale(font, options.referenceText || text, height) : null
-  const glyphs = Array.from(text).map(char => {
+  const glyphs = Array.from(text).map((char) => {
     const codePoint = char.codePointAt(0)
-    if (codePoint === undefined)  throw new Error('无效字符')
+    if (codePoint === undefined) { throw new Error('无效字符') }
     const glyph = font.glyphForCodePoint(codePoint)
-    if (glyph.id === 0 && char !== ' ')  throw new Error(`字体不包含字符“${char}”`)
+    if (glyph.id === 0 && char !== ' ') { throw new Error(`字体不包含字符“${char}”`) }
     if (char === ' ') {
       const width = reference
         ? (glyph.advanceWidth || unitsPerEm / 2) * reference.scale
@@ -124,7 +128,7 @@ export function textLayout(
     }
     const box = glyph.bbox
     const glyphHeight = box.maxY - box.minY
-    if (glyphHeight <= 0)  throw new Error(`字符“${char}”无法生成轮廓`)
+    if (glyphHeight <= 0) { throw new Error(`字符“${char}”无法生成轮廓`) }
     const scale = reference?.scale ?? height / glyphHeight
     const originMaxY = reference?.maxY ?? box.maxY
     return {
@@ -146,6 +150,8 @@ export function textLayout(
 
 export interface LayoutOptions {
   align?: 'start' | 'center'
+  fitTargets?: Array<{ text: string; width: number }>
+  fitTexts?: string[]
   minGap?: number
   maxGap?: number
   scaleMode?: TextLayoutOptions['scaleMode']
@@ -189,9 +195,9 @@ export function Layout({
         const x = startX + layout.glyphs
           .slice(0, index)
           .reduce((total, item) => total + item.width + gap, 0)
-        if (isWhitespace || !path)
+        if (isWhitespace || !path) {
           return null
-
+        }
         const transform = `translate(${x} ${startY + originMaxY * scale}) scale(${scale} ${-scale}) translate(${-box.minX} 0)`
         return (
           <path
@@ -228,13 +234,30 @@ export function OutlinedText({
   options = {
   },
 }: OutlinedTextProps) {
-  const layout = textLayout(font, text, height, options)
+  let fittedHeight = height
+  const fitTargets = options.fitTargets?.length
+    ? options.fitTargets
+    : (options.fitTexts?.length ? options.fitTexts : [text]).map(fitText => ({
+      text: fitText,
+      width,
+    }))
+  const fitRatio = Math.min(...fitTargets.map((fitTarget) => {
+    const fitLayout = textLayout(font, fitTarget.text, fittedHeight, options)
+    const minimumGaps = Math.max(0, fitLayout.glyphs.length - 1) * (options.minGap ?? 0)
+    const availableGlyphWidth = Math.max(fitTarget.width * 0.01, fitTarget.width - minimumGaps)
+    return availableGlyphWidth / fitLayout.usedWidth
+  }))
+  if (fitRatio < 1) {
+    fittedHeight = Math.max(0.01, fittedHeight * fitRatio)
+  }
+  const layout = textLayout(font, text, fittedHeight, options)
   const gap = textGap(layout.usedWidth, layout.glyphs.length, width, options)
   const contentWidth = layout.usedWidth + gap * Math.max(0, layout.glyphs.length - 1)
   const x = options.align === 'start' ? startX : startX + (width - contentWidth) / 2
+  const y = startY + (height - fittedHeight) / 2
   const keyPrefix = `${text}-${startX}-${startY}`
   return (
-    <Layout layout={layout} startX={x} startY={startY} gap={gap} keyPrefix={keyPrefix}>
+    <Layout layout={layout} startX={x} startY={y} gap={gap} keyPrefix={keyPrefix}>
       {fill}
     </Layout>
   )
