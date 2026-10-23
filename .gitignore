@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-webpack/
 /out/
 
 # production
@@ -23,8 +24,6 @@
 # misc
 .DS_Store
 *.pem
-
-.codebuddy
 
 # debug
 npm-debug.log*
