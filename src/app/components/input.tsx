@@ -1,3 +1,6 @@
+import {
+  forwardRef,
+} from 'react'
 import type {
   InputHTMLAttributes,
 } from 'react'
@@ -8,23 +11,35 @@ import {
 
 type InputProps = InputHTMLAttributes<HTMLInputElement>
 
-function Input({
-  className, type, ...props
-}: InputProps) {
+/**
+ * M3 text field（outlined 变体）。
+ *
+ * M3 规范里 outlined text field 是 56dp 高的容器 + 1dp 描边，聚焦时描边转
+ * primary 并加粗到 2dp。这里为了贴合工坊紧凑的侧栏，把高度压到 40dp，
+ * 但保留「focused → primary + ring」的视觉规则。
+ */
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input({
+  className,
+  ...props
+}, ref) {
   return (
     <input
-      type={type}
-      data-slot="input"
+      ref={ref}
       className={cn(
-        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-        'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+        'h-10 w-full min-w-0 rounded-[var(--md-sys-shape-corner-extra-small)]',
+        'border border-[var(--md-sys-color-outline)] bg-transparent',
+        'px-4 text-sm text-foreground',
+        'placeholder:text-muted-foreground',
+        'transition-colors duration-[var(--md-sys-motion-duration-short)]',
+        'hover:border-[var(--md-sys-color-on-surface)]',
+        'focus:border-[var(--md-sys-color-primary)] focus:ring-1 focus:ring-[var(--md-sys-color-primary)] focus:outline-none',
+        'disabled:cursor-not-allowed disabled:opacity-[0.38]',
         className,
       )}
       {...props}
     />
   )
-}
+})
 
 export {
   Input,

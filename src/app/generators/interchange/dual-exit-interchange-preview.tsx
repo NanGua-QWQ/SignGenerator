@@ -9,12 +9,10 @@ import {
 import {
   cleanExitDistance, cleanExitRoute, cleanExitText, routeSignWidth,
 } from '../generator'
+import RawSvg from '../raw-svg'
 import {
-  RawSvg,
-} from '../raw-svg'
-import {
-  RouteSignNode,
-} from '../sign/route-sign'
+  ExpresswaySignNode,
+} from '../sign/expressway'
 import {
   WHITE, escapeXml, OutlinedText,
 } from '../svg-text'
@@ -24,11 +22,7 @@ const TEMPLATE_HEIGHT = 449.52
 const ROUTE_SIGN_HEIGHT = 118
 const ROUTE_SIGN_X = 210
 const DESTINATION_X = 386
-const DESTINATION_RIGHT = 548
-const DESTINATION_MIN_WIDTH = 80
-const ROUTE_DESTINATION_GAP = 14
-const ROUTE_SIGN_MAX_WIDTH
-  = DESTINATION_RIGHT - ROUTE_SIGN_X - ROUTE_DESTINATION_GAP - DESTINATION_MIN_WIDTH
+const DESTINATION_WIDTH = 134
 const FIRST_ROW_Y = 47
 const SECOND_ROW_Y = 193
 const DESTINATION_TEXT_OPTIONS = {
@@ -38,35 +32,18 @@ const DESTINATION_TEXT_OPTIONS = {
   minGap: 14,
 }
 
-function rowLayout(preferredRouteWidth: number) {
-  const routeWidth = Math.min(preferredRouteWidth, ROUTE_SIGN_MAX_WIDTH)
-  const startX = Math.max(
-    DESTINATION_X,
-    ROUTE_SIGN_X + routeWidth + ROUTE_DESTINATION_GAP,
-  )
-  return {
-    routeWidth,
-    destinationX: startX,
-    destinationWidth: DESTINATION_RIGHT - startX,
-  }
-}
-
-export function DualExitInterchangePreviewSign({
+export default function DualExitInterchangePreviewSign({
   sign,
 }: { sign: Sign }) {
   const fontChinese = useFont('a')
   const fontLatin = useFont('b')
-  const firstRoute = cleanExitRoute(sign.leftRoute, 'G55', sign.leftRouteKind)
-  const secondRoute = cleanExitRoute(sign.rightRoute, 'G55', sign.rightRouteKind)
+  const firstRoute = cleanExitRoute(sign.leftRoute, 'G55')
+  const secondRoute = cleanExitRoute(sign.rightRoute, 'G55')
   const firstDestination = cleanExitText(sign.exitName, '永州', 4)
   const secondDestination = cleanExitText(sign.exitDestination, '广州', 4)
   const distance = cleanExitDistance(sign.exitDistance || '3')
-  const firstRowLayout = rowLayout(
-    routeSignWidth(firstRoute, ROUTE_SIGN_HEIGHT, sign.leftRouteKind),
-  )
-  const secondRowLayout = rowLayout(
-    routeSignWidth(secondRoute, ROUTE_SIGN_HEIGHT, sign.rightRouteKind),
-  )
+  const firstRouteWidth = routeSignWidth(firstRoute, ROUTE_SIGN_HEIGHT)
+  const secondRouteWidth = routeSignWidth(secondRoute, ROUTE_SIGN_HEIGHT)
   const label = escapeXml(
     `${firstRoute} ${firstDestination} ${secondRoute} ${secondDestination} ${distance}km`,
   )
@@ -79,58 +56,50 @@ export function DualExitInterchangePreviewSign({
       height={TEMPLATE_HEIGHT}
     >
       <g data-generated="dual-exit-interchange-preview">
-        <g data-row="first">
-          <RouteSignNode
-            code={firstRoute}
-            kind={sign.leftRouteKind}
-            provinceLabel={sign.leftRouteProvinceLabel}
-            threeDigitDescend={sign.leftRouteThreeDigitDescend}
-            fontChinese={fontChinese}
-            fontLatin={fontLatin}
-            x={ROUTE_SIGN_X}
-            y={FIRST_ROW_Y}
-            width={firstRowLayout.routeWidth}
-            height={ROUTE_SIGN_HEIGHT}
-          />
-          <g data-part="destination">
-            <OutlinedText
-              font={fontChinese}
-              text={firstDestination}
-              startX={firstRowLayout.destinationX}
-              startY={FIRST_ROW_Y + 27.5}
-              width={firstRowLayout.destinationWidth}
-              height={71.5}
-              fill={WHITE}
-              options={DESTINATION_TEXT_OPTIONS}
-            />
-          </g>
-        </g>
-        <g data-row="second">
-          <RouteSignNode
-            code={secondRoute}
-            kind={sign.rightRouteKind}
-            provinceLabel={sign.rightRouteProvinceLabel}
-            threeDigitDescend={sign.rightRouteThreeDigitDescend}
-            fontChinese={fontChinese}
-            fontLatin={fontLatin}
-            x={ROUTE_SIGN_X}
-            y={SECOND_ROW_Y}
-            width={secondRowLayout.routeWidth}
-            height={ROUTE_SIGN_HEIGHT}
-          />
-          <g data-part="destination">
-            <OutlinedText
-              font={fontChinese}
-              text={secondDestination}
-              startX={secondRowLayout.destinationX}
-              startY={SECOND_ROW_Y + 27.5}
-              width={secondRowLayout.destinationWidth}
-              height={71.5}
-              fill={WHITE}
-              options={DESTINATION_TEXT_OPTIONS}
-            />
-          </g>
-        </g>
+        <ExpresswaySignNode
+          code={firstRoute}
+          kind={sign.leftRouteKind}
+          provinceLabel={sign.leftRouteProvinceLabel}
+          threeDigitDescend={sign.leftRouteThreeDigitDescend}
+          fontChinese={fontChinese}
+          fontLatin={fontLatin}
+          x={ROUTE_SIGN_X}
+          y={FIRST_ROW_Y}
+          width={firstRouteWidth}
+          height={ROUTE_SIGN_HEIGHT}
+        />
+        <OutlinedText
+          font={fontChinese}
+          text={firstDestination}
+          startX={DESTINATION_X}
+          startY={FIRST_ROW_Y + 27.5}
+          width={DESTINATION_WIDTH}
+          height={71.5}
+          fill={WHITE}
+          options={DESTINATION_TEXT_OPTIONS}
+        />
+        <ExpresswaySignNode
+          code={secondRoute}
+          kind={sign.rightRouteKind}
+          provinceLabel={sign.rightRouteProvinceLabel}
+          threeDigitDescend={sign.rightRouteThreeDigitDescend}
+          fontChinese={fontChinese}
+          fontLatin={fontLatin}
+          x={ROUTE_SIGN_X}
+          y={SECOND_ROW_Y}
+          width={secondRouteWidth}
+          height={ROUTE_SIGN_HEIGHT}
+        />
+        <OutlinedText
+          font={fontChinese}
+          text={secondDestination}
+          startX={DESTINATION_X}
+          startY={SECOND_ROW_Y + 27.5}
+          width={DESTINATION_WIDTH}
+          height={71.5}
+          fill={WHITE}
+          options={DESTINATION_TEXT_OPTIONS}
+        />
         <OutlinedText
           font={fontChinese}
           text={distance}

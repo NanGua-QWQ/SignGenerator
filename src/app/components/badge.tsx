@@ -6,47 +6,122 @@ import {
   cn,
 } from '@/lib/utils'
 
-const variants = {
-  default:
-    'bg-muted text-muted-foreground ring-1 ring-border dark:bg-muted dark:text-muted-foreground dark:ring-border',
-  fork: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-950/35 dark:text-orange-300 dark:ring-orange-900/60',
-  expressway:
-    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/35 dark:text-emerald-300 dark:ring-emerald-900/60',
-  national:
-    'bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-950/35 dark:text-red-300 dark:ring-red-900/60',
-  provincial:
-    'bg-yellow-50 text-yellow-800 ring-1 ring-yellow-200 dark:bg-yellow-950/35 dark:text-yellow-300 dark:ring-yellow-900/60',
-  county:
-    'bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-950/35 dark:text-violet-300 dark:ring-violet-900/60',
-  township:
-    'bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-950/35 dark:text-violet-300 dark:ring-violet-900/60',
-  slate:
-    'bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-950/35 dark:text-slate-300 dark:ring-slate-900/60',
-  amber:
-    'bg-amber-50 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/35 dark:text-amber-300 dark:ring-amber-900/60',
-  emerald:
-    'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/35 dark:text-emerald-300 dark:ring-emerald-900/60',
-  sky: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-950/35 dark:text-sky-300 dark:ring-sky-900/60',
-  rose: 'bg-rose-50 text-rose-700 ring-1 ring-rose-200 dark:bg-rose-950/35 dark:text-rose-300 dark:ring-rose-900/60',
-  violet:
-    'bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-950/35 dark:text-violet-300 dark:ring-violet-900/60',
-} as const
-
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: keyof typeof variants
+/**
+ * 语义色变体 → M3 颜色角色对。
+ *
+ * M3 没有「彩色标签」这个组件，最接近的是 **tonal chip**：
+ * 底色取 `<role>-container`、文字取 `on-<role>-container`。
+ * 这里把原来的 emerald / amber / rose … 等 Tailwind 调色板映射到
+ * M3 的 primary / secondary / tertiary / error 四族容器色，
+ * 保证明暗两套主题都由同一组令牌驱动。
+ */
+const variantRole: Record<string, { bg: string; fg: string }> = {
+  default: {
+    bg: 'var(--md-sys-color-surface-container-highest)',
+    fg: 'var(--md-sys-color-on-surface-variant)',
+  },
+  slate: {
+    bg: 'var(--md-sys-color-surface-container-highest)',
+    fg: 'var(--md-sys-color-on-surface-variant)',
+  },
+  primary: {
+    bg: 'var(--md-sys-color-primary-container)',
+    fg: 'var(--md-sys-color-on-primary-container)',
+  },
+  expressway: {
+    bg: 'var(--md-sys-color-primary-container)',
+    fg: 'var(--md-sys-color-on-primary-container)',
+  },
+  emerald: {
+    bg: 'var(--md-sys-color-primary-container)',
+    fg: 'var(--md-sys-color-on-primary-container)',
+  },
+  violet: {
+    bg: 'var(--md-sys-color-secondary-container)',
+    fg: 'var(--md-sys-color-on-secondary-container)',
+  },
+  county: {
+    bg: 'var(--md-sys-color-secondary-container)',
+    fg: 'var(--md-sys-color-on-secondary-container)',
+  },
+  township: {
+    bg: 'var(--md-sys-color-secondary-container)',
+    fg: 'var(--md-sys-color-on-secondary-container)',
+  },
+  sky: {
+    bg: 'var(--md-sys-color-secondary-container)',
+    fg: 'var(--md-sys-color-on-secondary-container)',
+  },
+  tertiary: {
+    bg: 'var(--md-sys-color-tertiary-container)',
+    fg: 'var(--md-sys-color-on-tertiary-container)',
+  },
+  amber: {
+    bg: 'var(--md-sys-color-tertiary-container)',
+    fg: 'var(--md-sys-color-on-tertiary-container)',
+  },
+  fork: {
+    bg: 'var(--md-sys-color-tertiary-container)',
+    fg: 'var(--md-sys-color-on-tertiary-container)',
+  },
+  provincial: {
+    bg: 'var(--md-sys-color-tertiary-container)',
+    fg: 'var(--md-sys-color-on-tertiary-container)',
+  },
+  rose: {
+    bg: 'var(--md-sys-color-error-container)',
+    fg: 'var(--md-sys-color-on-error-container)',
+  },
+  national: {
+    bg: 'var(--md-sys-color-error-container)',
+    fg: 'var(--md-sys-color-on-error-container)',
+  },
+  error: {
+    bg: 'var(--md-sys-color-error-container)',
+    fg: 'var(--md-sys-color-on-error-container)',
+  },
 }
 
+/** 兼容旧调用点：颜色名 → 同一组 M3 容器色的 class 串 */
+const badgeVariants: Record<string, string> = Object.fromEntries(
+  Object.entries(variantRole).map(([key, role]) => [
+    key,
+    `bg-[${role.bg}] text-[${role.fg}]`,
+  ]),
+)
+
+type BadgeVariant = keyof typeof variantRole | string
+
+interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  variant?: BadgeVariant
+}
+
+/** M3 tonal chip：全圆角、label-small、container / on-container 配色 */
 export function Badge({
-  className, variant = 'default', ...props
+  className,
+  variant = 'default',
+  style,
+  ...props
 }: BadgeProps) {
+  const role = variantRole[variant] ?? variantRole.default
   return (
     <span
       className={cn(
-        'inline-flex h-5 min-w-0 items-center justify-center rounded px-2 text-[11px] font-semibold leading-none tracking-normal',
-        variants[variant],
+        'inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5',
+        'text-[0.6875rem] leading-4 font-medium tracking-[0.03125rem] whitespace-nowrap',
         className,
       )}
+      style={{
+        backgroundColor: role.bg,
+        color: role.fg,
+        ...style,
+      }}
       {...props}
     />
   )
+}
+
+export {
+  badgeVariants,
+  variantRole as badgeRole,
 }
