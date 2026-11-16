@@ -5,8 +5,6 @@ import type {
 interface RawSvgProps {
   template: string
   label: string
-  x?: number
-  y?: number
   width?: number | string
   height?: number | string
   children?: ReactNode
@@ -23,8 +21,8 @@ const extractViewBox = (template: string) => {
   return match?.[1]
 }
 
-export function RawSvg({
-  template, label, x, y, width, height, children,
+export default function RawSvg({
+  template, label, width, height, children,
 }: RawSvgProps) {
   const inner = extractInner(template)
   const viewBox = extractViewBox(template)
@@ -34,8 +32,6 @@ export function RawSvg({
       role="img"
       aria-label={label}
       viewBox={viewBox}
-      x={x}
-      y={y}
       width={width}
       height={height}
     >

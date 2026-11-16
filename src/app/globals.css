@@ -2,80 +2,360 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+/* ============================================================================
+ * Material Design 3 —— 字体
+ *
+ * M3 规范的正文字体是 Roboto（数字 / 拉丁），中文按规范回落到系统无衬线
+ * （Noto Sans SC / 苹方 / 微软雅黑）。
+ *
+ * 这里**自托管** Roboto / Roboto Mono 的 woff2，不依赖 Google Fonts CDN
+ * （构建机与内网环境常常访问不到）；unicode-range 只管拉丁，
+ * 中文自然落到下面的 CJK 字体。
+ *
+ * 版面设计画布上的文本**不走这里** —— 那是 Minecraft 交通标志字体，
+ * 由 `lib/studio/text.ts` 单独加载 unifont / jtbz，见下面的注释。
+ * ========================================================================== */
+
+/* ---- Roboto（M3 正文字体）---- */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* 拉丁扩展区，覆盖越南语 / 东欧等 */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-ext-500-normal.woff2') format('woff2');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-latin-ext-700-normal.woff2') format('woff2');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* ---- Roboto Mono（代码 / 数值）---- */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-mono-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/roboto/roboto-mono-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---- 交通标志字体（画布预览）----
+ *
+ * 与模组 `assets/yunbeiuc/font/traf_sign_font_{a,b,c}.json` 同源：
+ * 每个字体由「交通 TTF + MiSans 中文兜底」两个 provider 组成，
+ * 其中交通 TTF 用 `skip` 排除了 CJK / 全角标点（交给 MiSans）。
+ * 这里用 `unicode-range` 复刻同一套排除范围，栈里再接 TrafSignCJK。
+ */
+@font-face {
+  font-family: 'TrafSignA';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/traffic/re2014a.ttf') format('truetype');
+  /* = 全码位去掉 U+3000-303F / U+4E00-9FFF / U+FF00-FFEF */
+  unicode-range: U+0000-2FFF, U+3040-4DFF, U+A000-FEFF, U+FFF0-10FFFF;
+}
+@font-face {
+  font-family: 'TrafSignB';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/traffic/rg2014b.ttf') format('truetype');
+  unicode-range: U+0000-2FFF, U+3040-4DFF, U+A000-FEFF, U+FFF0-10FFFF;
+}
+@font-face {
+  font-family: 'TrafSignC';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/traffic/rg2014c.ttf') format('truetype');
+  unicode-range: U+0000-2FFF, U+3040-4DFF, U+A000-FEFF, U+FFF0-10FFFF;
+}
+/* 中文兜底（模组里三个交通字体的第二 provider） */
+@font-face {
+  font-family: 'TrafSignCJK';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/traffic/misans_semibold.ttf') format('truetype');
+}
+
+/* ============================================================================
+ * Material Design 3 —— 设计令牌层
+ *
+ * 浅色方案 = **纯白单色**：所有 surface / container 都是白到浅灰的中性色，
+ * 强调色 primary 取近黑（#1a1a1a），不再带任何紫调 —— 画布上的路牌配色
+ * 因此不会被界面染色干扰。深色方案（.dark）保持 M3 baseline 不变。
+ * 所有颜色角色以 --md-sys-color-* 命名，与 M3 官方规范的 role 名称一一对应。
+ *
+ * 命名规则：surface 系 = 背景与容器；on-* = 落在对应颜色之上的前景色；
+ * primary / secondary / tertiary / error 各自带 -container 与 on--container。
+ * ========================================================================== */
+
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --primary: oklch(0.32 0.093 258.61);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --sign-preview-grid: oklch(0.72 0.02 160 / 55%);
+  color-scheme: light;
+
+  /* ---- primary（近黑，用于激活态 / 焦点环 / 主按钮） ---- */
+  --md-sys-color-primary: #1a1a1a;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e8e8e8;
+  --md-sys-color-on-primary-container: #1a1a1a;
+
+  /* ---- secondary（中性灰，用于次级强调 / 选中底色） ---- */
+  --md-sys-color-secondary: #5c5c5c;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e8e8e8;
+  --md-sys-color-on-secondary-container: #1a1a1a;
+
+  /* ---- tertiary（中性灰，用于强调补充） ---- */
+  --md-sys-color-tertiary: #6b6b6b;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #f0f0f0;
+  --md-sys-color-on-tertiary-container: #1a1a1a;
+
+  /* ---- error（功能性红色，保持可辨识） ---- */
+  --md-sys-color-error: #b3261e;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #fdeceb;
+  --md-sys-color-on-error-container: #410e0b;
+
+  /* ---- surface（由低到高的层级容器，全部中性） ---- */
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-dim: #e6e6e6;
+  --md-sys-color-surface-bright: #ffffff;
+  --md-sys-color-on-surface: #1a1a1a;
+  --md-sys-color-on-surface-variant: #5c5c5c;
+
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #fafafa;
+  --md-sys-color-surface-container: #f4f4f4;
+  --md-sys-color-surface-container-high: #ededed;
+  --md-sys-color-surface-container-highest: #e6e6e6;
+  --md-sys-color-surface-variant: #ececec;
+
+  --md-sys-color-inverse-surface: #2b2b2b;
+  --md-sys-color-inverse-on-surface: #f5f5f5;
+
+  /* ---- outline / scrim ---- */
+  --md-sys-color-outline: #8a8a8a;
+  --md-sys-color-outline-variant: #dcdcdc;
+  --md-sys-color-scrim: #000000;
+
+  --md-sys-color-shadow: #000000;
+
+  /* ---- 状态层（state layer）与水波纹 ---- */
+  --md-sys-state-hover-opacity: 0.08;
+  --md-sys-state-focus-opacity: 0.10;
+  --md-sys-state-pressed-opacity: 0.10;
+  --md-sys-state-dragged-opacity: 0.16;
+
+  /* ---- 形状（shape scale） ---- */
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* ---- 层级（elevation） ---- */
+  --md-sys-elevation-level-1: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 1px 3px 1px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level-2: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 2px 6px 2px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level-3: 0 4px 8px 3px rgb(0 0 0 / 15%), 0 1px 3px 0 rgb(0 0 0 / 30%);
+
+  /* ---- 动效（motion） ---- */
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-duration-short: 100ms;
+  --md-sys-motion-duration-medium: 200ms;
+
+  /* ---- 附加：字体族（M3 = Roboto 拉丁 + 系统中文回退） ---- */
+  --md-sys-typescale-font-plain: 'Roboto', 'Roboto Flex', 'Noto Sans SC',
+    'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --md-sys-typescale-font-brand: var(--md-sys-typescale-font-plain);
+  --md-sys-typescale-font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular,
+    'Cascadia Code', Consolas, monospace;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --sign-preview-grid: oklch(0.56 0.02 160 / 42%);
+  color-scheme: dark;
+
+  --md-sys-color-primary: #d0bcff;
+  --md-sys-color-on-primary: #381e72;
+  --md-sys-color-primary-container: #4f378b;
+  --md-sys-color-on-primary-container: #eaddff;
+
+  --md-sys-color-secondary: #ccc2dc;
+  --md-sys-color-on-secondary: #332d41;
+  --md-sys-color-secondary-container: #4a4458;
+  --md-sys-color-on-secondary-container: #e8def8;
+
+  --md-sys-color-tertiary: #efb8c8;
+  --md-sys-color-on-tertiary: #492532;
+  --md-sys-color-tertiary-container: #633b48;
+  --md-sys-color-on-tertiary-container: #ffd8e4;
+
+  --md-sys-color-error: #f2b8b5;
+  --md-sys-color-on-error: #601410;
+  --md-sys-color-error-container: #8c1d18;
+  --md-sys-color-on-error-container: #f9dedc;
+
+  --md-sys-color-surface: #141218;
+  --md-sys-color-surface-dim: #141218;
+  --md-sys-color-surface-bright: #3b383e;
+  --md-sys-color-on-surface: #e6e0e9;
+  --md-sys-color-on-surface-variant: #cac4d0;
+
+  --md-sys-color-surface-container-lowest: #0f0d13;
+  --md-sys-color-surface-container-low: #1d1b20;
+  --md-sys-color-surface-container: #211f26;
+  --md-sys-color-surface-container-high: #2b2930;
+  --md-sys-color-surface-container-highest: #36343b;
+  --md-sys-color-surface-variant: #49454f;
+
+  --md-sys-color-inverse-surface: #e6e0e9;
+  --md-sys-color-inverse-on-surface: #322f35;
+
+  --md-sys-color-outline: #938f99;
+  --md-sys-color-outline-variant: #49454f;
+  --md-sys-color-scrim: #000000;
+
+  --md-sys-color-shadow: #000000;
 }
 
-@layer theme {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-property: background-color, border-color, box-shadow;
-  }
+/* ============================================================================
+ * 语义别名层
+ *
+ * 面向 Tailwind 工具类（bg-background / text-foreground / border-border …）。
+ * 组件里统一用这一层名字，颜色方案换代时只需改上面的 --md-sys-color-*。
+ * ========================================================================== */
 
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      transition-duration: 0s !important;
-    }
-  }
+:root {
+  --color-background: var(--md-sys-color-surface);
+  --color-foreground: var(--md-sys-color-on-surface);
+
+  --color-card: var(--md-sys-color-surface-container-low);
+  --color-card-foreground: var(--md-sys-color-on-surface);
+
+  --color-popover: var(--md-sys-color-surface-container);
+  --color-popover-foreground: var(--md-sys-color-on-surface);
+
+  --color-primary: var(--md-sys-color-primary);
+  --color-primary-foreground: var(--md-sys-color-on-primary);
+
+  --color-secondary: var(--md-sys-color-secondary-container);
+  --color-secondary-foreground: var(--md-sys-color-on-secondary-container);
+
+  --color-muted: var(--md-sys-color-surface-container);
+  --color-muted-foreground: var(--md-sys-color-on-surface-variant);
+
+  --color-accent: var(--md-sys-color-secondary-container);
+  --color-accent-foreground: var(--md-sys-color-on-secondary-container);
+
+  --color-destructive: var(--md-sys-color-error);
+  --color-destructive-foreground: var(--md-sys-color-on-error);
+
+  --color-border: var(--md-sys-color-outline-variant);
+  --color-input: var(--md-sys-color-outline);
+  --color-ring: var(--md-sys-color-primary);
+
+  /* 预览画布网格：跟随 outline-variant，比面板底色略暗一档 */
+  --sign-preview-grid: color-mix(in srgb, var(--md-sys-color-outline) 46%, transparent);
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+
+  --radius-xs: var(--md-sys-shape-corner-extra-small);
+  --radius-sm: var(--md-sys-shape-corner-small);
+  --radius-md: var(--md-sys-shape-corner-medium);
+  --radius-lg: var(--md-sys-shape-corner-large);
+  --radius-xl: var(--md-sys-shape-corner-extra-large);
+
+  --font-sans: var(--md-sys-typescale-font-plain);
+  --font-mono: var(--md-sys-typescale-font-mono);
 }
 
 @layer base {
@@ -85,61 +365,128 @@
     min-height: 100%;
   }
 
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-sys-typescale-font-plain);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  @media (max-width: 767px) {
-    /* Keep iOS from zooming the viewport when an editor field receives focus. */
-    input,
-    textarea,
-    select,
-    [role='combobox'] {
-      font-size: 16px;
-    }
-
-    /* Mobile browsers reserve space for system gestures near the screen edges. */
-    body {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+  main {
+    height: 100vh;
   }
 
-  .animated-title {
-    position: relative;
-    color: transparent;
-    background-image: linear-gradient(to right, white, white, transparent);
-    background-size: 200% 100%;
-    background-repeat: no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    background-position-x: 200%;
-    transition: background-position-x 1s ease-in-out 0.5s;
-    cursor: pointer;
+  ::selection {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
   }
 
-  .animated-title.is-filled {
-    background-position-x: 0%;
+  /* M3 滚动条：细、圆、低对比 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--md-sys-color-outline-variant) transparent;
   }
 
-  .animated-title::after {
-    content: '道路标志生成器';
-    position: absolute;
-    inset: 0;
-    color: yellow;
-    -webkit-text-stroke: 2px white;
-    -webkit-text-fill-color: transparent;
-    opacity: 0;
-    /* 不透明度将延迟切换，具体延迟由 .is-filled 规则控制 */
-    transition: opacity 0.4s ease-in-out 0s;
-    pointer-events: none;
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 
-  /* 点击后先执行文字填充过渡，再延迟显示描边（delay = background transition delay + duration） */
-  .animated-title.is-filled::after {
-    transition-delay: 1.6s; /* 0.5s delay + 1s duration = 1.5s，留一点余量 */
-    opacity: 1;
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-full);
+    border: 2px solid transparent;
+    background-clip: content-box;
   }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--md-sys-color-outline);
+    background-clip: content-box;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ============================================================================
+ * M3 组件工具类
+ *
+ * 命名沿用 @utility，供 JSX 直接使用；全部基于语义别名层取色，
+ * 因此 light / dark 自动跟随。
+ * ========================================================================== */
+
+/** 复选框 / 单选 / range 的强调色 */
+@utility accent-primary {
+  accent-color: var(--md-sys-color-primary);
+}
+
+/** 图标按钮：40dp 圆形，hover / pressed 各一档 state layer（M3 标准动效） */
+@utility md-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  transition: background-color var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface) calc(var(--md-sys-state-hover-opacity) * 100%),
+      transparent
+    );
+  }
+
+  &:active {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface) calc(var(--md-sys-state-pressed-opacity) * 100%),
+      transparent
+    );
+  }
+}
+
+/** 分段按钮（segmented button）选中态 */
+@utility md-segment {
+  border-radius: var(--md-sys-shape-corner-full);
+  transition:
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+/** 侧栏面板标题（M3 title-small） */
+@utility md-panel-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.00625rem;
+  color: var(--md-sys-color-on-surface);
+}
+
+/** M3 label-medium：表单字段标签 */
+@utility md-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03125rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/** M3 body-small：辅助说明文字 */
+@utility md-supporting {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.025rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/** 数字与代码：等宽、tabular */
+@utility md-code {
+  font-family: var(--md-sys-typescale-font-mono);
+  font-variant-numeric: tabular-nums;
 }

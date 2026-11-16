@@ -7,7 +7,6 @@ import type {
 } from 'next'
 
 const
-  basePath = process.env.NEXT_PUBLIC_BASE_PATH,
   rawRule = {
     loaders: [
       'raw-loader',
@@ -15,34 +14,22 @@ const
     as: '*.js',
   } satisfies TurbopackRuleConfigItem,
   nextConfig: NextConfig = {
-    output: 'export',
-    // GitHub Pages project sites are hosted under /<repository-name>.
-    // This is empty for local development and the offline package.
-    ...basePath ? {
-      basePath,
-    } : {
-    },
+    /* config options here */
     reactCompiler: true,
-    webpack(config) {
-      // These imports are source text, not images or executable TS modules.
-      // Match them before Next's image and TypeScript loaders.
-      config.module.rules = [{
-        oneOf: [
-          {
-            test: /(?:\.svg|\.raw\.ts)$/i,
-            type: 'asset/source',
-          },
-          {
-            rules: config.module.rules,
-          },
-        ],
-      }]
-      return config
-    },
+    /*
+     * `next dev` 默认只放行启动时用的主机名（`localhost`），其余来源访问
+     * `/_next/**`、`/__nextjs*`（含 HMR、字体、字体 CSS）一律 403 Unauthorized。
+     * 桌面端预览面板是用 `127.0.0.1:3000` 打开页面的，所以整站 JS chunk 全被拦，
+     * 页面能返回 200 但 hydration 直接失败。这里把回环地址显式加进白名单。
+     * 只影响 dev，生产构建不带这个开关。
+     */
+    allowedDevOrigins: [
+      '127.0.0.1',
+      '[::1]',
+    ],
     turbopack: {
       rules: {
         '*.svg': rawRule,
-        '*.raw.ts': rawRule,
       },
     },
   }
